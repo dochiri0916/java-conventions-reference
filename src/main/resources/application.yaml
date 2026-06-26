@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: tool-test-lab
+
+  # H2 In-Memory Database (MySQL 호환 모드)
+  datasource:
+    url: jdbc:h2:mem:tooltestlab;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # H2 Console — http://localhost:18080/h2-console (dev profile only)
+  h2:
+    console:
+      enabled: false
+      path: /h2-console
+
+  # JPA / Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+
+# Application
+app:
+  error:
+    type-uri-prefix: https://api.example.com/problems/
+
+# Tool Test Lab — 동시성 모드
+tool-test-lab:
+  concurrency:
+    safe: false # true로 바꾸면 @Version + PESSIMISTIC_WRITE 활성화
+
+# Server
+server:
+  port: 18080
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.dochiri.tooltestlab: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

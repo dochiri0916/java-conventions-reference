@@ -1,0 +1,5 @@
+# dev 프로파일 — 로컬 개발용. H2 Console 활성화
+spring:
+  h2:
+    console:
+      enabled: true

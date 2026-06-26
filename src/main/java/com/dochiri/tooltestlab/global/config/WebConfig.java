@@ -1,0 +1,38 @@
+package com.dochiri.tooltestlab.global.config;
+
+import com.dochiri.tooltestlab.global.web.LoginCheckInterceptor;
+import com.dochiri.tooltestlab.global.web.MemberSessionArgumentResolver;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new LoginCheckInterceptor())
+                .addPathPatterns("/api/**")
+                .excludePathPatterns(
+                        "/api/members/register",
+                        "/api/members/login",
+                        "/api/reviews/product/**",
+                        "/h2-console/**");
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new MemberSessionArgumentResolver());
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
