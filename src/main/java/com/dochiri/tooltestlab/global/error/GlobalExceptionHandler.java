@@ -42,6 +42,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(problemDetail);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ProblemDetail> handleIllegalArgumentException(
+            IllegalArgumentException ex,
+            HttpServletRequest request
+    ) {
+        ErrorCode errorCode = CommonErrorCode.VALIDATION_FAILED;
+
+        ProblemDetail problemDetail = problemDetailFactory.create(
+                errorCode.httpStatus(),
+                errorCode.code(),
+                errorCode.message(),
+                ex.getMessage(),
+                request
+        );
+
+        return ResponseEntity
+                .status(errorCode.httpStatus())
+                .body(problemDetail);
+    }
+
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ProblemDetail> handleMissingRequestHeader(
             MissingRequestHeaderException ex,
@@ -171,18 +191,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                     .body(problemDetail);
         }
 
-        ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
+        // Spring이 전달한 실제 HTTP 상태 코드를 사용한다.
+        // handleExceptionInternal로 전달되는 예외들은 각자 올바른 상태 코드를 가지고 있으므로
+        // INTERNAL_SERVER_ERROR로 하드코딩하지 않는다.
+        HttpStatus resolvedStatus = HttpStatus.valueOf(statusCode.value());
 
         ProblemDetail problemDetail = problemDetailFactory.create(
-                errorCode.httpStatus(),
-                errorCode.code(),
-                errorCode.message(),
-                errorCode.message(),
+                resolvedStatus,
+                CommonErrorCode.INTERNAL_SERVER_ERROR.code(),
+                resolvedStatus.getReasonPhrase(),
+                ex.getMessage() != null ? ex.getMessage() : resolvedStatus.getReasonPhrase(),
                 request
         );
 
         return ResponseEntity
-                .status(errorCode.httpStatus())
+                .status(resolvedStatus)
                 .headers(headers)
                 .body(problemDetail);
     }

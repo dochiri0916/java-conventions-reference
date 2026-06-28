@@ -9,11 +9,10 @@ import com.dochiri.tooltestlab.cart.application.port.in.GetCartUseCase;
 import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartUseCase;
 import com.dochiri.tooltestlab.cart.application.result.GetCartResult;
 import com.dochiri.tooltestlab.global.web.LoginMember;
-import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.product.domain.model.Product;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,14 +26,12 @@ public class CartController {
     private final GetCartUseCase getCartUseCase;
     private final AddToCartUseCase addToCartUseCase;
     private final RemoveFromCartUseCase removeFromCartUseCase;
-    private final ProductRepositoryPort productRepositoryPort;
 
     public CartController(GetCartUseCase getCartUseCase, AddToCartUseCase addToCartUseCase,
-                          RemoveFromCartUseCase removeFromCartUseCase, ProductRepositoryPort productRepositoryPort) {
+                          RemoveFromCartUseCase removeFromCartUseCase) {
         this.getCartUseCase = getCartUseCase;
         this.addToCartUseCase = addToCartUseCase;
         this.removeFromCartUseCase = removeFromCartUseCase;
-        this.productRepositoryPort = productRepositoryPort;
     }
 
     @Operation(summary = "장바구니 조회", description = "로그인된 회원의 장바구니를 조회합니다.")
@@ -49,11 +46,10 @@ public class CartController {
 
     @Operation(summary = "장바구니 담기", description = "상품을 장바구니에 추가합니다.")
     @PostMapping("/items")
-    public ResponseEntity<Map<String, String>> add(@LoginMember String memberPublicId, @RequestBody AddToCartRequest request) {
-        Product product = productRepositoryPort.findByPublicId(request.productPublicId())
-                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다. productPublicId=" + request.productPublicId()));
+    public ResponseEntity<Map<String, String>> add(@LoginMember String memberPublicId, @Valid @RequestBody AddToCartRequest request) {
+        // 상품 조회와 검증은 Application Service에서 트랜잭션 내에서 처리한다.
         addToCartUseCase.add(new AddToCartCommand(
-                memberPublicId, product.publicId(), product.name(), request.quantity(), product.price().amount()));
+                memberPublicId, request.productPublicId(), request.quantity()));
         return ResponseEntity.ok(Map.of("message", "장바구니에 추가되었습니다."));
     }
 

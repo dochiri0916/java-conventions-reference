@@ -1,29 +1,31 @@
 package com.dochiri.tooltestlab.cart.domain.model;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 /**
- * 장바구니 아이템. 담을 당시의 상품명과 가격을 스냅샷으로 저장.
+ * 장바구니 상품 Value Object. 장바구니에 담긴 상품의 스냅샷.
  */
-public record CartItem(String productPublicId, String productName, int quantity, long unitPrice) {
+public record CartItem(String productPublicId, String productName, int quantity, Money unitPrice) {
 
     public CartItem {
-        Objects.requireNonNull(productPublicId, "상품 ID는 null일 수 없습니다.");
-        Objects.requireNonNull(productName, "상품명은 null일 수 없습니다.");
+        requireNonNull(productPublicId, "상품 ID는 null일 수 없습니다.");
+        requireNonNull(productName, "상품명은 null일 수 없습니다.");
+        requireNonNull(unitPrice, "단가는 null일 수 없습니다.");
 
+        productPublicId = productPublicId.strip();
         productName = productName.strip();
 
         if (productPublicId.isBlank()) throw new IllegalArgumentException("상품 ID는 빈 값일 수 없습니다.");
         if (productName.isBlank()) throw new IllegalArgumentException("상품명은 빈 값일 수 없습니다.");
         if (quantity <= 0) throw new IllegalArgumentException("수량은 1 이상이어야 합니다. 입력값: " + quantity);
-        if (unitPrice < 0) throw new IllegalArgumentException("단가는 0 이상이어야 합니다. 입력값: " + unitPrice);
     }
 
-    public long totalPrice() {
-        return unitPrice * quantity;
+    public Money totalPrice() {
+        return unitPrice.multiply(quantity);
     }
 
     public CartItem increaseQuantity(int delta) {
+        if (delta <= 0) throw new IllegalArgumentException("증가 수량은 1 이상이어야 합니다. 입력값: " + delta);
         return new CartItem(productPublicId, productName, quantity + delta, unitPrice);
     }
 }

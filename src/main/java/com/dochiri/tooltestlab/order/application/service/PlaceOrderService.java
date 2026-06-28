@@ -56,7 +56,7 @@ public class PlaceOrderService implements PlaceOrderUseCase, GetOrderUseCase, Li
 
         // 재고 확인 (read-only — 실제 차감은 이벤트 핸들러에서)
         List<OrderLine> orderLines = new ArrayList<>();
-        for (var cartItem : cart.items()) {
+        for (var cartItem : cart.items().values()) {
             Product product = productRepositoryPort.findByPublicId(cartItem.productPublicId())
                     .orElseThrow(() -> new IllegalStateException(
                             "상품을 찾을 수 없습니다. productPublicId=" + cartItem.productPublicId()));
@@ -69,7 +69,7 @@ public class PlaceOrderService implements PlaceOrderUseCase, GetOrderUseCase, Li
 
             orderLines.add(new OrderLine(
                     cartItem.productPublicId(), cartItem.productName(),
-                    cartItem.quantity(), cartItem.unitPrice()));
+                    cartItem.quantity(), cartItem.unitPrice().amount()));
         }
 
         // 주문 생성 (Primary Aggregate)

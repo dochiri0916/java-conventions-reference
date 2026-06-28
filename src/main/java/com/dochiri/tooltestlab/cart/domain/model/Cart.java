@@ -1,74 +1,67 @@
 package com.dochiri.tooltestlab.cart.domain.model;
 
-import java.util.*;
+import com.dochiri.tooltestlab.member.domain.model.MemberId;
+
+import static java.util.Objects.requireNonNull;
 
 /**
- * 장바구니 Aggregate Root. 회원당 하나의 장바구니.
+ * 장바구니 Aggregate Root.
+ * 한 회원당 하나의 장바구니만 존재한다.
  */
-public record Cart(String publicId, String memberPublicId, List<CartItem> items) {
+public record Cart(
+        CartId id,
+        MemberId memberId,
+        CartItems items
+) {
 
     public Cart {
-        Objects.requireNonNull(publicId, "publicId는 null일 수 없습니다.");
-        Objects.requireNonNull(memberPublicId, "회원 ID는 null일 수 없습니다.");
-        Objects.requireNonNull(items, "장바구니 아이템 목록은 null일 수 없습니다.");
-
-        if (publicId.isBlank()) throw new IllegalArgumentException("publicId는 빈 값일 수 없습니다.");
-        if (memberPublicId.isBlank()) throw new IllegalArgumentException("회원 ID는 빈 값일 수 없습니다.");
-
-        // 방어적 복사
-        items = Collections.unmodifiableList(new ArrayList<>(items));
+        requireNonNull(id, "장바구니 ID는 null일 수 없습니다.");
+        requireNonNull(memberId, "회원 ID는 null일 수 없습니다.");
+        requireNonNull(items, "장바구니 아이템 목록은 null일 수 없습니다.");
     }
 
-    public static Cart create(String memberPublicId) {
-        return new Cart(
-                UUID.randomUUID().toString().replace("-", ""),
-                memberPublicId,
-                List.of());
+    public static Cart create(MemberId memberId) {
+        return new Cart(CartId.generate(), memberId, CartItems.empty());
     }
 
     /**
-     * 상품 추가. 이미 있으면 수량 증가.
+     * 상품 추가. 이미 담긴 상품이면 수량을 증가시킨다.
      */
-    public Cart addItem(String productPublicId, String productName, int quantity, long unitPrice) {
-        List<CartItem> newItems = new ArrayList<>(this.items);
-        Optional<CartItem> existing = findItem(productPublicId);
+    public Cart addItem(String productPublicId, String productName, int quantity, Money unitPrice) {
+        requireNonNull(productPublicId, "상품 ID는 null일 수 없습니다.");
+        requireNonNull(productName, "상품명은 null일 수 없습니다.");
+        requireNonNull(unitPrice, "단가는 null일 수 없습니다.");
 
-        if (existing.isPresent()) {
-            int idx = newItems.indexOf(existing.get());
-            newItems.set(idx, existing.get().increaseQuantity(quantity));
-        } else {
-            newItems.add(new CartItem(productPublicId, productName, quantity, unitPrice));
-        }
-
-        return new Cart(publicId, memberPublicId, newItems);
+        return items.findByProductId(productPublicId)
+                .map(existing -> {
+                    CartItem increased = existing.increaseQuantity(quantity);
+                    return new Cart(id, memberId, items.replace(existing, increased));
+                })
+                .orElseGet(() -> {
+                    CartItem newItem = new CartItem(productPublicId, productName, quantity, unitPrice);
+                    return new Cart(id, memberId, items.add(newItem));
+                });
     }
 
     /**
      * 상품 제거.
      */
     public Cart removeItem(String productPublicId) {
-        List<CartItem> newItems = this.items.stream()
-                .filter(item -> !item.productPublicId().equals(productPublicId))
-                .toList();
-        return new Cart(publicId, memberPublicId, newItems);
+        return new Cart(id, memberId, items.remove(productPublicId));
     }
 
     /**
      * 장바구니 비우기.
      */
     public Cart clear() {
-        return new Cart(publicId, memberPublicId, List.of());
+        return new Cart(id, memberId, CartItems.empty());
     }
 
-    public long totalAmount() {
-        return items.stream().mapToLong(CartItem::totalPrice).sum();
+    public Money totalAmount() {
+        return items.totalAmount();
     }
 
     public boolean isEmpty() {
         return items.isEmpty();
-    }
-
-    private Optional<CartItem> findItem(String productPublicId) {
-        return items.stream().filter(i -> i.productPublicId().equals(productPublicId)).findFirst();
     }
 }

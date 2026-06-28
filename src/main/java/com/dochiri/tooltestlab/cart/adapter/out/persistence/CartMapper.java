@@ -1,7 +1,11 @@
 package com.dochiri.tooltestlab.cart.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
+import com.dochiri.tooltestlab.cart.domain.model.CartId;
 import com.dochiri.tooltestlab.cart.domain.model.CartItem;
+import com.dochiri.tooltestlab.cart.domain.model.CartItems;
+import com.dochiri.tooltestlab.cart.domain.model.Money;
+import com.dochiri.tooltestlab.member.domain.model.MemberId;
 
 import java.util.List;
 
@@ -16,18 +20,23 @@ final class CartMapper {
 
     static Cart toDomain(CartEntity entity, List<CartItemEntity> itemEntities) {
         List<CartItem> domainItems = itemEntities.stream()
-                .map(e -> new CartItem(e.getProductPublicId(), e.getProductName(), e.getQuantity(), e.getUnitPrice()))
+                .map(e -> new CartItem(e.getProductPublicId(), e.getProductName(), e.getQuantity(),
+                        Money.of(e.getUnitPrice())))
                 .toList();
-        return new Cart(entity.getPublicId(), entity.getMemberPublicId(), domainItems);
+        return new Cart(
+                new CartId(entity.getPublicId()),
+                new MemberId(entity.getMemberPublicId()),
+                CartItems.from(domainItems));
     }
 
     static CartEntity toEntity(Cart domain) {
-        return new CartEntity(null, domain.publicId(), domain.memberPublicId());
+        return new CartEntity(null, domain.id().value(), domain.memberId().value());
     }
 
     static List<CartItemEntity> toItemEntities(Cart domain, Long cartId) {
-        return domain.items().stream()
-                .map(i -> new CartItemEntity(null, cartId, i.productPublicId(), i.productName(), i.quantity(), i.unitPrice()))
+        return domain.items().values().stream()
+                .map(i -> new CartItemEntity(null, cartId, i.productPublicId(), i.productName(),
+                        i.quantity(), i.unitPrice().amount()))
                 .toList();
     }
 }
