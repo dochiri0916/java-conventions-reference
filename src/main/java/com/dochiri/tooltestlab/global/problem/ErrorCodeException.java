@@ -1,9 +1,18 @@
 package com.dochiri.tooltestlab.global.problem;
 
-public interface ErrorCodeException {
+public abstract class ErrorCodeException extends RuntimeException {
 
-    ErrorCode errorCode();
+    protected ErrorCodeException(String message) {
+        super(message);
+    }
 
-    String detail();
+    protected ErrorCodeException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
+    public abstract ErrorCode errorCode();
+
+    public String detail() {
+        return getMessage();
+    }
 }

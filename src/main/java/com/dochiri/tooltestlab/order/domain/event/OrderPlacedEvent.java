@@ -1,7 +1,11 @@
 package com.dochiri.tooltestlab.order.domain.event;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.order.domain.model.Money;
 import com.dochiri.tooltestlab.order.domain.model.OrderId;
+import com.dochiri.tooltestlab.order.domain.model.Quantity;
+import com.dochiri.tooltestlab.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.product.domain.model.ProductName;
 
 import java.util.List;
 
@@ -14,6 +18,6 @@ public record OrderPlacedEvent(
         MemberId memberId,
         List<ItemDetail> items) {
 
-    public record ItemDetail(String productPublicId, String productName, int quantity, long unitPrice) {
+    public record ItemDetail(ProductId productId, ProductName productName, Quantity quantity, Money unitPrice) {
     }
 }

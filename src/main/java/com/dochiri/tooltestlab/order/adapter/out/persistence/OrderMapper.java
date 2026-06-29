@@ -2,6 +2,8 @@ package com.dochiri.tooltestlab.order.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.domain.model.*;
+import com.dochiri.tooltestlab.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.product.domain.model.ProductName;
 
 import java.util.List;
 
@@ -16,7 +18,7 @@ final class OrderMapper {
 
     static Order toDomain(OrderEntity entity, List<OrderLineEntity> itemEntities) {
         List<OrderLine> domainItems = itemEntities.stream()
-                .map(e -> new OrderLine(e.getProductPublicId(), e.getProductName(), e.getQuantity(), e.getUnitPrice()))
+                .map(e -> new OrderLine(new ProductId(e.getProductPublicId()), new ProductName(e.getProductName()), new Quantity(e.getQuantity()), Money.of(e.getUnitPrice())))
                 .toList();
 
         ShippingAddress shippingAddress = new ShippingAddress(
@@ -33,7 +35,7 @@ final class OrderMapper {
 
     static List<OrderLineEntity> toItemEntities(Order domain, OrderEntity orderEntity) {
         return domain.items().values().stream()
-                .map(i -> new OrderLineEntity(null, orderEntity.getId(), i.productPublicId(), i.productName(), i.quantity(), i.unitPrice()))
+                .map(i -> new OrderLineEntity(null, orderEntity.getId(), i.productId().value(), i.productName().value(), i.quantity().value(), i.unitPrice().amount()))
                 .toList();
     }
 }

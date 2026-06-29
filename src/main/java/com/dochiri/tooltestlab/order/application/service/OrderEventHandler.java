@@ -41,12 +41,12 @@ public class OrderEventHandler {
         log.info("[OrderEventHandler] 주문 생성 이벤트 수신. orderId={}, items={}", event.orderId().value(), event.items().size());
 
         for (var item : event.items()) {
-            Product product = productRepositoryPort.findByPublicId(item.productPublicId())
+            Product product = productRepositoryPort.findByPublicId(item.productId().value())
                     .orElseThrow(() -> new IllegalStateException(
-                            "상품을 찾을 수 없습니다. productPublicId=" + item.productPublicId()));
-            Product decreased = product.decreaseStock(item.quantity());
+                            "상품을 찾을 수 없습니다. productPublicId=" + item.productId().value()));
+            Product decreased = product.decreaseStock(item.quantity().value());
             productRepositoryPort.save(decreased, List.of());
-            log.debug("재고 차감 완료. productPublicId={}, quantity={}", item.productPublicId(), item.quantity());
+            log.debug("재고 차감 완료. productPublicId={}, quantity={}", item.productId().value(), item.quantity());
         }
 
         // 장바구니 비우기
@@ -65,12 +65,12 @@ public class OrderEventHandler {
         log.info("[OrderEventHandler] 주문 취소 이벤트 수신. orderId={}, items={}", event.orderId().value(), event.items().size());
 
         for (var item : event.items()) {
-            Product product = productRepositoryPort.findByPublicId(item.productPublicId())
+            Product product = productRepositoryPort.findByPublicId(item.productId().value())
                     .orElseThrow(() -> new IllegalStateException(
-                            "상품을 찾을 수 없습니다. productPublicId=" + item.productPublicId()));
-            Product restored = product.increaseStock(item.quantity());
+                            "상품을 찾을 수 없습니다. productPublicId=" + item.productId().value()));
+            Product restored = product.increaseStock(item.quantity().value());
             productRepositoryPort.save(restored, List.of());
-            log.debug("재고 복구 완료. productPublicId={}, quantity={}", item.productPublicId(), item.quantity());
+            log.debug("재고 복구 완료. productPublicId={}, quantity={}", item.productId().value(), item.quantity());
         }
     }
 }
