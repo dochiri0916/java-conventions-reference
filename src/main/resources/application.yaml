@@ -31,6 +31,10 @@ app:
   error:
     type-uri-prefix: https://api.example.com/problems/
 
+api:
+  problem:
+    base-uri: https://api.example.com
+
 # Tool Test Lab — 동시성 모드
 tool-test-lab:
   concurrency:
