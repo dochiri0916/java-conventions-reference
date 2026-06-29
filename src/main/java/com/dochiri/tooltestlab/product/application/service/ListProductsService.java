@@ -27,11 +27,11 @@ public class ListProductsService implements ListProductsUseCase {
 
         List<ListProductsResult.ProductSummary> summaries = productPage.getContent().stream()
                 .map(product -> {
-                    List<Category> categories = productRepositoryPort.findCategoriesByProductPublicId(product.publicId());
+                    List<Category> categories = productRepositoryPort.findCategoriesByProductPublicId(product.id().value());
                     List<String> categoryNames = categories.stream().map(Category::name).toList();
                     return new ListProductsResult.ProductSummary(
-                            product.publicId(), product.name(), product.price().amount(),
-                            product.stock(), product.status().name(), categoryNames);
+                            product.id().value(), product.name().value(), product.price().amount(),
+                            product.stock().value(), product.status().name(), categoryNames);
                 })
                 .toList();
 

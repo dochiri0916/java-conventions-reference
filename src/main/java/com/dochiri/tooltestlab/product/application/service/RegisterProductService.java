@@ -40,7 +40,7 @@ public class RegisterProductService implements RegisterProductUseCase {
 
         List<String> categoryNames = categories.stream().map(Category::name).toList();
         return new RegisterProductResult(
-                saved.publicId(), saved.name(), saved.price().amount(),
-                saved.stock(), saved.status().name(), categoryNames);
+                saved.id().value(), saved.name().value(), saved.price().amount(),
+                saved.stock().value(), saved.status().name(), categoryNames);
     }
 }

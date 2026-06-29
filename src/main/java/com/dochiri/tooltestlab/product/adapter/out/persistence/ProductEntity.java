@@ -60,10 +60,10 @@ public class ProductEntity {
      * Domain 상태를 Entity에 반영한다.
      */
     void apply(com.dochiri.tooltestlab.product.domain.model.Product domain) {
-        this.name = domain.name();
-        this.description = domain.description();
+        this.name = domain.name().value();
+        this.description = domain.description().value();
         this.priceAmount = domain.price().amount();
-        this.stock = domain.stock();
+        this.stock = domain.stock().value();
         this.status = domain.status().name();
     }
 

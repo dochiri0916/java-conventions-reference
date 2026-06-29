@@ -29,8 +29,8 @@ public class GetProductService implements GetProductUseCase {
         List<String> categoryNames = categories.stream().map(Category::name).toList();
 
         return new GetProductResult(
-                product.publicId(), product.name(), product.description(),
-                product.price().amount(), product.stock(),
+                product.id().value(), product.name().value(), product.description().value(),
+                product.price().amount(), product.stock().value(),
                 product.status().name(), categoryNames);
     }
 }
