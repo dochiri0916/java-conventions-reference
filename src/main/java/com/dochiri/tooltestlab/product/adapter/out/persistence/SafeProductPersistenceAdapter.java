@@ -37,7 +37,7 @@ class SafeProductPersistenceAdapter implements ProductRepositoryPort {
     @Transactional
     public Product save(Product product, List<Category> categories) {
         // PESSIMISTIC_WRITE로 락을 잡고 조회 → 동시 수정 방지
-        Optional<ProductEntity> existing = productJpaRepository.findByPublicIdForUpdate(product.publicId());
+        Optional<ProductEntity> existing = productJpaRepository.findByPublicIdForUpdate(product.id().value());
         ProductEntity entity;
         if (existing.isPresent()) {
             entity = existing.get();
@@ -47,7 +47,7 @@ class SafeProductPersistenceAdapter implements ProductRepositoryPort {
         }
 
         if (!categories.isEmpty()) {
-            List<String> categoryPublicIds = categories.stream().map(Category::publicId).toList();
+            List<String> categoryPublicIds = categories.stream().map(c -> c.id().value()).toList();
             List<CategoryEntity> managedCategories = categoryJpaRepository.findAllByPublicIdIn(categoryPublicIds);
             List<Long> categoryIds = managedCategories.stream().map(CategoryEntity::getId).toList();
             entity.replaceCategoryIds(categoryIds);

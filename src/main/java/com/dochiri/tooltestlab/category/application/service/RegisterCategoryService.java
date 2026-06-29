@@ -21,6 +21,6 @@ public class RegisterCategoryService implements RegisterCategoryUseCase {
     @Override
     public RegisterCategoryResult register(RegisterCategoryCommand command) {
         Category saved = productRepositoryPort.saveCategory(Category.create(command.name()));
-        return new RegisterCategoryResult(saved.publicId(), saved.name());
+        return new RegisterCategoryResult(saved.id().value(), saved.name());
     }
 }

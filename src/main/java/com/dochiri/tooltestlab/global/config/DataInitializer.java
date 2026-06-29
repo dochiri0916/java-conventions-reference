@@ -38,16 +38,16 @@ public class DataInitializer implements CommandLineRunner {
         Category food = saveCategoryIfAbsent("식품");
 
         // 상품
-        List<String> elecIds = List.of(electronics.publicId());
+        List<String> elecIds = List.of(electronics.id().value());
         registerProductUseCase.register(new RegisterProductCommand("노트북", "고성능 노트북", 1_500_000, 10, elecIds));
         registerProductUseCase.register(new RegisterProductCommand("무선 이어폰", "노이즈 캔슬링 이어폰", 250_000, 50, elecIds));
         registerProductUseCase.register(new RegisterProductCommand("스마트폰", "최신형 스마트폰", 1_200_000, 30, elecIds));
 
-        List<String> clothIds = List.of(clothing.publicId());
+        List<String> clothIds = List.of(clothing.id().value());
         registerProductUseCase.register(new RegisterProductCommand("맨투맨", "편안한 맨투맨", 49_000, 100, clothIds));
         registerProductUseCase.register(new RegisterProductCommand("청바지", "슬림핏 청바지", 79_000, 80, clothIds));
 
-        List<String> bookIds = List.of(books.publicId());
+        List<String> bookIds = List.of(books.id().value());
         registerProductUseCase.register(new RegisterProductCommand("클린 코드", "로버트 마틴 저", 35_000, 200, bookIds));
         registerProductUseCase.register(new RegisterProductCommand("DDD START!", "최범균 저", 28_000, 150, bookIds));
 

@@ -31,7 +31,7 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
     @Override
     @Transactional
     public Product save(Product product, List<Category> categories) {
-        Optional<ProductEntity> existing = productJpaRepository.findByPublicId(product.publicId());
+        Optional<ProductEntity> existing = productJpaRepository.findByPublicId(product.id().value());
         ProductEntity entity;
         if (existing.isPresent()) {
             entity = existing.get();
@@ -41,7 +41,7 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
         }
 
         if (!categories.isEmpty()) {
-            List<String> categoryPublicIds = categories.stream().map(Category::publicId).toList();
+            List<String> categoryPublicIds = categories.stream().map(c -> c.id().value()).toList();
             List<CategoryEntity> managedCategories = categoryJpaRepository.findAllByPublicIdIn(categoryPublicIds);
             List<Long> categoryIds = managedCategories.stream().map(CategoryEntity::getId).toList();
             entity.replaceCategoryIds(categoryIds);

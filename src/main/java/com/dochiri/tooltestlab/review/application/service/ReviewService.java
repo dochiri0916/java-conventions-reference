@@ -1,5 +1,7 @@
 package com.dochiri.tooltestlab.review.application.service;
 
+import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.review.application.command.WriteReviewCommand;
 import com.dochiri.tooltestlab.review.application.port.in.DeleteReviewUseCase;
 import com.dochiri.tooltestlab.review.application.port.in.GetProductReviewsUseCase;
@@ -29,10 +31,14 @@ public class ReviewService implements WriteReviewUseCase, GetProductReviewsUseCa
             throw new IllegalStateException("이미 이 상품에 리뷰를 작성하셨습니다.");
         }
 
-        Review review = Review.create(command.memberPublicId(), command.productPublicId(), command.rating(), command.content());
+        Review review = Review.create(
+                new MemberId(command.memberPublicId()),
+                new ProductId(command.productPublicId()),
+                command.rating(),
+                command.content());
         Review saved = reviewRepositoryPort.save(review);
 
-        return new WriteReviewResult(saved.publicId(), saved.memberPublicId(), saved.productPublicId(), saved.rating(), saved.content());
+        return new WriteReviewResult(saved.id().value(), saved.memberId().value(), saved.productId().value(), saved.rating(), saved.content());
     }
 
     @Override
@@ -44,7 +50,7 @@ public class ReviewService implements WriteReviewUseCase, GetProductReviewsUseCa
                 : reviews.stream().mapToInt(Review::rating).average().orElse(0.0);
 
         var data = reviews.stream()
-                .map(r -> new GetProductReviewsResult.ReviewData(r.publicId(), r.memberPublicId(), r.rating(), r.content()))
+                .map(r -> new GetProductReviewsResult.ReviewData(r.id().value(), r.memberId().value(), r.rating(), r.content()))
                 .toList();
 
         return new GetProductReviewsResult(productPublicId, data, Math.round(avg * 10.0) / 10.0);
@@ -55,7 +61,7 @@ public class ReviewService implements WriteReviewUseCase, GetProductReviewsUseCa
         Review review = reviewRepositoryPort.findByPublicId(reviewPublicId)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다. publicId=" + reviewPublicId));
 
-        if (!review.memberPublicId().equals(memberPublicId)) {
+        if (!review.memberId().value().equals(memberPublicId)) {
             throw new IllegalStateException("본인이 작성한 리뷰만 삭제할 수 있습니다.");
         }
 

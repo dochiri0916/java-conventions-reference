@@ -2,9 +2,6 @@ package com.dochiri.tooltestlab.member.domain.model;
 
 import static java.util.Objects.requireNonNull;
 
-/**
- * 회원 Aggregate Root.
- */
 public record Member(
         MemberId id,
         String email,
@@ -44,5 +41,16 @@ public record Member(
      */
     public Member withdraw() {
         return new Member(id, email, password, name, MemberStatus.WITHDRAWN);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other
+                || other instanceof Member member && id.equals(member.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }

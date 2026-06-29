@@ -2,9 +2,14 @@ package com.dochiri.tooltestlab.product.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.category.adapter.out.persistence.CategoryEntity;
 import com.dochiri.tooltestlab.category.domain.model.Category;
+import com.dochiri.tooltestlab.category.domain.model.CategoryId;
 import com.dochiri.tooltestlab.product.domain.model.Money;
 import com.dochiri.tooltestlab.product.domain.model.Product;
+import com.dochiri.tooltestlab.product.domain.model.ProductDescription;
+import com.dochiri.tooltestlab.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.product.domain.model.ProductName;
 import com.dochiri.tooltestlab.product.domain.model.ProductStatus;
+import com.dochiri.tooltestlab.product.domain.model.Stock;
 
 import java.util.List;
 
@@ -20,32 +25,32 @@ final class ProductMapper {
     // --- Product ---
     static Product toDomain(ProductEntity entity) {
         return new Product(
-                entity.getPublicId(),
-                entity.getName(),
-                entity.getDescription(),
+                new ProductId(entity.getPublicId()),
+                new ProductName(entity.getName()),
+                new ProductDescription(entity.getDescription()),
                 Money.of(entity.getPriceAmount()),
-                entity.getStock(),
+                Stock.of(entity.getStock()),
                 ProductStatus.valueOf(entity.getStatus()));
     }
 
     static ProductEntity toEntity(Product domain) {
         return new ProductEntity(
                 null,
-                domain.publicId(),
-                domain.name(),
-                domain.description(),
+                domain.id().value(),
+                domain.name().value(),
+                domain.description().value(),
                 domain.price().amount(),
-                domain.stock(),
+                domain.stock().value(),
                 domain.status().name());
     }
 
     // --- Category ---
     static Category toDomain(CategoryEntity entity) {
-        return new Category(entity.getPublicId(), entity.getName());
+        return new Category(new CategoryId(entity.getPublicId()), entity.getName());
     }
 
     static CategoryEntity toEntity(Category domain) {
-        return new CategoryEntity(null, domain.publicId(), domain.name());
+        return new CategoryEntity(null, domain.id().value(), domain.name());
     }
 
     static void updateEntity(ProductEntity entity, Product domain) {

@@ -1,13 +1,10 @@
 package com.dochiri.tooltestlab.cart.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.product.domain.model.ProductId;
 
 import static java.util.Objects.requireNonNull;
 
-/**
- * 장바구니 Aggregate Root.
- * 한 회원당 하나의 장바구니만 존재한다.
- */
 public record Cart(
         CartId id,
         MemberId memberId,
@@ -24,35 +21,26 @@ public record Cart(
         return new Cart(CartId.generate(), memberId, CartItems.empty());
     }
 
-    /**
-     * 상품 추가. 이미 담긴 상품이면 수량을 증가시킨다.
-     */
-    public Cart addItem(String productPublicId, String productName, int quantity, Money unitPrice) {
-        requireNonNull(productPublicId, "상품 ID는 null일 수 없습니다.");
+    public Cart addItem(ProductId productId, String productName, int quantity, Money unitPrice) {
+        requireNonNull(productId, "상품 ID는 null일 수 없습니다.");
         requireNonNull(productName, "상품명은 null일 수 없습니다.");
         requireNonNull(unitPrice, "단가는 null일 수 없습니다.");
 
-        return items.findByProductId(productPublicId)
+        return items.findByProductId(productId)
                 .map(existing -> {
                     CartItem increased = existing.increaseQuantity(quantity);
                     return new Cart(id, memberId, items.replace(existing, increased));
                 })
                 .orElseGet(() -> {
-                    CartItem newItem = new CartItem(productPublicId, productName, quantity, unitPrice);
+                    CartItem newItem = new CartItem(productId, productName, quantity, unitPrice);
                     return new Cart(id, memberId, items.add(newItem));
                 });
     }
 
-    /**
-     * 상품 제거.
-     */
-    public Cart removeItem(String productPublicId) {
-        return new Cart(id, memberId, items.remove(productPublicId));
+    public Cart removeItem(ProductId productId) {
+        return new Cart(id, memberId, items.remove(productId));
     }
 
-    /**
-     * 장바구니 비우기.
-     */
     public Cart clear() {
         return new Cart(id, memberId, CartItems.empty());
     }
@@ -63,5 +51,16 @@ public record Cart(
 
     public boolean isEmpty() {
         return items.isEmpty();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other
+                || other instanceof Cart cart && id.equals(cart.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }
