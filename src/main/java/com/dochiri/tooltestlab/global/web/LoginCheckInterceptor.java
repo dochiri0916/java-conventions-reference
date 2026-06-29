@@ -14,8 +14,9 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     public static final String MEMBER_ID_KEY = "MEMBER_ID";
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        HttpSession session = request.getSession(false);
+    public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, Object handler)
+            throws Exception {
+        final HttpSession session = request.getSession(false);
 
         if (session == null || session.getAttribute(MEMBER_ID_KEY) == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

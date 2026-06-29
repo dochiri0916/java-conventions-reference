@@ -1,8 +1,8 @@
-package com.dochiri.tooltestlab.global.problem;
+package com.dochiri.tooltestlab.global.error;
 
 import org.springframework.http.HttpStatus;
 
-public interface ErrorCode {
+public interface ApiErrorCode {
 
     HttpStatus status();
 
@@ -11,5 +11,4 @@ public interface ErrorCode {
     String type();
 
     String title();
-
 }

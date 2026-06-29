@@ -14,7 +14,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class MemberSessionArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
-    public boolean supportsParameter(MethodParameter parameter) {
+    public boolean supportsParameter(final MethodParameter parameter) {
         return parameter.hasParameterAnnotation(LoginMember.class)
                 && parameter.getParameterType().equals(String.class);
     }
@@ -22,11 +22,11 @@ public class MemberSessionArgumentResolver implements HandlerMethodArgumentResol
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+        final HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         if (request == null) {
             return null;
         }
-        HttpSession session = request.getSession(false);
+        final HttpSession session = request.getSession(false);
         if (session == null) {
             return null;
         }
