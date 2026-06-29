@@ -1,6 +1,8 @@
 package com.dochiri.tooltestlab.order.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
+import com.dochiri.tooltestlab.product.domain.model.ProductId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +16,7 @@ class OrderTest {
     @Test
     @DisplayName("주문을 생성할 수 있다")
     void createOrder() {
-        OrderLine line = new OrderLine("product1", "노트북", 2, 1_000_000L);
+        OrderLine line = new OrderLine(new ProductId("product1"), new com.dochiri.tooltestlab.product.domain.model.ProductName("노트북"), new Quantity(2), Money.of(1_000_000L));
         ShippingAddress address = new ShippingAddress("홍길동", "01012345678", "서울시", "12345");
         Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)), address);
 
@@ -28,7 +30,7 @@ class OrderTest {
     @Test
     @DisplayName("주문을 취소할 수 있다 (PENDING 상태)")
     void cancelOrder() {
-        OrderLine line = new OrderLine("product1", "노트북", 2, 1_000_000L);
+        OrderLine line = new OrderLine(new ProductId("product1"), new com.dochiri.tooltestlab.product.domain.model.ProductName("노트북"), new Quantity(2), Money.of(1_000_000L));
         Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)),
                 new ShippingAddress("홍길동", "01012345678", "서울시", "12345"));
 
@@ -40,20 +42,20 @@ class OrderTest {
     @Test
     @DisplayName("이미 취소된 주문은 다시 취소할 수 없다")
     void cannotCancelTwice() {
-        OrderLine line = new OrderLine("product1", "노트북", 2, 1_000_000L);
+        OrderLine line = new OrderLine(new ProductId("product1"), new com.dochiri.tooltestlab.product.domain.model.ProductName("노트북"), new Quantity(2), Money.of(1_000_000L));
         Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)),
                 new ShippingAddress("홍길동", "01012345678", "서울시", "12345"));
         Order cancelled = order.cancel();
 
         assertThatThrownBy(cancelled::cancel)
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("취소");
+                .isInstanceOf(InvalidOrderStatusException.class)
+                .hasMessageContaining("CANCELLED");
     }
 
     @Test
     @DisplayName("배송 완료된 주문은 취소할 수 없다")
     void cannotCancelDelivered() {
-        OrderLine line = new OrderLine("product1", "노트북", 2, 1_000_000L);
+        OrderLine line = new OrderLine(new ProductId("product1"), new com.dochiri.tooltestlab.product.domain.model.ProductName("노트북"), new Quantity(2), Money.of(1_000_000L));
         ShippingAddress address = new ShippingAddress("홍길동", "01012345678", "서울시", "12345");
         Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)), address);
         Order paid = order.pay();
@@ -61,7 +63,7 @@ class OrderTest {
         Order delivered = shipped.deliver();
 
         assertThatThrownBy(delivered::cancel)
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("취소");
+                .isInstanceOf(InvalidOrderStatusException.class)
+                .hasMessageContaining("DELIVERED");
     }
 }

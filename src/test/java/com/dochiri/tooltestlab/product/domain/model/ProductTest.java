@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.product.domain.model;
 
+import com.dochiri.tooltestlab.product.domain.exception.InsufficientStockException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,10 +14,10 @@ class ProductTest {
     void createProduct() {
         Product product = Product.create("노트북", "고성능 노트북", Money.of(1_500_000), 10);
 
-        assertThat(product.publicId()).isNotBlank();
-        assertThat(product.name()).isEqualTo("노트북");
+        assertThat(product.id().value()).isNotBlank();
+        assertThat(product.name().value()).isEqualTo("노트북");
         assertThat(product.price().amount()).isEqualTo(1_500_000);
-        assertThat(product.stock()).isEqualTo(10);
+        assertThat(product.stock().value()).isEqualTo(10);
         assertThat(product.status()).isEqualTo(ProductStatus.ON_SALE);
     }
 
@@ -32,7 +33,7 @@ class ProductTest {
     void decreaseStock() {
         Product product = Product.create("노트북", "고성능 노트북", Money.of(1_500_000), 10);
         Product decreased = product.decreaseStock(3);
-        assertThat(decreased.stock()).isEqualTo(7);
+        assertThat(decreased.stock().value()).isEqualTo(7);
         assertThat(decreased.status()).isEqualTo(ProductStatus.ON_SALE);
     }
 
@@ -41,7 +42,7 @@ class ProductTest {
     void decreaseStockToZero() {
         Product product = Product.create("노트북", "고성능 노트북", Money.of(1_500_000), 3);
         Product decreased = product.decreaseStock(3);
-        assertThat(decreased.stock()).isEqualTo(0);
+        assertThat(decreased.stock().value()).isEqualTo(0);
         assertThat(decreased.status()).isEqualTo(ProductStatus.SOLD_OUT);
     }
 
@@ -50,7 +51,7 @@ class ProductTest {
     void decreaseStockInsufficient() {
         Product product = Product.create("노트북", "고성능 노트북", Money.of(1_500_000), 3);
         assertThatThrownBy(() -> product.decreaseStock(5))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(InsufficientStockException.class)
                 .hasMessageContaining("재고가 부족합니다");
     }
 
@@ -59,7 +60,7 @@ class ProductTest {
     void increaseStock() {
         Product product = Product.create("노트북", "고성능 노트북", Money.of(1_500_000), 10);
         Product increased = product.increaseStock(5);
-        assertThat(increased.stock()).isEqualTo(15);
+        assertThat(increased.stock().value()).isEqualTo(15);
     }
 
     @Test
@@ -67,6 +68,6 @@ class ProductTest {
     void immutability() {
         Product product = Product.create("노트북", "고성능 노트북", Money.of(1_500_000), 10);
         product.decreaseStock(3);
-        assertThat(product.stock()).isEqualTo(10); // 원본 불변
+        assertThat(product.stock().value()).isEqualTo(10); // 원본 불변
     }
 }
