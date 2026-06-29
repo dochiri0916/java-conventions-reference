@@ -4,9 +4,6 @@ import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 
-/**
- * 장바구니 식별자 Value Object.
- */
 public record CartId(String value) {
 
     public CartId {

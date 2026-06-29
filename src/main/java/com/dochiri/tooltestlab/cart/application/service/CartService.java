@@ -14,6 +14,7 @@ import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.product.application.exception.ProductNotFoundException;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.product.domain.model.Product;
+import com.dochiri.tooltestlab.product.domain.model.ProductId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +39,7 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, RemoveFrom
 
         var items = cart.items().values().stream()
                 .map(i -> new GetCartResult.Item(
-                        i.productPublicId(), i.productName(), i.quantity(),
+                        i.productId().value(), i.productName(), i.quantity(),
                         i.unitPrice().amount(), i.totalPrice().amount()))
                 .toList();
 
@@ -56,7 +57,7 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, RemoveFrom
         Cart cart = cartRepositoryPort.findByMemberId(command.memberPublicId())
                 .orElseGet(() -> Cart.create(memberId));
 
-        cart = cart.addItem(product.publicId(), product.name(),
+        cart = cart.addItem(product.id(), product.name().value(),
                 command.quantity(), Money.of(product.price().amount()));
         cartRepositoryPort.save(cart);
     }
@@ -66,7 +67,7 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, RemoveFrom
         Cart cart = cartRepositoryPort.findByMemberId(command.memberPublicId())
                 .orElseThrow(() -> new CartNotFoundException(command.memberPublicId()));
 
-        cart = cart.removeItem(command.productPublicId());
+        cart = cart.removeItem(new ProductId(command.productPublicId()));
         cartRepositoryPort.save(cart);
     }
 }

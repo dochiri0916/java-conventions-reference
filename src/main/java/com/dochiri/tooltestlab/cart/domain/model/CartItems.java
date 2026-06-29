@@ -1,16 +1,13 @@
 package com.dochiri.tooltestlab.cart.domain.model;
 
+import com.dochiri.tooltestlab.product.domain.model.ProductId;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
-/**
- * 장바구니 상품 목록에 대한 일급 컬렉션.
- * 0~{@value #MAX_ITEM_COUNT}개의 {@link CartItem}을 보장하며 불변이다.
- * 장바구니는 비어 있을 수 있다(OrderLines와 다른 점).
- */
 public record CartItems(List<CartItem> values) {
 
     public static final int MAX_ITEM_COUNT = 100;
@@ -68,18 +65,18 @@ public record CartItems(List<CartItem> values) {
     /**
      * 특정 상품이 포함되어 있는지 확인한다.
      */
-    public boolean containsProduct(String productPublicId) {
-        requireNonNull(productPublicId, "상품 ID는 null일 수 없습니다.");
-        return values.stream().anyMatch(item -> item.productPublicId().equals(productPublicId));
+    public boolean containsProduct(ProductId productId) {
+        requireNonNull(productId, "상품 ID는 null일 수 없습니다.");
+        return values.stream().anyMatch(item -> item.productId().equals(productId));
     }
 
     /**
      * 상품 ID로 장바구니 아이템을 찾는다.
      */
-    public Optional<CartItem> findByProductId(String productPublicId) {
-        requireNonNull(productPublicId, "상품 ID는 null일 수 없습니다.");
+    public Optional<CartItem> findByProductId(ProductId productId) {
+        requireNonNull(productId, "상품 ID는 null일 수 없습니다.");
         return values.stream()
-                .filter(item -> item.productPublicId().equals(productPublicId))
+                .filter(item -> item.productId().equals(productId))
                 .findFirst();
     }
 
@@ -116,18 +113,18 @@ public record CartItems(List<CartItem> values) {
      * 상품을 장바구니에서 제거한다.
      * 존재하지 않는 상품이면 예외가 발생한다.
      */
-    public CartItems remove(String productPublicId) {
-        requireNonNull(productPublicId, "상품 ID는 null일 수 없습니다.");
+    public CartItems remove(ProductId productId) {
+        requireNonNull(productId, "상품 ID는 null일 수 없습니다.");
 
         boolean exists = values.stream()
-                .anyMatch(item -> item.productPublicId().equals(productPublicId));
+                .anyMatch(item -> item.productId().equals(productId));
         if (!exists) {
             throw new IllegalArgumentException(
-                    "해당 상품이 장바구니에 존재하지 않습니다. productPublicId=" + productPublicId);
+                    "해당 상품이 장바구니에 존재하지 않습니다. productId=" + productId.value());
         }
 
         List<CartItem> changed = values.stream()
-                .filter(item -> !item.productPublicId().equals(productPublicId))
+                .filter(item -> !item.productId().equals(productId))
                 .toList();
         return new CartItems(changed);
     }
