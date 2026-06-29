@@ -21,6 +21,7 @@ spring:
       ddl-auto: create-drop
     show-sql: true
     open-in-view: false
+    defer-datasource-initialization: true
     properties:
       hibernate:
         format_sql: true
