@@ -1,10 +1,9 @@
 package com.dochiri.tooltestlab.order.domain.model;
 
+import com.dochiri.tooltestlab.order.domain.exception.InvalidShippingAddressException;
+
 import static java.util.Objects.requireNonNull;
 
-/**
- * 배송지 Value Object.
- */
 public record ShippingAddress(String recipientName, String phone, String address, String zipCode) {
 
     public ShippingAddress {
@@ -18,9 +17,17 @@ public record ShippingAddress(String recipientName, String phone, String address
         address = address.strip();
         zipCode = zipCode.strip();
 
-        if (recipientName.isBlank()) throw new IllegalArgumentException("받는 분 성함은 빈 값일 수 없습니다.");
-        if (phone.isBlank()) throw new IllegalArgumentException("연락처는 빈 값일 수 없습니다.");
-        if (address.isBlank()) throw new IllegalArgumentException("주소는 빈 값일 수 없습니다.");
-        if (zipCode.isBlank()) throw new IllegalArgumentException("우편번호는 빈 값일 수 없습니다.");
+        if (recipientName.isBlank()) {
+            throw new InvalidShippingAddressException("받는 분 성함은 빈 값일 수 없습니다.");
+        }
+        if (phone.isBlank()) {
+            throw new InvalidShippingAddressException("연락처는 빈 값일 수 없습니다.");
+        }
+        if (address.isBlank()) {
+            throw new InvalidShippingAddressException("주소는 빈 값일 수 없습니다.");
+        }
+        if (zipCode.isBlank()) {
+            throw new InvalidShippingAddressException("우편번호는 빈 값일 수 없습니다.");
+        }
     }
 }

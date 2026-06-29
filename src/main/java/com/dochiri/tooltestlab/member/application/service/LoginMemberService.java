@@ -17,20 +17,20 @@ public class LoginMemberService implements LoginMemberUseCase {
     private final MemberRepositoryPort memberRepositoryPort;
     private final PasswordEncoder passwordEncoder;
 
-    public LoginMemberService(MemberRepositoryPort memberRepositoryPort, PasswordEncoder passwordEncoder) {
+    public LoginMemberService(final MemberRepositoryPort memberRepositoryPort, final PasswordEncoder passwordEncoder) {
         this.memberRepositoryPort = memberRepositoryPort;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public LoginMemberResult login(LoginMemberCommand command) {
-        Member member = memberRepositoryPort.findByEmail(command.email())
-                .orElseThrow(() -> new LoginFailedException("이메일 또는 비밀번호가 일치하지 않습니다."));
+    public LoginMemberResult login(final LoginMemberCommand command) {
+        final Member member = memberRepositoryPort.findByEmail(command.email())
+                .orElseThrow(() -> new LoginFailedException());
 
-        if (!passwordEncoder.matches(command.password(), member.password())) {
-            throw new LoginFailedException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        if (!passwordEncoder.matches(command.password(), member.password().value())) {
+            throw new LoginFailedException();
         }
 
-        return new LoginMemberResult(member.id().value(), member.email(), member.name());
+        return new LoginMemberResult(member.id().value(), member.email().value(), member.name().value());
     }
 }

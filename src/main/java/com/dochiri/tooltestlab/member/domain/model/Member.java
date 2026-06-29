@@ -4,9 +4,9 @@ import static java.util.Objects.requireNonNull;
 
 public record Member(
         MemberId id,
-        String email,
-        String password,
-        String name,
+        Email email,
+        Password password,
+        MemberName name,
         MemberStatus status) {
 
     public Member {
@@ -15,19 +15,9 @@ public record Member(
         requireNonNull(password, "비밀번호는 null일 수 없습니다.");
         requireNonNull(name, "이름은 null일 수 없습니다.");
         requireNonNull(status, "회원 상태는 null일 수 없습니다.");
-
-        email = email.strip();
-        name = name.strip();
-
-        if (email.isBlank()) throw new IllegalArgumentException("이메일은 빈 값일 수 없습니다.");
-        if (password.isBlank()) throw new IllegalArgumentException("비밀번호는 빈 값일 수 없습니다.");
-        if (name.isBlank()) throw new IllegalArgumentException("이름은 빈 값일 수 없습니다.");
     }
 
-    /**
-     * 신규 회원 생성.
-     */
-    public static Member create(String email, String encodedPassword, String name) {
+    public static Member create(final Email email, final Password encodedPassword, final MemberName name) {
         return new Member(
                 MemberId.generate(),
                 email,
@@ -36,15 +26,12 @@ public record Member(
                 MemberStatus.ACTIVE);
     }
 
-    /**
-     * 회원 탈퇴 처리.
-     */
     public Member withdraw() {
         return new Member(id, email, password, name, MemberStatus.WITHDRAWN);
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(final Object other) {
         return this == other
                 || other instanceof Member member && id.equals(member.id);
     }

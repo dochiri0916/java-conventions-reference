@@ -1,6 +1,12 @@
 package com.dochiri.tooltestlab.member.adapter.out.persistence;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +39,7 @@ public class MemberEntity {
     @Column(nullable = false, length = 20)
     private String status;
 
-    public MemberEntity(Long id, String publicId, String email, String password, String name, String status) {
+    public MemberEntity(final Long id, final String publicId, final String email, final String password, final String name, final String status) {
         this.id = id;
         this.publicId = publicId;
         this.email = email;

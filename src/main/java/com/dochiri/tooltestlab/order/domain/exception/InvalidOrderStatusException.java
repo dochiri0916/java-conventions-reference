@@ -6,9 +6,9 @@ import static java.util.Objects.requireNonNull;
 
 public final class InvalidOrderStatusException extends OrderDomainException {
 
-    public InvalidOrderStatusException(OrderId orderId, String expected, String actual) {
+    public InvalidOrderStatusException(final OrderId orderId, final String expected, final String actual) {
         super(
-                OrderDomainErrorCode.INVALID_ORDER_STATUS,
+                OrderDomainErrorCode.BAD_ORDER_STATUS,
                 "주문[%s]의 상태가 유효하지 않습니다. 예상=%s, 실제=%s".formatted(orderId.value(), expected, actual));
         requireNonNull(orderId);
         requireNonNull(expected);

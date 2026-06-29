@@ -20,15 +20,15 @@ class SafeReviewPersistenceAdapter implements ReviewRepositoryPort {
 
     private final ReviewJpaRepository reviewJpaRepository;
 
-    SafeReviewPersistenceAdapter(ReviewJpaRepository reviewJpaRepository) {
+    SafeReviewPersistenceAdapter(final ReviewJpaRepository reviewJpaRepository) {
         this.reviewJpaRepository = reviewJpaRepository;
     }
 
     @Override
-    public Review save(Review review) {
+    public Review save(final Review review) {
         try {
-            ReviewEntity entity = ReviewMapper.toEntity(review);
-            ReviewEntity saved = reviewJpaRepository.save(entity);
+            final ReviewEntity entity = ReviewMapper.toEntity(review);
+            final ReviewEntity saved = reviewJpaRepository.save(entity);
             return ReviewMapper.toDomain(saved);
         } catch (DataIntegrityViolationException e) {
             throw new IllegalStateException("이미 이 상품에 리뷰를 작성하셨습니다.");
@@ -36,23 +36,23 @@ class SafeReviewPersistenceAdapter implements ReviewRepositoryPort {
     }
 
     @Override
-    public Optional<Review> findByPublicId(String publicId) {
+    public Optional<Review> findByPublicId(final String publicId) {
         return reviewJpaRepository.findByPublicId(publicId).map(ReviewMapper::toDomain);
     }
 
     @Override
-    public List<Review> findByProductId(String productPublicId) {
+    public List<Review> findByProductId(final String productPublicId) {
         return reviewJpaRepository.findByProductPublicIdOrderByIdDesc(productPublicId).stream()
                 .map(ReviewMapper::toDomain).toList();
     }
 
     @Override
-    public boolean existsByMemberIdAndProductId(String memberPublicId, String productPublicId) {
+    public boolean existsByMemberIdAndProductId(final String memberPublicId, final String productPublicId) {
         return reviewJpaRepository.existsByMemberPublicIdAndProductPublicId(memberPublicId, productPublicId);
     }
 
     @Override
-    public void deleteByPublicId(String publicId) {
+    public void deleteByPublicId(final String publicId) {
         reviewJpaRepository.deleteByPublicId(publicId);
     }
 }

@@ -30,14 +30,14 @@ class SafeCartPersistenceAdapter implements CartRepositoryPort {
     private final CartJpaRepository cartJpaRepository;
     private final CartItemJpaRepository cartItemJpaRepository;
 
-    SafeCartPersistenceAdapter(CartJpaRepository cartJpaRepository, CartItemJpaRepository cartItemJpaRepository) {
+    SafeCartPersistenceAdapter(final CartJpaRepository cartJpaRepository, final CartItemJpaRepository cartItemJpaRepository) {
         this.cartJpaRepository = cartJpaRepository;
         this.cartItemJpaRepository = cartItemJpaRepository;
     }
 
     @Override
     @Transactional
-    public Cart save(Cart cart) {
+    public Cart save(final Cart cart) {
         try {
             return doSave(cart);
         } catch (DataIntegrityViolationException e) {
@@ -50,28 +50,28 @@ class SafeCartPersistenceAdapter implements CartRepositoryPort {
         }
     }
 
-    private Cart doSave(Cart cart) {
+    private Cart doSave(final Cart cart) {
         // PESSIMISTIC_WRITE로 락을 잡고 조회 → 동시 수정 방지
-        Optional<CartEntity> existing = cartJpaRepository.findByMemberPublicIdForUpdate(cart.memberId().value());
-        CartEntity cartEntity;
+        final Optional<CartEntity> existing = cartJpaRepository.findByMemberPublicIdForUpdate(cart.memberId().value());
+        final CartEntity cartEntity;
         if (existing.isPresent()) {
             cartEntity = existing.get();
         } else {
             cartEntity = CartMapper.toEntity(cart);
         }
-        CartEntity savedCart = cartJpaRepository.save(cartEntity);
+        final CartEntity savedCart = cartJpaRepository.save(cartEntity);
 
         cartItemJpaRepository.deleteByCartId(savedCart.getId());
-        List<CartItemEntity> itemEntities = CartMapper.toItemEntities(cart, savedCart.getId());
-        List<CartItemEntity> savedItems = cartItemJpaRepository.saveAll(itemEntities);
+        final List<CartItemEntity> itemEntities = CartMapper.toItemEntities(cart, savedCart.getId());
+        final List<CartItemEntity> savedItems = cartItemJpaRepository.saveAll(itemEntities);
 
         return CartMapper.toDomain(savedCart, savedItems);
     }
 
     @Override
-    public Optional<Cart> findByMemberId(String memberPublicId) {
+    public Optional<Cart> findByMemberId(final String memberPublicId) {
         return cartJpaRepository.findByMemberPublicId(memberPublicId).flatMap(cartEntity -> {
-            List<CartItemEntity> items = cartItemJpaRepository.findByCartId(cartEntity.getId());
+            final List<CartItemEntity> items = cartItemJpaRepository.findByCartId(cartEntity.getId());
             return Optional.of(CartMapper.toDomain(cartEntity, items));
         });
     }

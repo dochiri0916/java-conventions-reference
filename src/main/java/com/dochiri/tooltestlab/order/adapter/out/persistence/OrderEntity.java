@@ -43,8 +43,8 @@ public class OrderEntity {
     @Column(nullable = false, length = 10)
     private String zipCode;
 
-    private OrderEntity(Long id, String publicId, String memberPublicId, String status, long totalAmount,
-                        String recipientName, String phone, String address, String zipCode) {
+    private OrderEntity(final Long id, final String publicId, final String memberPublicId, final String status, final long totalAmount,
+                        String recipientName, final String phone, final String address, final String zipCode) {
         this.id = id;
         this.publicId = publicId;
         this.memberPublicId = memberPublicId;
@@ -56,7 +56,7 @@ public class OrderEntity {
         this.zipCode = zipCode;
     }
 
-    static OrderEntity from(Order domain) {
+    static OrderEntity from(final Order domain) {
         return new OrderEntity(
                 null, domain.id().value(), domain.memberId().value(), domain.status().name(),
                 domain.totalAmount().amount(),
@@ -64,7 +64,7 @@ public class OrderEntity {
                 domain.shippingAddress().address(), domain.shippingAddress().zipCode());
     }
 
-    void apply(Order domain) {
+    void apply(final Order domain) {
         this.status = domain.status().name();
         this.totalAmount = domain.totalAmount().amount();
         this.recipientName = domain.shippingAddress().recipientName();

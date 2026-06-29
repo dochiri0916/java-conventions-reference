@@ -5,8 +5,8 @@ import com.dochiri.tooltestlab.product.application.command.RegisterProductComman
 import com.dochiri.tooltestlab.product.application.port.in.RegisterProductUseCase;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.product.application.result.RegisterProductResult;
-import com.dochiri.tooltestlab.product.domain.model.Money;
 import com.dochiri.tooltestlab.product.domain.model.Product;
+import com.dochiri.tooltestlab.shared.model.Money;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +19,13 @@ public class RegisterProductService implements RegisterProductUseCase {
 
     private final ProductRepositoryPort productRepositoryPort;
 
-    public RegisterProductService(ProductRepositoryPort productRepositoryPort) {
+    public RegisterProductService(final ProductRepositoryPort productRepositoryPort) {
         this.productRepositoryPort = productRepositoryPort;
     }
 
     @Override
-    public RegisterProductResult register(RegisterProductCommand command) {
-        Product product = Product.create(
+    public RegisterProductResult register(final RegisterProductCommand command) {
+        final Product product = Product.create(
                 command.name(),
                 command.description(),
                 Money.of(command.priceAmount()),
@@ -36,9 +36,9 @@ public class RegisterProductService implements RegisterProductUseCase {
             categories = productRepositoryPort.findCategoriesByPublicIds(new HashSet<>(command.categoryIds()));
         }
 
-        Product saved = productRepositoryPort.save(product, categories);
+        final Product saved = productRepositoryPort.save(product, categories);
 
-        List<String> categoryNames = categories.stream().map(Category::name).toList();
+        final List<String> categoryNames = categories.stream().map(c -> c.name().value()).toList();
         return new RegisterProductResult(
                 saved.id().value(), saved.name().value(), saved.price().amount(),
                 saved.stock().value(), saved.status().name(), categoryNames);

@@ -1,35 +1,34 @@
 package com.dochiri.tooltestlab.member.adapter.out.persistence;
 
+import com.dochiri.tooltestlab.member.domain.model.Email;
 import com.dochiri.tooltestlab.member.domain.model.Member;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.member.domain.model.MemberName;
 import com.dochiri.tooltestlab.member.domain.model.MemberStatus;
+import com.dochiri.tooltestlab.member.domain.model.Password;
 
-/**
- * MemberEntity ↔ Member 변환 유틸리티.
- * Spring Bean 등록 금지 (CLODE.md 규칙).
- */
 final class MemberMapper {
 
     private MemberMapper() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
-    static Member toDomain(MemberEntity entity) {
+    static Member toDomain(final MemberEntity entity) {
         return new Member(
                 new MemberId(entity.getPublicId()),
-                entity.getEmail(),
-                entity.getPassword(),
-                entity.getName(),
+                new Email(entity.getEmail()),
+                new Password(entity.getPassword()),
+                new MemberName(entity.getName()),
                 MemberStatus.valueOf(entity.getStatus()));
     }
 
-    static MemberEntity toEntity(Member domain) {
+    static MemberEntity toEntity(final Member domain) {
         return new MemberEntity(
                 null,
                 domain.id().value(),
-                domain.email(),
-                domain.password(),
-                domain.name(),
+                domain.email().value(),
+                domain.password().value(),
+                domain.name().value(),
                 domain.status().name());
     }
 }

@@ -1,21 +1,17 @@
 package com.dochiri.tooltestlab.order.application.exception;
 
-import com.dochiri.tooltestlab.global.error.BusinessException;
-import com.dochiri.tooltestlab.global.error.ErrorCode;
+public abstract class OrderApplicationException extends RuntimeException {
 
-public abstract class OrderApplicationException extends BusinessException {
+    private static final long serialVersionUID = 1L;
 
-    protected OrderApplicationException(ErrorCode errorCode) {
-        super(errorCode);
+    private final OrderApplicationErrorCode errorCode;
+
+    protected OrderApplicationException(final OrderApplicationErrorCode errorCode, final String message) {
+        super(message);
+        this.errorCode = errorCode;
     }
 
-    protected OrderApplicationException(ErrorCode errorCode, String message) {
-        super(errorCode, message);
-    }
-
-    @Override
     public OrderApplicationErrorCode errorCode() {
-        return (OrderApplicationErrorCode) super.errorCode();
+        return errorCode;
     }
-
 }

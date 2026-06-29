@@ -2,7 +2,9 @@ package com.dochiri.tooltestlab.review.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.review.domain.model.Rating;
 import com.dochiri.tooltestlab.review.domain.model.Review;
+import com.dochiri.tooltestlab.review.domain.model.ReviewContent;
 import com.dochiri.tooltestlab.review.domain.model.ReviewId;
 
 final class ReviewMapper {
@@ -11,22 +13,22 @@ final class ReviewMapper {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
-    static Review toDomain(ReviewEntity entity) {
+    static Review toDomain(final ReviewEntity entity) {
         return new Review(
                 new ReviewId(entity.getPublicId()),
                 new MemberId(entity.getMemberPublicId()),
                 new ProductId(entity.getProductPublicId()),
-                entity.getRating(),
-                entity.getContent());
+                new Rating(entity.getRating()),
+                new ReviewContent(entity.getContent()));
     }
 
-    static ReviewEntity toEntity(Review domain) {
+    static ReviewEntity toEntity(final Review domain) {
         return new ReviewEntity(
                 null,
                 domain.id().value(),
                 domain.memberId().value(),
                 domain.productId().value(),
-                domain.rating(),
-                domain.content());
+                domain.rating().value(),
+                domain.content().value());
     }
 }

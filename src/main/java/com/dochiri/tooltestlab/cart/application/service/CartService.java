@@ -9,12 +9,12 @@ import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartUseCase;
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.application.result.GetCartResult;
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
-import com.dochiri.tooltestlab.cart.domain.model.Money;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.product.application.exception.ProductNotFoundException;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.product.domain.model.Product;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.shared.model.Money;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,21 +25,21 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, RemoveFrom
     private final CartRepositoryPort cartRepositoryPort;
     private final ProductRepositoryPort productRepositoryPort;
 
-    public CartService(CartRepositoryPort cartRepositoryPort, ProductRepositoryPort productRepositoryPort) {
+    public CartService(final CartRepositoryPort cartRepositoryPort, final ProductRepositoryPort productRepositoryPort) {
         this.cartRepositoryPort = cartRepositoryPort;
         this.productRepositoryPort = productRepositoryPort;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public GetCartResult getCart(String memberPublicId) {
-        MemberId memberId = new MemberId(memberPublicId);
-        Cart cart = cartRepositoryPort.findByMemberId(memberPublicId)
+    public GetCartResult getCart(final String memberPublicId) {
+        final MemberId memberId = new MemberId(memberPublicId);
+        final Cart cart = cartRepositoryPort.findByMemberId(memberPublicId)
                 .orElseGet(() -> Cart.create(memberId));
 
-        var items = cart.items().values().stream()
+        final var items = cart.items().values().stream()
                 .map(i -> new GetCartResult.Item(
-                        i.productId().value(), i.productName(), i.quantity(),
+                        i.productId().value(), i.productName().value(), i.quantity(),
                         i.unitPrice().amount(), i.totalPrice().amount()))
                 .toList();
 
@@ -47,23 +47,22 @@ public class CartService implements GetCartUseCase, AddToCartUseCase, RemoveFrom
     }
 
     @Override
-    public void add(AddToCartCommand command) {
-        MemberId memberId = new MemberId(command.memberPublicId());
+    public void add(final AddToCartCommand command) {
+        final MemberId memberId = new MemberId(command.memberPublicId());
 
-        // 트랜잭션 내에서 상품 존재 여부와 최신 가격을 조회한다.
-        Product product = productRepositoryPort.findByPublicId(command.productPublicId())
+        final Product product = productRepositoryPort.findByPublicId(command.productPublicId())
                 .orElseThrow(() -> new ProductNotFoundException(command.productPublicId()));
 
         Cart cart = cartRepositoryPort.findByMemberId(command.memberPublicId())
                 .orElseGet(() -> Cart.create(memberId));
 
-        cart = cart.addItem(product.id(), product.name().value(),
+        cart = cart.addItem(product.id(), product.name(),
                 command.quantity(), Money.of(product.price().amount()));
         cartRepositoryPort.save(cart);
     }
 
     @Override
-    public void remove(RemoveFromCartCommand command) {
+    public void remove(final RemoveFromCartCommand command) {
         Cart cart = cartRepositoryPort.findByMemberId(command.memberPublicId())
                 .orElseThrow(() -> new CartNotFoundException(command.memberPublicId()));
 

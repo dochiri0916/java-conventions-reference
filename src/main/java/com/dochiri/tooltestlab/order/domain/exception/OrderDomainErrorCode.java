@@ -1,39 +1,20 @@
 package com.dochiri.tooltestlab.order.domain.exception;
 
-import com.dochiri.tooltestlab.global.error.ErrorCode;
-import org.springframework.http.HttpStatus;
+public enum OrderDomainErrorCode {
 
-public enum OrderDomainErrorCode implements ErrorCode {
+    BAD_ORDER_STATUS("현재 주문 상태에서는 처리할 수 없습니다."),
+    INVALID_ORDER_ID("주문 ID는 빈 값일 수 없습니다."),
+    INVALID_QUANTITY("수량은 1 이상이어야 합니다."),
+    BAD_SHIPPING_ADDR("배송지 정보가 올바르지 않습니다."),
+    BAD_ORDER_LINES("주문 상품 목록이 올바르지 않습니다.");
 
-    INVALID_ORDER_STATUS(
-            "INVALID_ORDER_STATUS",
-            "현재 주문 상태에서는 처리할 수 없습니다.",
-            HttpStatus.BAD_REQUEST
-    );
-
-    private final String code;
     private final String message;
-    private final HttpStatus httpStatus;
 
-    OrderDomainErrorCode(String code, String message, HttpStatus httpStatus) {
-        this.code = code;
+    OrderDomainErrorCode(final String message) {
         this.message = message;
-        this.httpStatus = httpStatus;
     }
 
-    @Override
-    public String code() {
-        return code;
-    }
-
-    @Override
-    public String message() {
+    public String title() {
         return message;
     }
-
-    @Override
-    public HttpStatus httpStatus() {
-        return httpStatus;
-    }
-
 }

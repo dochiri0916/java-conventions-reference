@@ -30,7 +30,7 @@ public class OrderLineEntity {
     @Column(nullable = false)
     private long unitPrice;
 
-    public OrderLineEntity(Long id, Long orderId, String productPublicId, String productName, int quantity, long unitPrice) {
+    public OrderLineEntity(final Long id, final Long orderId, final String productPublicId, final String productName, final int quantity, final long unitPrice) {
         this.id = id;
         this.productPublicId = productPublicId;
         this.productName = productName;

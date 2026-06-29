@@ -5,6 +5,7 @@ import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.adapter.in.web.request.PlaceOrderRequest;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.OrderResponse;
 import com.dochiri.tooltestlab.order.application.command.PlaceOrderCommand;
+import com.dochiri.tooltestlab.order.application.exception.NotOrderOwnerException;
 import com.dochiri.tooltestlab.order.application.port.in.CancelOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.in.GetOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.in.ListOrdersUseCase;
@@ -17,7 +18,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
@@ -32,8 +38,8 @@ public class OrderController {
     private final ListOrdersUseCase listOrdersUseCase;
     private final CancelOrderUseCase cancelOrderUseCase;
 
-    public OrderController(PlaceOrderUseCase placeOrderUseCase, GetOrderUseCase getOrderUseCase,
-                           ListOrdersUseCase listOrdersUseCase, CancelOrderUseCase cancelOrderUseCase) {
+    public OrderController(final PlaceOrderUseCase placeOrderUseCase, final GetOrderUseCase getOrderUseCase,
+                           ListOrdersUseCase listOrdersUseCase, final CancelOrderUseCase cancelOrderUseCase) {
         this.placeOrderUseCase = placeOrderUseCase;
         this.getOrderUseCase = getOrderUseCase;
         this.listOrdersUseCase = listOrdersUseCase;
@@ -43,11 +49,11 @@ public class OrderController {
     @Operation(summary = "주문 생성", description = "장바구니에 담긴 상품으로 주문을 생성합니다.")
     @PostMapping
     public ResponseEntity<OrderResponse> place(@LoginMember String memberPublicId, @RequestBody PlaceOrderRequest request) {
-        ShippingAddress shippingAddress = new ShippingAddress(
+        final ShippingAddress shippingAddress = new ShippingAddress(
                 request.recipientName(), request.phone(), request.address(), request.zipCode());
-        PlaceOrderResult result = placeOrderUseCase.place(new PlaceOrderCommand(new MemberId(memberPublicId), shippingAddress));
+        final PlaceOrderResult result = placeOrderUseCase.place(new PlaceOrderCommand(new MemberId(memberPublicId), shippingAddress));
 
-        var items = result.items().stream()
+        final var items = result.items().stream()
                 .map(i -> new OrderResponse.Item(i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), (long) i.quantity() * i.unitPrice()))
                 .toList();
         return ResponseEntity.ok(new OrderResponse(result.publicId(), null, result.status(), result.totalAmount(),
@@ -57,8 +63,8 @@ public class OrderController {
     @Operation(summary = "주문 목록 조회", description = "로그인된 회원의 주문 목록을 조회합니다.")
     @GetMapping
     public ResponseEntity<List<Map<String, Object>>> list(@LoginMember String memberPublicId) {
-        ListOrdersResult result = listOrdersUseCase.listByMember(memberPublicId);
-        var body = result.orders().stream()
+        final ListOrdersResult result = listOrdersUseCase.listByMember(memberPublicId);
+        final var body = result.orders().stream()
                 .map(o -> Map.<String, Object>of("publicId", o.publicId(), "status", o.status(), "totalAmount", o.totalAmount(), "itemCount", o.itemCount()))
                 .toList();
         return ResponseEntity.ok(body);
@@ -70,11 +76,11 @@ public class OrderController {
             @LoginMember String memberPublicId,
             @Parameter(description = "주문 publicId", example = "a1b2c3d4e5f6")
             @PathVariable String publicId) {
-        GetOrderResult result = getOrderUseCase.getOrder(publicId);
+        final GetOrderResult result = getOrderUseCase.getOrder(publicId);
         if (!result.memberPublicId().equals(memberPublicId)) {
-            throw new IllegalArgumentException("자신의 주문만 조회할 수 있습니다.");
+            throw new NotOrderOwnerException();
         }
-        var items = result.items().stream()
+        final var items = result.items().stream()
                 .map(i -> new OrderResponse.Item(i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.totalPrice()))
                 .toList();
         return ResponseEntity.ok(new OrderResponse(result.publicId(), result.memberPublicId(), result.status(),

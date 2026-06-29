@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.product.application.service;
 
 import com.dochiri.tooltestlab.category.domain.model.Category;
+import com.dochiri.tooltestlab.product.application.exception.ProductNotFoundException;
 import com.dochiri.tooltestlab.product.application.port.in.GetProductUseCase;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.product.application.result.GetProductResult;
@@ -16,17 +17,17 @@ public class GetProductService implements GetProductUseCase {
 
     private final ProductRepositoryPort productRepositoryPort;
 
-    public GetProductService(ProductRepositoryPort productRepositoryPort) {
+    public GetProductService(final ProductRepositoryPort productRepositoryPort) {
         this.productRepositoryPort = productRepositoryPort;
     }
 
     @Override
-    public GetProductResult getProduct(String publicId) {
-        Product product = productRepositoryPort.findByPublicId(publicId)
-                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다. publicId=" + publicId));
+    public GetProductResult getProduct(final String publicId) {
+        final Product product = productRepositoryPort.findByPublicId(publicId)
+                .orElseThrow(() -> new ProductNotFoundException(publicId));
 
-        List<Category> categories = productRepositoryPort.findCategoriesByProductPublicId(publicId);
-        List<String> categoryNames = categories.stream().map(Category::name).toList();
+        final List<Category> categories = productRepositoryPort.findCategoriesByProductPublicId(publicId);
+        final List<String> categoryNames = categories.stream().map(c -> c.name().value()).toList();
 
         return new GetProductResult(
                 product.id().value(), product.name().value(), product.description().value(),

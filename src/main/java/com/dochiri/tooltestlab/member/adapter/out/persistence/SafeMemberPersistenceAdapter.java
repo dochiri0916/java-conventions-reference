@@ -18,29 +18,29 @@ class SafeMemberPersistenceAdapter implements MemberRepositoryPort {
 
     private final MemberJpaRepository jpaRepository;
 
-    SafeMemberPersistenceAdapter(MemberJpaRepository jpaRepository) {
+    SafeMemberPersistenceAdapter(final MemberJpaRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
 
     @Override
-    public Member save(Member member) {
-        MemberEntity entity = MemberMapper.toEntity(member);
-        MemberEntity saved = jpaRepository.save(entity);
+    public Member save(final Member member) {
+        final MemberEntity entity = MemberMapper.toEntity(member);
+        final MemberEntity saved = jpaRepository.save(entity);
         return MemberMapper.toDomain(saved);
     }
 
     @Override
-    public Optional<Member> findByPublicId(String publicId) {
+    public Optional<Member> findByPublicId(final String publicId) {
         return jpaRepository.findByPublicId(publicId).map(MemberMapper::toDomain);
     }
 
     @Override
-    public Optional<Member> findByEmail(String email) {
+    public Optional<Member> findByEmail(final String email) {
         return jpaRepository.findByEmail(email).map(MemberMapper::toDomain);
     }
 
     @Override
-    public boolean existsByEmail(String email) {
+    public boolean existsByEmail(final String email) {
         // PESSIMISTIC_WRITE 락을 잡고 조회 → 동시에 같은 이메일로 등록하는 요청 직렬화
         return jpaRepository.findByEmailForUpdate(email).isPresent();
     }

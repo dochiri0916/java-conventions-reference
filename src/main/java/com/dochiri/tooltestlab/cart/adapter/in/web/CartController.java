@@ -14,7 +14,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -27,7 +33,7 @@ public class CartController {
     private final AddToCartUseCase addToCartUseCase;
     private final RemoveFromCartUseCase removeFromCartUseCase;
 
-    public CartController(GetCartUseCase getCartUseCase, AddToCartUseCase addToCartUseCase,
+    public CartController(final GetCartUseCase getCartUseCase, final AddToCartUseCase addToCartUseCase,
                           RemoveFromCartUseCase removeFromCartUseCase) {
         this.getCartUseCase = getCartUseCase;
         this.addToCartUseCase = addToCartUseCase;
@@ -37,16 +43,19 @@ public class CartController {
     @Operation(summary = "장바구니 조회", description = "로그인된 회원의 장바구니를 조회합니다.")
     @GetMapping
     public ResponseEntity<CartResponse> get(@LoginMember String memberPublicId) {
-        GetCartResult result = getCartUseCase.getCart(memberPublicId);
-        var items = result.items().stream()
-                .map(i -> new CartResponse.Item(i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.totalPrice()))
+        final GetCartResult result = getCartUseCase.getCart(memberPublicId);
+        final var items = result.items().stream()
+                .map(i -> new CartResponse.Item(
+                        i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.totalPrice()))
                 .toList();
-        return ResponseEntity.ok(new CartResponse(result.publicId(), result.memberPublicId(), items, result.totalAmount()));
+        return ResponseEntity.ok(
+                new CartResponse(result.publicId(), result.memberPublicId(), items, result.totalAmount()));
     }
 
     @Operation(summary = "장바구니 담기", description = "상품을 장바구니에 추가합니다.")
     @PostMapping("/items")
-    public ResponseEntity<Map<String, String>> add(@LoginMember String memberPublicId, @Valid @RequestBody AddToCartRequest request) {
+    public ResponseEntity<Map<String, String>> add(
+            @LoginMember String memberPublicId, @Valid @RequestBody AddToCartRequest request) {
         // 상품 조회와 검증은 Application Service에서 트랜잭션 내에서 처리한다.
         addToCartUseCase.add(new AddToCartCommand(
                 memberPublicId, request.productPublicId(), request.quantity()));

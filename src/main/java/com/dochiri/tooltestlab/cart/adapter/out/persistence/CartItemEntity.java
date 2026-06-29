@@ -1,6 +1,11 @@
 package com.dochiri.tooltestlab.cart.adapter.out.persistence;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +35,8 @@ public class CartItemEntity {
     @Column(nullable = false)
     private long unitPrice;
 
-    public CartItemEntity(Long id, Long cartId, String productPublicId, String productName, int quantity, long unitPrice) {
+    public CartItemEntity(final Long id, final Long cartId, final String productPublicId,
+                          String productName, final int quantity, final long unitPrice) {
         this.id = id;
         this.cartId = cartId;
         this.productPublicId = productPublicId;

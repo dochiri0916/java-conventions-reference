@@ -24,16 +24,17 @@ public class CategoryController {
 
     private final RegisterCategoryUseCase registerCategoryUseCase;
 
-    public CategoryController(RegisterCategoryUseCase registerCategoryUseCase) {
+    public CategoryController(final RegisterCategoryUseCase registerCategoryUseCase) {
         this.registerCategoryUseCase = registerCategoryUseCase;
     }
 
     @Operation(summary = "카테고리 등록", description = "새로운 카테고리를 등록합니다.")
     @PostMapping
     public ResponseEntity<Map<String, String>> create(
-            @RequestBody(description = "카테고리 정보", content = @Content(schema = @Schema(implementation = CreateCategoryBody.class)))
+            @RequestBody(description = "카테고리 정보",
+                    content = @Content(schema = @Schema(implementation = CreateCategoryBody.class)))
             @org.springframework.web.bind.annotation.RequestBody Map<String, String> body) {
-        RegisterCategoryResult result = registerCategoryUseCase.register(new RegisterCategoryCommand(body.get("name")));
+        final RegisterCategoryResult result = registerCategoryUseCase.register(new RegisterCategoryCommand(body.get("name")));
         return ResponseEntity.ok(Map.of("publicId", result.publicId(), "name", result.name()));
     }
 

@@ -16,19 +16,20 @@ public class ListProductsService implements ListProductsUseCase {
 
     private final ProductRepositoryPort productRepositoryPort;
 
-    public ListProductsService(ProductRepositoryPort productRepositoryPort) {
+    public ListProductsService(final ProductRepositoryPort productRepositoryPort) {
         this.productRepositoryPort = productRepositoryPort;
     }
 
     @Override
-    public ListProductsResult list(int page, int size) {
-        Page<com.dochiri.tooltestlab.product.domain.model.Product> productPage =
+    public ListProductsResult list(final int page, final int size) {
+        final Page<com.dochiri.tooltestlab.product.domain.model.Product> productPage =
                 productRepositoryPort.findAll(page, size);
 
-        List<ListProductsResult.ProductSummary> summaries = productPage.getContent().stream()
+        final List<ListProductsResult.ProductSummary> summaries = productPage.getContent().stream()
                 .map(product -> {
-                    List<Category> categories = productRepositoryPort.findCategoriesByProductPublicId(product.id().value());
-                    List<String> categoryNames = categories.stream().map(Category::name).toList();
+                    final List<Category> categories =
+                            productRepositoryPort.findCategoriesByProductPublicId(product.id().value());
+                    final List<String> categoryNames = categories.stream().map(c -> c.name().value()).toList();
                     return new ListProductsResult.ProductSummary(
                             product.id().value(), product.name().value(), product.price().amount(),
                             product.stock().value(), product.status().name(), categoryNames);

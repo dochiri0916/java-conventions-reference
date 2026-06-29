@@ -1,6 +1,12 @@
 package com.dochiri.tooltestlab.category.adapter.out.persistence;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +30,7 @@ public class CategoryEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
-    public CategoryEntity(Long id, String publicId, String name) {
+    public CategoryEntity(final Long id, final String publicId, final String name) {
         this.id = id;
         this.publicId = publicId;
         this.name = name;

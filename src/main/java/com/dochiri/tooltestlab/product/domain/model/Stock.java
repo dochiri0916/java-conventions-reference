@@ -1,22 +1,23 @@
 package com.dochiri.tooltestlab.product.domain.model;
 
 import com.dochiri.tooltestlab.product.domain.exception.InsufficientStockException;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidStockException;
 
 public record Stock(int value) {
 
     public Stock {
         if (value < 0) {
-            throw new IllegalArgumentException("재고는 0 이상이어야 합니다. 입력값: " + value);
+            throw new InvalidStockException("재고는 0 이상이어야 합니다. 입력값: " + value);
         }
     }
 
-    public static Stock of(int value) {
+    public static Stock from(final int value) {
         return new Stock(value);
     }
 
-    public Stock decrease(int quantity) {
+    public Stock decrease(final int quantity) {
         if (quantity <= 0) {
-            throw new IllegalArgumentException("감소 수량은 1 이상이어야 합니다. 입력값: " + quantity);
+            throw new InvalidStockException("감소 수량은 1 이상이어야 합니다. 입력값: " + quantity);
         }
         if (this.value < quantity) {
             throw new InsufficientStockException(this.value, quantity);
@@ -24,9 +25,9 @@ public record Stock(int value) {
         return new Stock(value - quantity);
     }
 
-    public Stock increase(int quantity) {
+    public Stock increase(final int quantity) {
         if (quantity <= 0) {
-            throw new IllegalArgumentException("증가 수량은 1 이상이어야 합니다. 입력값: " + quantity);
+            throw new InvalidStockException("증가 수량은 1 이상이어야 합니다. 입력값: " + quantity);
         }
         return new Stock(value + quantity);
     }

@@ -1,6 +1,9 @@
 package com.dochiri.tooltestlab.cart.domain.model;
 
+import com.dochiri.tooltestlab.cart.domain.exception.CartItemLimitExceededException;
+import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.shared.model.Money;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,44 +19,28 @@ public record CartItems(List<CartItem> values) {
         requireNonNull(values, "장바구니 상품 목록은 null일 수 없습니다.");
 
         if (values.size() > MAX_ITEM_COUNT) {
-            throw new IllegalArgumentException(
-                    "장바구니 상품은 최대 " + MAX_ITEM_COUNT + "개까지 가능합니다. 입력값: " + values.size());
+            throw new CartItemLimitExceededException(values.size());
         }
 
-        // 각 요소 null 검증
         values.forEach(item -> requireNonNull(item, "장바구니 상품은 null일 수 없습니다."));
 
         values = List.copyOf(values);
     }
 
-    // -------------------------------------------------------------------------
-    // Factory
-    // -------------------------------------------------------------------------
-
     public static CartItems empty() {
         return new CartItems(List.of());
     }
 
-    public static CartItems from(List<CartItem> items) {
+    public static CartItems from(final List<CartItem> items) {
         return new CartItems(items);
     }
 
-    // -------------------------------------------------------------------------
-    // Business
-    // -------------------------------------------------------------------------
-
-    /**
-     * 전체 금액. 각 상품의 {@link CartItem#totalPrice()} 합계.
-     */
     public Money totalAmount() {
         return values.stream()
                 .map(CartItem::totalPrice)
                 .reduce(Money.ZERO, Money::add);
     }
 
-    /**
-     * 장바구니 상품 개수 (라인 수).
-     */
     public int size() {
         return values.size();
     }
@@ -62,68 +49,48 @@ public record CartItems(List<CartItem> values) {
         return values.isEmpty();
     }
 
-    /**
-     * 특정 상품이 포함되어 있는지 확인한다.
-     */
-    public boolean containsProduct(ProductId productId) {
+    public boolean containsProduct(final ProductId productId) {
         requireNonNull(productId, "상품 ID는 null일 수 없습니다.");
         return values.stream().anyMatch(item -> item.productId().equals(productId));
     }
 
-    /**
-     * 상품 ID로 장바구니 아이템을 찾는다.
-     */
-    public Optional<CartItem> findByProductId(ProductId productId) {
+    public Optional<CartItem> findByProductId(final ProductId productId) {
         requireNonNull(productId, "상품 ID는 null일 수 없습니다.");
         return values.stream()
                 .filter(item -> item.productId().equals(productId))
                 .findFirst();
     }
 
-    // -------------------------------------------------------------------------
-    // Collection operations (return new CartItems)
-    // -------------------------------------------------------------------------
-
-    /**
-     * 상품을 장바구니에 추가한다.
-     */
-    public CartItems add(CartItem item) {
+    public CartItems add(final CartItem item) {
         requireNonNull(item, "추가할 상품은 null일 수 없습니다.");
-        List<CartItem> changed = new ArrayList<>(values);
+        final List<CartItem> changed = new ArrayList<>(values);
         changed.add(item);
         return new CartItems(changed);
     }
 
-    /**
-     * 기존 상품을 새 상품으로 교체한다(수량 증가 등).
-     */
-    public CartItems replace(CartItem oldItem, CartItem newItem) {
+    public CartItems replace(final CartItem oldItem, final CartItem newItem) {
         requireNonNull(oldItem, "교체 대상 상품은 null일 수 없습니다.");
         requireNonNull(newItem, "새 상품은 null일 수 없습니다.");
-        List<CartItem> changed = new ArrayList<>(values);
-        int idx = changed.indexOf(oldItem);
+        final List<CartItem> changed = new ArrayList<>(values);
+        final int idx = changed.indexOf(oldItem);
         if (idx < 0) {
-            throw new IllegalArgumentException("교체 대상 상품이 장바구니에 존재하지 않습니다.");
+            throw new InvalidCartItemException("교체 대상 상품이 장바구니에 존재하지 않습니다.");
         }
         changed.set(idx, newItem);
         return new CartItems(changed);
     }
 
-    /**
-     * 상품을 장바구니에서 제거한다.
-     * 존재하지 않는 상품이면 예외가 발생한다.
-     */
-    public CartItems remove(ProductId productId) {
+    public CartItems remove(final ProductId productId) {
         requireNonNull(productId, "상품 ID는 null일 수 없습니다.");
 
-        boolean exists = values.stream()
+        final boolean exists = values.stream()
                 .anyMatch(item -> item.productId().equals(productId));
         if (!exists) {
-            throw new IllegalArgumentException(
+            throw new InvalidCartItemException(
                     "해당 상품이 장바구니에 존재하지 않습니다. productId=" + productId.value());
         }
 
-        List<CartItem> changed = values.stream()
+        final List<CartItem> changed = values.stream()
                 .filter(item -> !item.productId().equals(productId))
                 .toList();
         return new CartItems(changed);

@@ -23,16 +23,16 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
     private final ProductJpaRepository productJpaRepository;
     private final CategoryJpaRepository categoryJpaRepository;
 
-    ProductPersistenceAdapter(ProductJpaRepository productJpaRepository, CategoryJpaRepository categoryJpaRepository) {
+    ProductPersistenceAdapter(final ProductJpaRepository productJpaRepository, final CategoryJpaRepository categoryJpaRepository) {
         this.productJpaRepository = productJpaRepository;
         this.categoryJpaRepository = categoryJpaRepository;
     }
 
     @Override
     @Transactional
-    public Product save(Product product, List<Category> categories) {
-        Optional<ProductEntity> existing = productJpaRepository.findByPublicId(product.id().value());
-        ProductEntity entity;
+    public Product save(final Product product, final List<Category> categories) {
+        final Optional<ProductEntity> existing = productJpaRepository.findByPublicId(product.id().value());
+        final ProductEntity entity;
         if (existing.isPresent()) {
             entity = existing.get();
             ProductMapper.updateEntity(entity, product);
@@ -41,52 +41,56 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
         }
 
         if (!categories.isEmpty()) {
-            List<String> categoryPublicIds = categories.stream().map(c -> c.id().value()).toList();
-            List<CategoryEntity> managedCategories = categoryJpaRepository.findAllByPublicIdIn(categoryPublicIds);
-            List<Long> categoryIds = managedCategories.stream().map(CategoryEntity::getId).toList();
+            final List<String> categoryPublicIds = categories.stream().map(c -> c.id().value()).toList();
+            final List<CategoryEntity> managedCategories = categoryJpaRepository.findAllByPublicIdIn(categoryPublicIds);
+            final List<Long> categoryIds = managedCategories.stream().map(CategoryEntity::getId).toList();
             entity.replaceCategoryIds(categoryIds);
         }
 
-        ProductEntity saved = productJpaRepository.save(entity);
+        final ProductEntity saved = productJpaRepository.save(entity);
         return ProductMapper.toDomain(saved);
     }
 
     @Override
-    public Optional<Product> findByPublicId(String publicId) {
+    public Optional<Product> findByPublicId(final String publicId) {
         return productJpaRepository.findByPublicId(publicId).map(ProductMapper::toDomain);
     }
 
     @Override
-    public Page<Product> findAll(int page, int size) {
+    public Page<Product> findAll(final int page, final int size) {
         return productJpaRepository.findAll(PageRequest.of(page, size))
                 .map(ProductMapper::toDomain);
     }
 
     @Override
-    public List<Category> findCategoriesByProductPublicId(String productPublicId) {
-        ProductEntity product = productJpaRepository.findByPublicId(productPublicId).orElse(null);
-        if (product == null) return List.of();
-        List<Long> categoryIds = product.getCategoryIds();
-        if (categoryIds.isEmpty()) return List.of();
-        List<CategoryEntity> categories = categoryJpaRepository.findAllById(categoryIds);
+    public List<Category> findCategoriesByProductPublicId(final String productPublicId) {
+        final ProductEntity product = productJpaRepository.findByPublicId(productPublicId).orElse(null);
+        if (product == null) {
+            return List.of();
+        }
+        final List<Long> categoryIds = product.getCategoryIds();
+        if (categoryIds.isEmpty()) {
+            return List.of();
+        }
+        final List<CategoryEntity> categories = categoryJpaRepository.findAllById(categoryIds);
         return ProductMapper.toDomainCategories(categories);
     }
 
     @Override
     @Transactional
-    public Category saveCategory(Category category) {
-        CategoryEntity entity = ProductMapper.toEntity(category);
-        CategoryEntity saved = categoryJpaRepository.save(entity);
+    public Category saveCategory(final Category category) {
+        final CategoryEntity entity = ProductMapper.toEntity(category);
+        final CategoryEntity saved = categoryJpaRepository.save(entity);
         return ProductMapper.toDomain(saved);
     }
 
     @Override
-    public Optional<Category> findCategoryByPublicId(String publicId) {
+    public Optional<Category> findCategoryByPublicId(final String publicId) {
         return categoryJpaRepository.findByPublicId(publicId).map(ProductMapper::toDomain);
     }
 
     @Override
-    public List<Category> findCategoriesByPublicIds(Set<String> publicIds) {
+    public List<Category> findCategoriesByPublicIds(final Set<String> publicIds) {
         return ProductMapper.toDomainCategories(
                 categoryJpaRepository.findAllByPublicIdIn(List.copyOf(publicIds)));
     }

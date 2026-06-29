@@ -1,6 +1,13 @@
 package com.dochiri.tooltestlab.review.adapter.out.persistence;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,7 +42,8 @@ public class ReviewEntity {
     @Column(nullable = false, length = 1000)
     private String content;
 
-    public ReviewEntity(Long id, String publicId, String memberPublicId, String productPublicId, int rating, String content) {
+    public ReviewEntity(final Long id, final String publicId, final String memberPublicId,
+                        String productPublicId, final int rating, final String content) {
         this.id = id;
         this.publicId = publicId;
         this.memberPublicId = memberPublicId;

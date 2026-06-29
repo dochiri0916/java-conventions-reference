@@ -4,11 +4,11 @@ public record Quantity(int value) {
 
     public Quantity {
         if (value <= 0) {
-            throw new IllegalArgumentException("수량은 1 이상이어야 합니다. 입력값: " + value);
+            throw new com.dochiri.tooltestlab.order.domain.exception.InvalidQuantityException(value);
         }
     }
 
-    public static Quantity of(int value) {
+    public static Quantity from(final int value) {
         return new Quantity(value);
     }
 }

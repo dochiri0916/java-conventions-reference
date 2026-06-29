@@ -1,20 +1,17 @@
 package com.dochiri.tooltestlab.order.domain.exception;
 
-import com.dochiri.tooltestlab.global.error.BusinessException;
+public abstract class OrderDomainException extends RuntimeException {
 
-public abstract class OrderDomainException extends BusinessException {
+    private static final long serialVersionUID = 1L;
 
-    protected OrderDomainException(OrderDomainErrorCode errorCode) {
-        super(errorCode);
+    private final OrderDomainErrorCode code;
+
+    protected OrderDomainException(final OrderDomainErrorCode code, final String message) {
+        super(message);
+        this.code = code;
     }
 
-    protected OrderDomainException(OrderDomainErrorCode errorCode, String message) {
-        super(errorCode, message);
-    }
-
-    @Override
     public OrderDomainErrorCode errorCode() {
-        return (OrderDomainErrorCode) super.errorCode();
+        return code;
     }
-
 }

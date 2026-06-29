@@ -1,0 +1,45 @@
+package com.dochiri.tooltestlab.order.application.service;
+
+import com.dochiri.tooltestlab.order.application.exception.NotOrderOwnerException;
+import com.dochiri.tooltestlab.order.application.exception.OrderNotFoundException;
+import com.dochiri.tooltestlab.order.application.port.in.CancelOrderUseCase;
+import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
+import com.dochiri.tooltestlab.order.domain.event.OrderCancelledEvent;
+import com.dochiri.tooltestlab.order.domain.model.Order;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@Transactional
+public class CancelOrderService implements CancelOrderUseCase {
+
+    private final OrderRepositoryPort orderRepositoryPort;
+    private final ApplicationEventPublisher eventPublisher;
+
+    public CancelOrderService(final OrderRepositoryPort orderRepositoryPort,
+                               ApplicationEventPublisher eventPublisher) {
+        this.orderRepositoryPort = orderRepositoryPort;
+        this.eventPublisher = eventPublisher;
+    }
+
+    @Override
+    public void cancel(final String memberPublicId, final String orderPublicId) {
+        final Order order = orderRepositoryPort.findByPublicId(orderPublicId)
+                .orElseThrow(() -> new OrderNotFoundException(orderPublicId));
+
+        if (!order.memberId().value().equals(memberPublicId)) {
+            throw new NotOrderOwnerException();
+        }
+
+        final Order cancelled = order.cancel();
+        orderRepositoryPort.save(cancelled);
+
+        final List<OrderCancelledEvent.ItemDetail> itemDetails = cancelled.items().values().stream()
+                .map(i -> new OrderCancelledEvent.ItemDetail(i.productId(), i.quantity()))
+                .toList();
+        eventPublisher.publishEvent(new OrderCancelledEvent(cancelled.id(), itemDetails));
+    }
+}

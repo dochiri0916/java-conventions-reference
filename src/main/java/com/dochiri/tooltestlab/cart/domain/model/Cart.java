@@ -2,6 +2,8 @@ package com.dochiri.tooltestlab.cart.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.product.domain.model.ProductName;
+import com.dochiri.tooltestlab.shared.model.Money;
 
 import static java.util.Objects.requireNonNull;
 
@@ -17,27 +19,28 @@ public record Cart(
         requireNonNull(items, "장바구니 아이템 목록은 null일 수 없습니다.");
     }
 
-    public static Cart create(MemberId memberId) {
+    public static Cart create(final MemberId memberId) {
         return new Cart(CartId.generate(), memberId, CartItems.empty());
     }
 
-    public Cart addItem(ProductId productId, String productName, int quantity, Money unitPrice) {
+    public Cart addItem(
+            final ProductId productId, final ProductName productName, final int quantity, final Money unitPrice) {
         requireNonNull(productId, "상품 ID는 null일 수 없습니다.");
         requireNonNull(productName, "상품명은 null일 수 없습니다.");
         requireNonNull(unitPrice, "단가는 null일 수 없습니다.");
 
         return items.findByProductId(productId)
                 .map(existing -> {
-                    CartItem increased = existing.increaseQuantity(quantity);
+                    final CartItem increased = existing.increaseQuantity(quantity);
                     return new Cart(id, memberId, items.replace(existing, increased));
                 })
                 .orElseGet(() -> {
-                    CartItem newItem = new CartItem(productId, productName, quantity, unitPrice);
+                    final CartItem newItem = new CartItem(productId, productName, quantity, unitPrice);
                     return new Cart(id, memberId, items.add(newItem));
                 });
     }
 
-    public Cart removeItem(ProductId productId) {
+    public Cart removeItem(final ProductId productId) {
         return new Cart(id, memberId, items.remove(productId));
     }
 
@@ -54,7 +57,7 @@ public record Cart(
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(final Object other) {
         return this == other
                 || other instanceof Cart cart && id.equals(cart.id);
     }

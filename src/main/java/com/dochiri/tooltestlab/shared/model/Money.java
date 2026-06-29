@@ -1,11 +1,9 @@
-package com.dochiri.tooltestlab.cart.domain.model;
+package com.dochiri.tooltestlab.shared.model;
 
 import java.util.Objects;
 
-/**
- * 금액 Value Object. 최소 화폐 단위(원)로 저장.
- */
 public record Money(long amount) {
+
     public Money {
         if (amount < 0) {
             throw new IllegalArgumentException("금액은 0 이상이어야 합니다. 입력값: " + amount);
@@ -16,7 +14,7 @@ public record Money(long amount) {
         return new Money(amount);
     }
 
-    public static final Money ZERO = new Money(0);
+    public static Money ZERO = new Money(0);
 
     public Money add(Money other) {
         Objects.requireNonNull(other, "더할 금액은 null일 수 없습니다.");

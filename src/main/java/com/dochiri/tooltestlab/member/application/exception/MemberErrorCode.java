@@ -1,39 +1,18 @@
 package com.dochiri.tooltestlab.member.application.exception;
 
-import com.dochiri.tooltestlab.global.error.ErrorCode;
-import org.springframework.http.HttpStatus;
+public enum MemberErrorCode {
 
-public enum MemberErrorCode implements ErrorCode {
+    LOGIN_FAILED("로그인 실패"),
+    DUPLICATE_EMAIL("이메일 중복"),
+    MEMBER_NOT_FOUND("회원 없음");
 
-    LOGIN_FAILED(
-            "LOGIN_FAILED",
-            "이메일 또는 비밀번호가 일치하지 않습니다.",
-            HttpStatus.UNAUTHORIZED
-    );
+    private final String title;
 
-    private final String code;
-    private final String message;
-    private final HttpStatus httpStatus;
-
-    MemberErrorCode(String code, String message, HttpStatus httpStatus) {
-        this.code = code;
-        this.message = message;
-        this.httpStatus = httpStatus;
+    MemberErrorCode(final String title) {
+        this.title = title;
     }
 
-    @Override
-    public String code() {
-        return code;
+    public String title() {
+        return title;
     }
-
-    @Override
-    public String message() {
-        return message;
-    }
-
-    @Override
-    public HttpStatus httpStatus() {
-        return httpStatus;
-    }
-
 }

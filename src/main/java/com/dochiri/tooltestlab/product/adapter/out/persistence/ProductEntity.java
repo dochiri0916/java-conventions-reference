@@ -1,6 +1,15 @@
 package com.dochiri.tooltestlab.product.adapter.out.persistence;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,7 +55,8 @@ public class ProductEntity {
     @Column(name = "category_id")
     private List<Long> categoryIds = new ArrayList<>();
 
-    public ProductEntity(Long id, String publicId, String name, String description, long priceAmount, int stock, String status) {
+    public ProductEntity(final Long id, final String publicId, final String name, final String description,
+                         long priceAmount, final int stock, final String status) {
         this.id = id;
         this.publicId = publicId;
         this.name = name;
@@ -59,7 +69,7 @@ public class ProductEntity {
     /**
      * Domain 상태를 Entity에 반영한다.
      */
-    void apply(com.dochiri.tooltestlab.product.domain.model.Product domain) {
+    void apply(final com.dochiri.tooltestlab.product.domain.model.Product domain) {
         this.name = domain.name().value();
         this.description = domain.description().value();
         this.priceAmount = domain.price().amount();
@@ -70,7 +80,7 @@ public class ProductEntity {
     /**
      * 연관된 Category ID 목록을 교체한다. PersistenceAdapter에서 managed entity로 동기화할 때만 사용.
      */
-    void replaceCategoryIds(List<Long> categoryIds) {
+    void replaceCategoryIds(final List<Long> categoryIds) {
         this.categoryIds = categoryIds;
     }
 }

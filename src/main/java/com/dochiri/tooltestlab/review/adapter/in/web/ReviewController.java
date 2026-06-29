@@ -12,7 +12,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -25,7 +31,7 @@ public class ReviewController {
     private final GetProductReviewsUseCase getProductReviewsUseCase;
     private final DeleteReviewUseCase deleteReviewUseCase;
 
-    public ReviewController(WriteReviewUseCase writeReviewUseCase,
+    public ReviewController(final WriteReviewUseCase writeReviewUseCase,
                             GetProductReviewsUseCase getProductReviewsUseCase,
                             DeleteReviewUseCase deleteReviewUseCase) {
         this.writeReviewUseCase = writeReviewUseCase;
@@ -35,8 +41,9 @@ public class ReviewController {
 
     @Operation(summary = "리뷰 작성", description = "상품에 대한 리뷰를 작성합니다.")
     @PostMapping
-    public ResponseEntity<Map<String, String>> write(@LoginMember String memberPublicId, @RequestBody WriteReviewRequest request) {
-        var result = writeReviewUseCase.write(
+    public ResponseEntity<Map<String, String>> write(
+            @LoginMember String memberPublicId, @RequestBody WriteReviewRequest request) {
+        final var result = writeReviewUseCase.write(
                 new WriteReviewCommand(memberPublicId, request.productPublicId(), request.rating(), request.content()));
         return ResponseEntity.ok(Map.of("publicId", result.publicId(), "message", "리뷰가 등록되었습니다."));
     }
@@ -46,8 +53,8 @@ public class ReviewController {
     public ResponseEntity<ReviewResponse> getByProduct(
             @Parameter(description = "상품 publicId", example = "p1r2o3d4u5c6")
             @PathVariable String productPublicId) {
-        GetProductReviewsResult result = getProductReviewsUseCase.getByProduct(productPublicId);
-        var data = result.reviews().stream()
+        final GetProductReviewsResult result = getProductReviewsUseCase.getByProduct(productPublicId);
+        final var data = result.reviews().stream()
                 .map(r -> new ReviewResponse.ReviewData(r.publicId(), r.memberPublicId(), r.rating(), r.content()))
                 .toList();
         return ResponseEntity.ok(new ReviewResponse(result.productPublicId(), data, result.averageRating()));

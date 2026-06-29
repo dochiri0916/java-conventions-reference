@@ -14,35 +14,35 @@ class ReviewPersistenceAdapter implements ReviewRepositoryPort {
 
     private final ReviewJpaRepository reviewJpaRepository;
 
-    ReviewPersistenceAdapter(ReviewJpaRepository reviewJpaRepository) {
+    ReviewPersistenceAdapter(final ReviewJpaRepository reviewJpaRepository) {
         this.reviewJpaRepository = reviewJpaRepository;
     }
 
     @Override
-    public Review save(Review review) {
-        ReviewEntity entity = ReviewMapper.toEntity(review);
-        ReviewEntity saved = reviewJpaRepository.save(entity);
+    public Review save(final Review review) {
+        final ReviewEntity entity = ReviewMapper.toEntity(review);
+        final ReviewEntity saved = reviewJpaRepository.save(entity);
         return ReviewMapper.toDomain(saved);
     }
 
     @Override
-    public Optional<Review> findByPublicId(String publicId) {
+    public Optional<Review> findByPublicId(final String publicId) {
         return reviewJpaRepository.findByPublicId(publicId).map(ReviewMapper::toDomain);
     }
 
     @Override
-    public List<Review> findByProductId(String productPublicId) {
+    public List<Review> findByProductId(final String productPublicId) {
         return reviewJpaRepository.findByProductPublicIdOrderByIdDesc(productPublicId).stream()
                 .map(ReviewMapper::toDomain).toList();
     }
 
     @Override
-    public boolean existsByMemberIdAndProductId(String memberPublicId, String productPublicId) {
+    public boolean existsByMemberIdAndProductId(final String memberPublicId, final String productPublicId) {
         return reviewJpaRepository.existsByMemberPublicIdAndProductPublicId(memberPublicId, productPublicId);
     }
 
     @Override
-    public void deleteByPublicId(String publicId) {
+    public void deleteByPublicId(final String publicId) {
         reviewJpaRepository.deleteByPublicId(publicId);
     }
 }

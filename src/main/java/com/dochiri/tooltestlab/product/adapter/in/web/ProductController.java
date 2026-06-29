@@ -14,7 +14,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -27,7 +33,7 @@ public class ProductController {
     private final GetProductUseCase getProductUseCase;
     private final ListProductsUseCase listProductsUseCase;
 
-    public ProductController(RegisterProductUseCase registerProductUseCase,
+    public ProductController(final RegisterProductUseCase registerProductUseCase,
                              GetProductUseCase getProductUseCase,
                              ListProductsUseCase listProductsUseCase) {
         this.registerProductUseCase = registerProductUseCase;
@@ -38,7 +44,7 @@ public class ProductController {
     @Operation(summary = "상품 등록", description = "새로운 상품을 등록합니다.")
     @PostMapping
     public ResponseEntity<ProductResponse> register(@RequestBody RegisterProductRequest request) {
-        RegisterProductResult result = registerProductUseCase.register(
+        final RegisterProductResult result = registerProductUseCase.register(
                 new RegisterProductCommand(request.name(), request.description(), request.priceAmount(),
                         request.stock(), request.categoryIds() != null ? request.categoryIds() : List.of()));
         return ResponseEntity.ok(new ProductResponse(
@@ -53,8 +59,8 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "페이지 크기", example = "20")
             @RequestParam(defaultValue = "20") int size) {
-        ListProductsResult result = listProductsUseCase.list(page, size);
-        var summaries = result.products().stream()
+        final ListProductsResult result = listProductsUseCase.list(page, size);
+        final var summaries = result.products().stream()
                 .map(p -> new ProductListResponse.ProductSummary(
                         p.publicId(), p.name(), p.priceAmount(), p.stock(), p.status(), p.categoryNames()))
                 .toList();
@@ -66,7 +72,7 @@ public class ProductController {
     public ResponseEntity<ProductResponse> get(
             @Parameter(description = "상품 publicId", example = "a1b2c3d4e5f6")
             @PathVariable String publicId) {
-        GetProductResult result = getProductUseCase.getProduct(publicId);
+        final GetProductResult result = getProductUseCase.getProduct(publicId);
         return ResponseEntity.ok(new ProductResponse(
                 result.publicId(), result.name(), result.description(), result.priceAmount(),
                 result.stock(), result.status(), result.categoryNames()));

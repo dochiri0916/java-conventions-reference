@@ -25,46 +25,46 @@ class SafeOrderPersistenceAdapter implements OrderRepositoryPort {
     private final OrderJpaRepository orderJpaRepository;
     private final OrderLineJpaRepository orderLineJpaRepository;
 
-    SafeOrderPersistenceAdapter(OrderJpaRepository orderJpaRepository, OrderLineJpaRepository orderLineJpaRepository) {
+    SafeOrderPersistenceAdapter(final OrderJpaRepository orderJpaRepository, final OrderLineJpaRepository orderLineJpaRepository) {
         this.orderJpaRepository = orderJpaRepository;
         this.orderLineJpaRepository = orderLineJpaRepository;
     }
 
     @Override
     @Transactional
-    public Order save(Order order) {
+    public Order save(final Order order) {
         // PESSIMISTIC_WRITE로 락을 잡고 조회 → 동시 수정 방지
-        Optional<OrderEntity> existing = orderJpaRepository.findByPublicIdForUpdate(order.id().value());
-        OrderEntity entity;
+        final Optional<OrderEntity> existing = orderJpaRepository.findByPublicIdForUpdate(order.id().value());
+        final OrderEntity entity;
         if (existing.isPresent()) {
             entity = existing.get();
             entity.apply(order);
         } else {
             entity = OrderMapper.toEntity(order);
         }
-        OrderEntity savedOrder = orderJpaRepository.save(entity);
+        final OrderEntity savedOrder = orderJpaRepository.save(entity);
 
         orderLineJpaRepository.deleteByOrderId(savedOrder.getId());
-        List<OrderLineEntity> items = OrderMapper.toItemEntities(order, savedOrder);
+        final List<OrderLineEntity> items = OrderMapper.toItemEntities(order, savedOrder);
         orderLineJpaRepository.saveAll(items);
 
         return OrderMapper.toDomain(savedOrder, items);
     }
 
     @Override
-    public Optional<Order> findByPublicId(String publicId) {
+    public Optional<Order> findByPublicId(final String publicId) {
         return orderJpaRepository.findByPublicId(publicId)
                 .map(entity -> {
-                    List<OrderLineEntity> items = orderLineJpaRepository.findByOrderIdOrderById(entity.getId());
+                    final List<OrderLineEntity> items = orderLineJpaRepository.findByOrderIdOrderById(entity.getId());
                     return OrderMapper.toDomain(entity, items);
                 });
     }
 
     @Override
-    public List<Order> findByMemberId(String memberPublicId) {
-        List<OrderEntity> entities = orderJpaRepository.findByMemberPublicIdOrderByIdDesc(memberPublicId);
+    public List<Order> findByMemberId(final String memberPublicId) {
+        final List<OrderEntity> entities = orderJpaRepository.findByMemberPublicIdOrderByIdDesc(memberPublicId);
 
-        List<Long> orderIds = entities.stream().map(OrderEntity::getId).toList();
+        final List<Long> orderIds = entities.stream().map(OrderEntity::getId).toList();
         Map<Long, List<OrderLineEntity>> itemsByOrderId = orderLineJpaRepository.findByOrderIdIn(orderIds)
                 .stream()
                 .collect(groupingBy(OrderLineEntity::getOrderId));

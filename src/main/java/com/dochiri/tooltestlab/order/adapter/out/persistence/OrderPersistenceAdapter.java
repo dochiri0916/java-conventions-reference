@@ -21,40 +21,40 @@ class OrderPersistenceAdapter implements OrderRepositoryPort {
     private final OrderLineJpaRepository orderLineJpaRepository;
 
     @Override
-    public Order save(Order order) {
-        Optional<OrderEntity> existing = orderJpaRepository.findByPublicId(order.id().value());
-        OrderEntity entity;
+    public Order save(final Order order) {
+        final Optional<OrderEntity> existing = orderJpaRepository.findByPublicId(order.id().value());
+        final OrderEntity entity;
         if (existing.isPresent()) {
             entity = existing.get();
             entity.apply(order);
         } else {
             entity = OrderMapper.toEntity(order);
         }
-        OrderEntity savedOrder = orderJpaRepository.save(entity);
+        final OrderEntity savedOrder = orderJpaRepository.save(entity);
 
         // items: 기존 삭제 후 새로 저장 (orphanRemoval 수동 구현)
         orderLineJpaRepository.deleteByOrderId(savedOrder.getId());
-        List<OrderLineEntity> items = OrderMapper.toItemEntities(order, savedOrder);
+        final List<OrderLineEntity> items = OrderMapper.toItemEntities(order, savedOrder);
         orderLineJpaRepository.saveAll(items);
 
         return OrderMapper.toDomain(savedOrder, items);
     }
 
     @Override
-    public Optional<Order> findByPublicId(String publicId) {
+    public Optional<Order> findByPublicId(final String publicId) {
         return orderJpaRepository.findByPublicId(publicId)
                 .map(entity -> {
-                    List<OrderLineEntity> items = orderLineJpaRepository.findByOrderIdOrderById(entity.getId());
+                    final List<OrderLineEntity> items = orderLineJpaRepository.findByOrderIdOrderById(entity.getId());
                     return OrderMapper.toDomain(entity, items);
                 });
     }
 
     @Override
-    public List<Order> findByMemberId(String memberPublicId) {
-        List<OrderEntity> entities = orderJpaRepository.findByMemberPublicIdOrderByIdDesc(memberPublicId);
+    public List<Order> findByMemberId(final String memberPublicId) {
+        final List<OrderEntity> entities = orderJpaRepository.findByMemberPublicIdOrderByIdDesc(memberPublicId);
 
         // batch load items
-        List<Long> orderIds = entities.stream().map(OrderEntity::getId).toList();
+        final List<Long> orderIds = entities.stream().map(OrderEntity::getId).toList();
         Map<Long, List<OrderLineEntity>> itemsByOrderId = orderLineJpaRepository.findByOrderIdIn(orderIds)
                 .stream()
                 .collect(groupingBy(OrderLineEntity::getOrderId));

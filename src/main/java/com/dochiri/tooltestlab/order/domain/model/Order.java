@@ -2,6 +2,7 @@ package com.dochiri.tooltestlab.order.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
+import com.dochiri.tooltestlab.shared.model.Money;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,7 +24,7 @@ public record Order(
         requireNonNull(totalAmount, "총 금액은 null일 수 없습니다.");
     }
 
-    public static Order create(MemberId memberId, OrderLines items, ShippingAddress shippingAddress) {
+    public static Order create(final MemberId memberId, final OrderLines items, final ShippingAddress shippingAddress) {
         return new Order(
                 OrderId.generate(),
                 memberId,
@@ -63,7 +64,7 @@ public record Order(
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(final Object other) {
         return this == other
                 || other instanceof Order order && id.equals(order.id);
     }
