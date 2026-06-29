@@ -1,12 +1,10 @@
 package com.dochiri.tooltestlab.order.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
 
 import static java.util.Objects.requireNonNull;
 
-/**
- * 주문 Aggregate Root.
- */
 public record Order(
         OrderId id,
         MemberId memberId,
@@ -35,43 +33,43 @@ public record Order(
                 items.totalAmount());
     }
 
-    /**
-     * 결제 완료.
-     */
     public Order pay() {
         if (status != OrderStatus.PENDING) {
-            throw new IllegalStateException("주문 접수 상태에서만 결제할 수 있습니다. 현재 상태: " + status);
+            throw new InvalidOrderStatusException(id, OrderStatus.PENDING.toString(), status.toString());
         }
         return new Order(id, memberId, items, OrderStatus.PAID, shippingAddress, totalAmount);
     }
 
-    /**
-     * 배송 시작.
-     */
     public Order startShipping() {
         if (status != OrderStatus.PAID) {
-            throw new IllegalStateException("결제 완료 상태에서만 배송할 수 있습니다. 현재 상태: " + status);
+            throw new InvalidOrderStatusException(id, OrderStatus.PAID.toString(), status.toString());
         }
         return new Order(id, memberId, items, OrderStatus.SHIPPING, shippingAddress, totalAmount);
     }
 
-    /**
-     * 배송 완료.
-     */
     public Order deliver() {
         if (status != OrderStatus.SHIPPING) {
-            throw new IllegalStateException("배송 중 상태에서만 배송 완료할 수 있습니다. 현재 상태: " + status);
+            throw new InvalidOrderStatusException(id, OrderStatus.SHIPPING.toString(), status.toString());
         }
         return new Order(id, memberId, items, OrderStatus.DELIVERED, shippingAddress, totalAmount);
     }
 
-    /**
-     * 주문 취소.
-     */
     public Order cancel() {
         if (status == OrderStatus.DELIVERED || status == OrderStatus.CANCELLED) {
-            throw new IllegalStateException("이미 " + status + " 상태인 주문은 취소할 수 없습니다.");
+            throw new InvalidOrderStatusException(
+                    id, "PENDING / PAID / SHIPPING", status.toString());
         }
         return new Order(id, memberId, items, OrderStatus.CANCELLED, shippingAddress, totalAmount);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other
+                || other instanceof Order order && id.equals(order.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }

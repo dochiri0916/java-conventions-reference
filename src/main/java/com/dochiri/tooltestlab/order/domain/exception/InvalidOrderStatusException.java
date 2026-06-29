@@ -1,13 +1,18 @@
 package com.dochiri.tooltestlab.order.domain.exception;
 
-public class InvalidOrderStatusException extends OrderDomainException {
+import com.dochiri.tooltestlab.order.domain.model.OrderId;
 
-    public InvalidOrderStatusException() {
-        super(OrderDomainErrorCode.INVALID_ORDER_STATUS);
-    }
+import static java.util.Objects.requireNonNull;
 
-    public InvalidOrderStatusException(String message) {
-        super(OrderDomainErrorCode.INVALID_ORDER_STATUS, message);
+public final class InvalidOrderStatusException extends OrderDomainException {
+
+    public InvalidOrderStatusException(OrderId orderId, String expected, String actual) {
+        super(
+                OrderDomainErrorCode.INVALID_ORDER_STATUS,
+                "주문[%s]의 상태가 유효하지 않습니다. 예상=%s, 실제=%s".formatted(orderId.value(), expected, actual));
+        requireNonNull(orderId);
+        requireNonNull(expected);
+        requireNonNull(actual);
     }
 
 }
