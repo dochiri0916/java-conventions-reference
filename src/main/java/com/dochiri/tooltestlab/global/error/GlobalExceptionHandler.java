@@ -47,8 +47,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 }
                 return mapToResponse(codeName, title, ex.getMessage());
             }
-        } catch (ReflectiveOperationException ignored) {
-        }
+        } catch (ReflectiveOperationException ignored) { /* fallthrough */ }
         return handleUnexpected(ex);
     }
 

@@ -32,9 +32,9 @@
         <Source name="~.*Test\.java"/>
     </Match>
 
-    <!-- Test code: dead store and return value ignored are intentional in tests -->
+    <!-- Test code: dead store, return value ignored, and thrown exceptions are intentional -->
     <Match>
-        <Bug code="DLS,RV"/>
+        <Bug code="DLS,RV,THROWS"/>
         <Source name="~.*Test\.java"/>
     </Match>
 

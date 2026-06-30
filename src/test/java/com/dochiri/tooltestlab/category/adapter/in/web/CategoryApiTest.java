@@ -113,4 +113,18 @@ class CategoryApiTest {
                 .andExpect(status().isUnauthorized());
         assertThat(1).isEqualTo(1);
     }
+
+    @Test
+    @DisplayName("CategoryResponse 레코드를 생성할 수 있다")
+    void categoryResponseCreation() {
+            // given
+
+            // when
+        var response = new com.dochiri.tooltestlab.category.adapter.in.web.response.CategoryResponse(
+                "cat123test", "전자기기");
+
+            // then
+        assertThat(response.publicId()).isEqualTo("cat123test");
+        assertThat(response.name()).isEqualTo("전자기기");
+    }
 }
