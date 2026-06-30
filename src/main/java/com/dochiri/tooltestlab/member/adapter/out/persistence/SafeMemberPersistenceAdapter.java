@@ -31,7 +31,7 @@ class SafeMemberPersistenceAdapter implements MemberRepositoryPort {
 
     @Override
     public Optional<Member> findByPublicId(final String publicId) {
-        return jpaRepository.findByPublicId(publicId).map(MemberMapper::toDomain);
+        return jpaRepository.findByMemberId(publicId).map(MemberMapper::toDomain);
     }
 
     @Override

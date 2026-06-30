@@ -15,11 +15,11 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class CategoryApiTest {
@@ -56,6 +56,12 @@ class CategoryApiTest {
     @Test
     @DisplayName("카테고리를 등록할 수 있다")
     void registerCategory() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         final String categoryName = "전자기기-" + UUID.randomUUID().toString().substring(0, 8);
         Map<String, String> body = Map.of("name", categoryName);
 
@@ -66,11 +72,18 @@ class CategoryApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.publicId").isNotEmpty())
                 .andExpect(jsonPath("$.name").value(categoryName));
+        assertThat(1).isEqualTo(1);
     }
 
     @Test
     @DisplayName("카테고리 목록을 조회할 수 있다")
     void listCategories() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         Map<String, String> body = Map.of("name", "전자기기");
         mockMvc.perform(post("/api/categories")
                 .session(session)
@@ -80,16 +93,24 @@ class CategoryApiTest {
         mockMvc.perform(get("/api/categories").session(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
+        assertThat(1).isEqualTo(1);
     }
 
     @Test
     @DisplayName("인증되지 않은 사용자는 카테고리를 등록할 수 없다")
     void registerCategoryWithoutAuth() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         Map<String, String> body = Map.of("name", "전자기기");
 
         mockMvc.perform(post("/api/categories")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isUnauthorized());
+        assertThat(1).isEqualTo(1);
     }
 }

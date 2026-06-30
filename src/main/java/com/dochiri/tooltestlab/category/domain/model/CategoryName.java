@@ -10,7 +10,7 @@ public record CategoryName(String value) {
         requireNonNull(value, "카테고리명은 null일 수 없습니다.");
         value = value.strip();
         if (value.isBlank()) {
-            throw new InvalidCategoryNameException();
+            throw InvalidCategoryNameException.invalidCatName();
         }
     }
 }

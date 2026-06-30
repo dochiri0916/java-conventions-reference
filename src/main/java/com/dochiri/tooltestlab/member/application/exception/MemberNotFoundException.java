@@ -1,8 +1,29 @@
 package com.dochiri.tooltestlab.member.application.exception;
 
-public final class MemberNotFoundException extends MemberApplicationException {
+import static java.util.Objects.requireNonNull;
 
-    public MemberNotFoundException(final String identifier) {
-        super(MemberErrorCode.MEMBER_NOT_FOUND, "회원을 찾을 수 없습니다. identifier=" + identifier);
+public final class MemberNotFoundException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final MemberErrorCode errorCode;
+    private final String identifier;
+
+    private MemberNotFoundException(final MemberErrorCode errorCode, final String identifier) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+        this.identifier = requireNonNull(identifier);
+    }
+
+    public static MemberNotFoundException memberNotFound(final String identifier) {
+        return new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND, identifier);
+    }
+
+    public MemberErrorCode code() {
+        return errorCode;
+    }
+
+    public String identifier() {
+        return identifier;
     }
 }

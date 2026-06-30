@@ -10,7 +10,7 @@ public record Email(String value) {
         requireNonNull(value, "이메일은 null일 수 없습니다.");
         value = value.strip();
         if (value.isBlank()) {
-            throw new InvalidEmailException();
+            throw InvalidEmailException.invalidEmail();
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.global.config;
 
-import com.dochiri.tooltestlab.member.application.command.RegisterMemberCommand;
+import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberCommand;
 import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

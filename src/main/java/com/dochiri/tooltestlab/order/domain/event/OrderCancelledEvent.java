@@ -1,18 +1,20 @@
 package com.dochiri.tooltestlab.order.domain.event;
 
+import com.dochiri.tooltestlab.order.domain.model.OrderCancelledItems;
 import com.dochiri.tooltestlab.order.domain.model.OrderId;
 import com.dochiri.tooltestlab.order.domain.model.Quantity;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
 
-import java.util.List;
+import static java.util.Objects.requireNonNull;
 
-/**
- * 주문이 취소되면 발행되는 도메인 이벤트.
- * 재고 복구를 트리거한다.
- */
 public record OrderCancelledEvent(
         OrderId orderId,
-        List<ItemDetail> items) {
+        OrderCancelledItems items) {
+
+    public OrderCancelledEvent {
+        requireNonNull(orderId, "주문 ID는 null일 수 없습니다.");
+        requireNonNull(items, "주문 상품 목록은 null일 수 없습니다.");
+    }
 
     public record ItemDetail(ProductId productId, Quantity quantity) {
     }

@@ -4,7 +4,6 @@ import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
 import com.dochiri.tooltestlab.order.domain.model.Order;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,6 @@ import static java.util.stream.Collectors.groupingBy;
  * PESSIMISTIC_WRITE 락으로 동시 수정을 직렬화한다.
  */
 @Repository
-@Transactional(readOnly = true)
 @ConditionalOnProperty(name = "tool-test-lab.concurrency.safe", havingValue = "true")
 class SafeOrderPersistenceAdapter implements OrderRepositoryPort {
 
@@ -31,10 +29,9 @@ class SafeOrderPersistenceAdapter implements OrderRepositoryPort {
     }
 
     @Override
-    @Transactional
     public Order save(final Order order) {
         // PESSIMISTIC_WRITE로 락을 잡고 조회 → 동시 수정 방지
-        final Optional<OrderEntity> existing = orderJpaRepository.findByPublicIdForUpdate(order.id().value());
+        final Optional<OrderEntity> existing = orderJpaRepository.findByOrderIdForUpdate(order.id().value());
         final OrderEntity entity;
         if (existing.isPresent()) {
             entity = existing.get();
@@ -44,8 +41,8 @@ class SafeOrderPersistenceAdapter implements OrderRepositoryPort {
         }
         final OrderEntity savedOrder = orderJpaRepository.save(entity);
 
-        orderLineJpaRepository.deleteByOrderId(savedOrder.getId());
-        final List<OrderLineEntity> items = OrderMapper.toItemEntities(order, savedOrder);
+        orderLineJpaRepository.deleteByOrderId(savedOrder.getOrderId());
+        final List<OrderLineEntity> items = OrderMapper.toItemEntities(order, savedOrder.getOrderId());
         orderLineJpaRepository.saveAll(items);
 
         return OrderMapper.toDomain(savedOrder, items);
@@ -53,24 +50,24 @@ class SafeOrderPersistenceAdapter implements OrderRepositoryPort {
 
     @Override
     public Optional<Order> findByPublicId(final String publicId) {
-        return orderJpaRepository.findByPublicId(publicId)
+        return orderJpaRepository.findByOrderId(publicId)
                 .map(entity -> {
-                    final List<OrderLineEntity> items = orderLineJpaRepository.findByOrderIdOrderById(entity.getId());
+                    final List<OrderLineEntity> items = orderLineJpaRepository.findByOrderIdOrderById(entity.getOrderId());
                     return OrderMapper.toDomain(entity, items);
                 });
     }
 
     @Override
     public List<Order> findByMemberId(final String memberPublicId) {
-        final List<OrderEntity> entities = orderJpaRepository.findByMemberPublicIdOrderByIdDesc(memberPublicId);
+        final List<OrderEntity> entities = orderJpaRepository.findByMemberIdOrderByIdDesc(memberPublicId);
 
-        final List<Long> orderIds = entities.stream().map(OrderEntity::getId).toList();
-        Map<Long, List<OrderLineEntity>> itemsByOrderId = orderLineJpaRepository.findByOrderIdIn(orderIds)
+        final List<String> orderIds = entities.stream().map(OrderEntity::getOrderId).toList();
+        Map<String, List<OrderLineEntity>> itemsByOrderId = orderLineJpaRepository.findByOrderIdIn(orderIds)
                 .stream()
                 .collect(groupingBy(OrderLineEntity::getOrderId));
 
         return entities.stream()
-                .map(e -> OrderMapper.toDomain(e, itemsByOrderId.getOrDefault(e.getId(), List.of())))
+                .map(e -> OrderMapper.toDomain(e, itemsByOrderId.getOrDefault(e.getOrderId(), List.of())))
                 .toList();
     }
 }

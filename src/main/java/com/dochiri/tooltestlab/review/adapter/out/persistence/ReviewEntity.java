@@ -1,25 +1,19 @@
 package com.dochiri.tooltestlab.review.adapter.out.persistence;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "reviews", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"memberPublicId", "productPublicId"})
+        @UniqueConstraint(columnNames = {"memberId", "productId"})
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReviewEntity {
 
+    @Getter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,13 +22,13 @@ public class ReviewEntity {
     private Long version;
 
     @Column(nullable = false, unique = true, length = 32)
-    private String publicId;
+    private String reviewId;
 
     @Column(nullable = false, length = 32)
-    private String memberPublicId;
+    private String memberId;
 
     @Column(nullable = false, length = 32)
-    private String productPublicId;
+    private String productId;
 
     @Column(nullable = false)
     private int rating;
@@ -42,13 +36,18 @@ public class ReviewEntity {
     @Column(nullable = false, length = 1000)
     private String content;
 
-    public ReviewEntity(final Long id, final String publicId, final String memberPublicId,
-                        String productPublicId, final int rating, final String content) {
+    private ReviewEntity(final Long id, final String reviewId, final String memberId,
+                        final String productId, final int rating, final String content) {
         this.id = id;
-        this.publicId = publicId;
-        this.memberPublicId = memberPublicId;
-        this.productPublicId = productPublicId;
+        this.reviewId = reviewId;
+        this.memberId = memberId;
+        this.productId = productId;
         this.rating = rating;
         this.content = content;
+    }
+
+    static ReviewEntity create(final String reviewId, final String memberId, final String productId,
+                               final int rating, final String content) {
+        return new ReviewEntity(null, reviewId, memberId, productId, rating, content);
     }
 }

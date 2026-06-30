@@ -1,8 +1,23 @@
 package com.dochiri.tooltestlab.product.domain.exception;
 
-public final class InvalidProductIdException extends ProductDomainException {
+import static java.util.Objects.requireNonNull;
 
-    public InvalidProductIdException() {
-        super(ProductDomainErrorCode.BAD_PRODUCT_ID, "상품 ID는 빈 값일 수 없습니다.");
+public final class InvalidProductIdException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final ProductDomainErrorCode errorCode;
+
+    private InvalidProductIdException(final ProductDomainErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+    }
+
+    public static InvalidProductIdException badProductId() {
+        return new InvalidProductIdException(ProductDomainErrorCode.BAD_PRODUCT_ID);
+    }
+
+    public ProductDomainErrorCode code() {
+        return errorCode;
     }
 }

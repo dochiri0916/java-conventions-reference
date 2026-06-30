@@ -15,16 +15,15 @@ final class ReviewMapper {
 
     static Review toDomain(final ReviewEntity entity) {
         return new Review(
-                new ReviewId(entity.getPublicId()),
-                new MemberId(entity.getMemberPublicId()),
-                new ProductId(entity.getProductPublicId()),
+                new ReviewId(entity.getReviewId()),
+                new MemberId(entity.getMemberId()),
+                new ProductId(entity.getProductId()),
                 new Rating(entity.getRating()),
                 new ReviewContent(entity.getContent()));
     }
 
     static ReviewEntity toEntity(final Review domain) {
-        return new ReviewEntity(
-                null,
+        return ReviewEntity.create(
                 domain.id().value(),
                 domain.memberId().value(),
                 domain.productId().value(),

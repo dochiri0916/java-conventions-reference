@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.cart.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.order.domain.model.Quantity;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.product.domain.model.ProductName;
 import com.dochiri.tooltestlab.shared.model.Money;
@@ -24,14 +25,15 @@ public record Cart(
     }
 
     public Cart addItem(
-            final ProductId productId, final ProductName productName, final int quantity, final Money unitPrice) {
+            final ProductId productId, final ProductName productName, final Quantity quantity, final Money unitPrice) {
         requireNonNull(productId, "상품 ID는 null일 수 없습니다.");
         requireNonNull(productName, "상품명은 null일 수 없습니다.");
+        requireNonNull(quantity, "수량은 null일 수 없습니다.");
         requireNonNull(unitPrice, "단가는 null일 수 없습니다.");
 
         return items.findByProductId(productId)
                 .map(existing -> {
-                    final CartItem increased = existing.increaseQuantity(quantity);
+                    final CartItem increased = existing.increaseQuantity(quantity.value());
                     return new Cart(id, memberId, items.replace(existing, increased));
                 })
                 .orElseGet(() -> {

@@ -1,12 +1,6 @@
 package com.dochiri.tooltestlab.category.adapter.out.persistence;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CategoryEntity {
 
+    @Getter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,14 +20,18 @@ public class CategoryEntity {
     private Long version;
 
     @Column(nullable = false, unique = true, length = 32)
-    private String publicId;
+    private String categoryId;
 
     @Column(nullable = false, unique = true)
     private String name;
 
-    public CategoryEntity(final Long id, final String publicId, final String name) {
+    private CategoryEntity(final Long id, final String categoryId, final String name) {
         this.id = id;
-        this.publicId = publicId;
+        this.categoryId = categoryId;
         this.name = name;
+    }
+
+    public static CategoryEntity create(final String categoryId, final String name) {
+        return new CategoryEntity(null, categoryId, name);
     }
 }

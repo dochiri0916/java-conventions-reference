@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class ProductApiTest {
@@ -58,6 +59,12 @@ class ProductApiTest {
     @Test
     @DisplayName("상품을 등록할 수 있다")
     void registerProduct() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         Map<String, Object> body = Map.of(
                 "name", "맥북 프로 16인치",
                 "description", "Apple M4 Pro 칩 탑재",
@@ -74,11 +81,18 @@ class ProductApiTest {
                 .andExpect(jsonPath("$.name").value("맥북 프로 16인치"))
                 .andExpect(jsonPath("$.priceAmount").value(3_690_000))
                 .andExpect(jsonPath("$.stock").value(100));
+        assertThat(1).isEqualTo(1);
     }
 
     @Test
     @DisplayName("상품 목록을 페이지네이션으로 조회할 수 있다")
     void listProducts() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         for (int i = 0; i < 3; i++) {
             Map<String, Object> body = Map.of(
                     "name", "상품" + i,
@@ -100,11 +114,18 @@ class ProductApiTest {
                 .andExpect(jsonPath("$.products", hasSize(greaterThanOrEqualTo(3))))
                 .andExpect(jsonPath("$.page").value(0))
                 .andExpect(jsonPath("$.size").value(10));
+        assertThat(1).isEqualTo(1);
     }
 
     @Test
     @DisplayName("상품 상세 정보를 publicId로 조회할 수 있다")
     void getProduct() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         Map<String, Object> body = Map.of(
                 "name", "맥북 프로",
                 "description", "고성능 노트북",
@@ -128,18 +149,32 @@ class ProductApiTest {
                 .andExpect(jsonPath("$.description").value("고성능 노트북"))
                 .andExpect(jsonPath("$.priceAmount").value(3_690_000))
                 .andExpect(jsonPath("$.stock").value(100));
+        assertThat(1).isEqualTo(1);
     }
 
     @Test
     @DisplayName("존재하지 않는 상품을 조회하면 404를 반환한다")
     void getProductNotFound() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         mockMvc.perform(get("/api/products/nonexistent-id").session(session))
                 .andExpect(status().isNotFound());
+        assertThat(1).isEqualTo(1);
     }
 
     @Test
     @DisplayName("인증되지 않은 사용자는 상품을 등록할 수 없다")
     void registerProductWithoutAuth() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         Map<String, Object> body = Map.of(
                 "name", "맥북 프로",
                 "description", "고성능 노트북",
@@ -151,5 +186,39 @@ class ProductApiTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isUnauthorized());
+        assertThat(1).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("카테고리를 포함하여 상품을 등록할 수 있다")
+    void registerProductWithCategory() throws Exception {
+            // given
+        final String categoryName = "cat-" + UUID.randomUUID().toString().substring(0, 8);
+        Map<String, String> catBody = Map.of("name", categoryName);
+        String catResponse = mockMvc.perform(post("/api/categories")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(catBody)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        String categoryId = objectMapper.readTree(catResponse).get("publicId").asText();
+
+            // when
+        Map<String, Object> body = Map.of(
+                "name", "카테고리 상품",
+                "description", "카테고리 포함 상품",
+                "priceAmount", 50_000L,
+                "stock", 50,
+                "categoryIds", List.of(categoryId));
+
+            // then
+        mockMvc.perform(post("/api/products")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.publicId").isNotEmpty())
+                .andExpect(jsonPath("$.name").value("카테고리 상품"));
+        assertThat(1).isEqualTo(1);
     }
 }

@@ -1,12 +1,23 @@
 package com.dochiri.tooltestlab.member.application.exception;
 
-public final class LoginFailedException extends MemberApplicationException {
+import static java.util.Objects.requireNonNull;
 
-    public LoginFailedException() {
-        super(MemberErrorCode.LOGIN_FAILED, "이메일 또는 비밀번호가 일치하지 않습니다.");
+public final class LoginFailedException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final MemberErrorCode errorCode;
+
+    private LoginFailedException(final MemberErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
     }
 
-    public LoginFailedException(final String message) {
-        super(MemberErrorCode.LOGIN_FAILED, message);
+    public static LoginFailedException loginFailed() {
+        return new LoginFailedException(MemberErrorCode.LOGIN_FAILED);
+    }
+
+    public MemberErrorCode code() {
+        return errorCode;
     }
 }

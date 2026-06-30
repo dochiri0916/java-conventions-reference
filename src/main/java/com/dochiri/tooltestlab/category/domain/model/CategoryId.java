@@ -11,7 +11,7 @@ public record CategoryId(String value) {
     public CategoryId {
         value = requireNonNull(value).strip();
         if (value.isBlank()) {
-            throw new InvalidCategoryIdException();
+            throw InvalidCategoryIdException.invalidCatId();
         }
     }
 

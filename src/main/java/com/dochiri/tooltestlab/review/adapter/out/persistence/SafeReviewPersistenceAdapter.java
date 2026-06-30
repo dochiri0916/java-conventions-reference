@@ -31,28 +31,28 @@ class SafeReviewPersistenceAdapter implements ReviewRepositoryPort {
             final ReviewEntity saved = reviewJpaRepository.save(entity);
             return ReviewMapper.toDomain(saved);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalStateException("이미 이 상품에 리뷰를 작성하셨습니다.");
+            throw new IllegalStateException("이미 이 상품에 리뷰를 작성하셨습니다.", e);
         }
     }
 
     @Override
     public Optional<Review> findByPublicId(final String publicId) {
-        return reviewJpaRepository.findByPublicId(publicId).map(ReviewMapper::toDomain);
+        return reviewJpaRepository.findByReviewId(publicId).map(ReviewMapper::toDomain);
     }
 
     @Override
     public List<Review> findByProductId(final String productPublicId) {
-        return reviewJpaRepository.findByProductPublicIdOrderByIdDesc(productPublicId).stream()
+        return reviewJpaRepository.findByProductIdOrderByIdDesc(productPublicId).stream()
                 .map(ReviewMapper::toDomain).toList();
     }
 
     @Override
     public boolean existsByMemberIdAndProductId(final String memberPublicId, final String productPublicId) {
-        return reviewJpaRepository.existsByMemberPublicIdAndProductPublicId(memberPublicId, productPublicId);
+        return reviewJpaRepository.existsByMemberIdAndProductId(memberPublicId, productPublicId);
     }
 
     @Override
     public void deleteByPublicId(final String publicId) {
-        reviewJpaRepository.deleteByPublicId(publicId);
+        reviewJpaRepository.deleteByReviewId(publicId);
     }
 }

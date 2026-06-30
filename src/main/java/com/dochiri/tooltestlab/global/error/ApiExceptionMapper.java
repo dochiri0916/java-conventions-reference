@@ -9,6 +9,7 @@ public class ApiExceptionMapper {
     public record Mapping(HttpStatus status, ProblemType problemType) {
     }
 
+    @SuppressWarnings("PMD.CyclomaticComplexity")
     public Mapping map(final String errorCode) {
         return switch (errorCode) {
             // Domain error codes — Product

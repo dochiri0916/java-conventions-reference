@@ -1,10 +1,10 @@
 package com.dochiri.tooltestlab.product.application.service;
 
 import com.dochiri.tooltestlab.category.domain.model.Category;
-import com.dochiri.tooltestlab.product.application.command.RegisterProductCommand;
+import com.dochiri.tooltestlab.product.application.port.in.RegisterProductCommand;
+import com.dochiri.tooltestlab.product.application.port.in.RegisterProductResult;
 import com.dochiri.tooltestlab.product.application.port.in.RegisterProductUseCase;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.product.application.result.RegisterProductResult;
 import com.dochiri.tooltestlab.product.domain.model.Product;
 import com.dochiri.tooltestlab.shared.model.Money;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class RegisterProductService implements RegisterProductUseCase {
+public final class RegisterProductService implements RegisterProductUseCase {
 
     private final ProductRepositoryPort productRepositoryPort;
 

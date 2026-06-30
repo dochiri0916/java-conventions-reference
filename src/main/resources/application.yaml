@@ -2,6 +2,14 @@ spring:
   application:
     name: tool-test-lab
 
+  # JDK Dynamic Proxy (final service + interface 기반)
+  aop:
+    proxy-target-class: false
+
+  # MessageSource
+  messages:
+    basename: messages/messages
+
   # H2 In-Memory Database (MySQL 호환 모드)
   datasource:
     url: jdbc:h2:mem:tooltestlab;MODE=MySQL
@@ -44,6 +52,14 @@ tool-test-lab:
 # Server
 server:
   port: 18080
+
+# SpringDoc OpenAPI
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    operations-sorter: method
+    tags-sorter: alpha
 
 # Logging
 logging:

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CategoryJpaRepository extends JpaRepository<CategoryEntity, Long> {
-    Optional<CategoryEntity> findByPublicId(String publicId);
+    Optional<CategoryEntity> findByCategoryId(String categoryId);
 
-    List<CategoryEntity> findAllByPublicIdIn(List<String> publicIds);
+    List<CategoryEntity> findAllByCategoryIdIn(List<String> categoryIds);
 }

@@ -1,10 +1,10 @@
 package com.dochiri.tooltestlab.member.application.service;
 
-import com.dochiri.tooltestlab.member.application.command.RegisterMemberCommand;
 import com.dochiri.tooltestlab.member.application.exception.DuplicateEmailException;
+import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberCommand;
+import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberResult;
 import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberUseCase;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
-import com.dochiri.tooltestlab.member.application.result.RegisterMemberResult;
 import com.dochiri.tooltestlab.member.domain.model.Email;
 import com.dochiri.tooltestlab.member.domain.model.Member;
 import com.dochiri.tooltestlab.member.domain.model.MemberName;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class RegisterMemberService implements RegisterMemberUseCase {
+public final class RegisterMemberService implements RegisterMemberUseCase {
 
     private final MemberRepositoryPort memberRepositoryPort;
     private final PasswordEncoder passwordEncoder;
@@ -28,7 +28,7 @@ public class RegisterMemberService implements RegisterMemberUseCase {
     @Override
     public RegisterMemberResult register(final RegisterMemberCommand command) {
         if (memberRepositoryPort.existsByEmail(command.email())) {
-            throw new DuplicateEmailException(command.email());
+            throw DuplicateEmailException.duplicateEmail(command.email());
         }
 
         final Member member = Member.create(

@@ -2,20 +2,20 @@ package com.dochiri.tooltestlab.order.application.service;
 
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
-import com.dochiri.tooltestlab.order.application.command.PlaceOrderCommand;
 import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
+import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
+import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderResult;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
-import com.dochiri.tooltestlab.order.application.result.PlaceOrderResult;
 import com.dochiri.tooltestlab.order.domain.event.OrderPlacedEvent;
+import com.dochiri.tooltestlab.order.domain.model.OrderPlacedItems;
 import com.dochiri.tooltestlab.order.domain.model.Order;
 import com.dochiri.tooltestlab.order.domain.model.OrderLine;
 import com.dochiri.tooltestlab.order.domain.model.OrderLines;
-import com.dochiri.tooltestlab.order.domain.model.Quantity;
 import com.dochiri.tooltestlab.product.application.exception.ProductNotFoundException;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.product.domain.exception.InsufficientStockException;
 import com.dochiri.tooltestlab.product.domain.model.Product;
-import com.dochiri.tooltestlab.product.domain.model.ProductName;
 import com.dochiri.tooltestlab.shared.model.Money;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class PlaceOrderService implements PlaceOrderUseCase {
+public final class PlaceOrderService implements PlaceOrderUseCase {
 
     private final OrderRepositoryPort orderRepositoryPort;
     private final CartRepositoryPort cartRepositoryPort;
@@ -46,25 +46,24 @@ public class PlaceOrderService implements PlaceOrderUseCase {
     @Override
     public PlaceOrderResult place(final PlaceOrderCommand command) {
         final Cart cart = cartRepositoryPort.findByMemberId(command.memberId().value())
-                .orElseThrow(EmptyCartException::new);
+                .orElseThrow(() -> EmptyCartException.emptyCart());
 
         if (cart.isEmpty()) {
-            throw new EmptyCartException();
+            throw EmptyCartException.emptyCart();
         }
 
         final List<OrderLine> orderLines = new ArrayList<>();
         for (var cartItem : cart.items().values()) {
             final Product product = productRepositoryPort.findByPublicId(cartItem.productId().value())
-                    .orElseThrow(() -> new ProductNotFoundException(cartItem.productId().value()));
+                    .orElseThrow(() -> ProductNotFoundException.productNotFound(cartItem.productId().value()));
 
-            if (product.stock().value() < cartItem.quantity()) {
-                throw new com.dochiri.tooltestlab.product.domain.exception.InsufficientStockException(
-                        product.stock().value(), cartItem.quantity());
+            if (product.stock().value() < cartItem.quantity().value()) {
+                throw InsufficientStockException.lowStock(product.stock().value(), cartItem.quantity().value());
             }
 
             orderLines.add(new OrderLine(
                     cartItem.productId(), cartItem.productName(),
-                    new Quantity(cartItem.quantity()), Money.of(cartItem.unitPrice().amount())));
+                    cartItem.quantity(), Money.of(cartItem.unitPrice().amount())));
         }
 
         Order order = Order.create(command.memberId(), OrderLines.from(orderLines), command.shippingAddress());
@@ -73,7 +72,7 @@ public class PlaceOrderService implements PlaceOrderUseCase {
         List<OrderPlacedEvent.ItemDetail> itemDetails = orderLines.stream()
                 .map(ol -> new OrderPlacedEvent.ItemDetail(ol.productId(), ol.productName(), ol.quantity(), ol.unitPrice()))
                 .toList();
-        eventPublisher.publishEvent(new OrderPlacedEvent(saved.id(), command.memberId(), itemDetails));
+        eventPublisher.publishEvent(new OrderPlacedEvent(saved.id(), command.memberId(), new OrderPlacedItems(itemDetails)));
 
         final var resultItems = saved.items().values().stream()
                 .map(i -> new PlaceOrderResult.OrderItemResult(i.productId().value(), i.productName().value(), i.quantity().value(), i.unitPrice().amount()))

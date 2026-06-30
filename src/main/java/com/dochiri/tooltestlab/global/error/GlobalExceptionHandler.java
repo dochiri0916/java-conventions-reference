@@ -1,17 +1,17 @@
 package com.dochiri.tooltestlab.global.error;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -20,108 +20,48 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final ApiProblemDetailFactory problemDetailFactory;
     private final ApiExceptionMapper exceptionMapper;
+    private final MessageSource messageSource;
 
     public GlobalExceptionHandler(final ApiProblemDetailFactory problemDetailFactory,
-                                   ApiExceptionMapper exceptionMapper) {
+                                   ApiExceptionMapper exceptionMapper,
+                                   MessageSource messageSource) {
         this.problemDetailFactory = problemDetailFactory;
         this.exceptionMapper = exceptionMapper;
+        this.messageSource = messageSource;
     }
 
-    // ── Order Domain ───────────────────────────────────────────────────
+    // ── Domain / Application 예외 (code() 메서드로 error code 추출) ─────
 
-    @ExceptionHandler(com.dochiri.tooltestlab.order.domain.exception.OrderDomainException.class)
-    public ResponseEntity<ProblemDetail> handleOrderDomain(
-            com.dochiri.tooltestlab.order.domain.exception.OrderDomainException ex) {
-        return mapToResponse(ex.errorCode().name(), ex.errorCode().title(), ex.getMessage());
-    }
-
-    // ── Product Domain ─────────────────────────────────────────────────
-
-    @ExceptionHandler(com.dochiri.tooltestlab.product.domain.exception.ProductDomainException.class)
-    public ResponseEntity<ProblemDetail> handleProductDomain(
-            com.dochiri.tooltestlab.product.domain.exception.ProductDomainException ex) {
-        return mapToResponse(ex.errorCode().name(), ex.errorCode().title(), ex.getMessage());
-    }
-
-    // ── Cart Domain ────────────────────────────────────────────────────
-
-    @ExceptionHandler(com.dochiri.tooltestlab.cart.domain.exception.CartDomainException.class)
-    public ResponseEntity<ProblemDetail> handleCartDomain(
-            com.dochiri.tooltestlab.cart.domain.exception.CartDomainException ex) {
-        return mapToResponse(ex.errorCode().name(), ex.errorCode().title(), ex.getMessage());
-    }
-
-    // ── Member Domain ──────────────────────────────────────────────────
-
-    @ExceptionHandler(com.dochiri.tooltestlab.member.domain.exception.MemberDomainException.class)
-    public ResponseEntity<ProblemDetail> handleMemberDomain(
-            com.dochiri.tooltestlab.member.domain.exception.MemberDomainException ex) {
-        return mapToResponse(ex.errorCode().name(), ex.errorCode().title(), ex.getMessage());
-    }
-
-    // ── Category Domain ────────────────────────────────────────────────
-
-    @ExceptionHandler(com.dochiri.tooltestlab.category.domain.exception.CategoryDomainException.class)
-    public ResponseEntity<ProblemDetail> handleCategoryDomain(
-            com.dochiri.tooltestlab.category.domain.exception.CategoryDomainException ex) {
-        return mapToResponse(ex.errorCode().name(), ex.errorCode().title(), ex.getMessage());
-    }
-
-    // ── Review Domain ──────────────────────────────────────────────────
-
-    @ExceptionHandler(com.dochiri.tooltestlab.review.domain.exception.ReviewDomainException.class)
-    public ResponseEntity<ProblemDetail> handleReviewDomain(
-            com.dochiri.tooltestlab.review.domain.exception.ReviewDomainException ex) {
-        return mapToResponse(ex.errorCode().name(), ex.errorCode().title(), ex.getMessage());
-    }
-
-    // ── Order Application ──────────────────────────────────────────────
-
-    @ExceptionHandler(com.dochiri.tooltestlab.order.application.exception.OrderApplicationException.class)
-    public ResponseEntity<ProblemDetail> handleOrderApplication(
-            com.dochiri.tooltestlab.order.application.exception.OrderApplicationException ex) {
-        return mapToResponse(ex.errorCode().name(), ex.errorCode().title(), ex.getMessage());
-    }
-
-    // ── Cart Application ───────────────────────────────────────────────
-
-    @ExceptionHandler(com.dochiri.tooltestlab.cart.application.exception.CartApplicationException.class)
-    public ResponseEntity<ProblemDetail> handleCartApplication(
-            com.dochiri.tooltestlab.cart.application.exception.CartApplicationException ex) {
-        return mapToResponse(ex.errorCode().name(), ex.errorCode().title(), ex.getMessage());
-    }
-
-    // ── Member Application ─────────────────────────────────────────────
-
-    @ExceptionHandler(com.dochiri.tooltestlab.member.application.exception.MemberApplicationException.class)
-    public ResponseEntity<ProblemDetail> handleMemberApplication(
-            com.dochiri.tooltestlab.member.application.exception.MemberApplicationException ex) {
-        return mapToResponse(ex.errorCode().name(), ex.errorCode().title(), ex.getMessage());
-    }
-
-    // ── Product Application ────────────────────────────────────────────
-
-    @ExceptionHandler(com.dochiri.tooltestlab.product.application.exception.ProductApplicationException.class)
-    public ResponseEntity<ProblemDetail> handleProductApplication(
-            com.dochiri.tooltestlab.product.application.exception.ProductApplicationException ex) {
-        return mapToResponse(ex.errorCode().name(), ex.errorCode().title(), ex.getMessage());
-    }
-
-    // ── Review Application ─────────────────────────────────────────────
-
-    @ExceptionHandler(com.dochiri.tooltestlab.review.application.exception.ReviewApplicationException.class)
-    public ResponseEntity<ProblemDetail> handleReviewApplication(
-            com.dochiri.tooltestlab.review.application.exception.ReviewApplicationException ex) {
-        return mapToResponse(ex.errorCode().name(), ex.errorCode().title(), ex.getMessage());
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ProblemDetail> handleRuntime(RuntimeException ex) {
+        try {
+            final Method codeMethod = ex.getClass().getMethod("code");
+            final Object errorCode = codeMethod.invoke(ex);
+            if (errorCode instanceof Enum<?> ec) {
+                String codeName = ec.name();
+                String title = codeName;
+                try {
+                    final Method titleMethod = ec.getClass().getMethod("title");
+                    title = (String) titleMethod.invoke(ec);
+                } catch (NoSuchMethodException ignored) {
+                }
+                return mapToResponse(codeName, title, ex.getMessage());
+            }
+        } catch (ReflectiveOperationException ignored) {
+        }
+        return handleUnexpected(ex);
     }
 
     // ── Fallback ───────────────────────────────────────────────────────
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ProblemDetail> handleUnexpected(Exception ex) {
+    @SuppressWarnings("PMD.UnusedFormalParameter")
+    private ResponseEntity<ProblemDetail> handleUnexpected(Exception ex) {
+        final Locale locale = LocaleContextHolder.getLocale();
+        final String title = messageSource.getMessage("error.internal.title", null, "Internal Server Error", locale);
+        final String detail = messageSource.getMessage("error.internal.detail", null, "An unexpected error occurred.", locale);
         final ProblemDetail body = problemDetailFactory.create(
-                "INTERNAL_SERVER_ERROR", "Internal Server Error",
-                "An unexpected error occurred.", HttpStatus.INTERNAL_SERVER_ERROR, ProblemType.INTERNAL_ERROR);
+                "INTERNAL_SERVER_ERROR", title,
+                detail, HttpStatus.INTERNAL_SERVER_ERROR, ProblemType.INTERNAL_ERROR);
         return ResponseEntity.internalServerError().body(body);
     }
 
@@ -133,8 +73,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpHeaders headers,
             HttpStatusCode status,
             WebRequest request) {
-        final ProblemDetail body = ProblemDetail.forStatusAndDetail(status, "Request validation failed.");
-        body.setTitle("Validation failed");
+        final Locale locale = LocaleContextHolder.getLocale();
+        final String detail = messageSource.getMessage("error.validation.detail", null, "Request validation failed.", locale);
+        final String title = messageSource.getMessage("error.validation.title", null, "Validation failed", locale);
+        final ProblemDetail body = ProblemDetail.forStatusAndDetail(status, detail);
+        body.setTitle(title);
         body.setProperty("code", "VALIDATION_ERROR");
 
         List<Map<String, String>> errors = exception.getBindingResult()

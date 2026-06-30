@@ -1,8 +1,23 @@
 package com.dochiri.tooltestlab.product.domain.exception;
 
-public final class InvalidProductNameException extends ProductDomainException {
+import static java.util.Objects.requireNonNull;
 
-    public InvalidProductNameException() {
-        super(ProductDomainErrorCode.BAD_PRODUCT_NAME, "상품명은 빈 값일 수 없습니다.");
+public final class InvalidProductNameException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final ProductDomainErrorCode errorCode;
+
+    private InvalidProductNameException(final ProductDomainErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+    }
+
+    public static InvalidProductNameException badProductName() {
+        return new InvalidProductNameException(ProductDomainErrorCode.BAD_PRODUCT_NAME);
+    }
+
+    public ProductDomainErrorCode code() {
+        return errorCode;
     }
 }

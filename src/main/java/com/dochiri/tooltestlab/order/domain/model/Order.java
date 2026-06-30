@@ -36,28 +36,28 @@ public record Order(
 
     public Order pay() {
         if (status != OrderStatus.PENDING) {
-            throw new InvalidOrderStatusException(id, OrderStatus.PENDING.toString(), status.toString());
+            throw InvalidOrderStatusException.badOrderStatus(id, OrderStatus.PENDING.toString(), status.toString());
         }
         return new Order(id, memberId, items, OrderStatus.PAID, shippingAddress, totalAmount);
     }
 
     public Order startShipping() {
         if (status != OrderStatus.PAID) {
-            throw new InvalidOrderStatusException(id, OrderStatus.PAID.toString(), status.toString());
+            throw InvalidOrderStatusException.badOrderStatus(id, OrderStatus.PAID.toString(), status.toString());
         }
         return new Order(id, memberId, items, OrderStatus.SHIPPING, shippingAddress, totalAmount);
     }
 
     public Order deliver() {
         if (status != OrderStatus.SHIPPING) {
-            throw new InvalidOrderStatusException(id, OrderStatus.SHIPPING.toString(), status.toString());
+            throw InvalidOrderStatusException.badOrderStatus(id, OrderStatus.SHIPPING.toString(), status.toString());
         }
         return new Order(id, memberId, items, OrderStatus.DELIVERED, shippingAddress, totalAmount);
     }
 
     public Order cancel() {
         if (status == OrderStatus.DELIVERED || status == OrderStatus.CANCELLED) {
-            throw new InvalidOrderStatusException(
+            throw InvalidOrderStatusException.badOrderStatus(
                     id, "PENDING / PAID / SHIPPING", status.toString());
         }
         return new Order(id, memberId, items, OrderStatus.CANCELLED, shippingAddress, totalAmount);

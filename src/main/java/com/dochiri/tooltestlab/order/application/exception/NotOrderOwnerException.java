@@ -1,8 +1,23 @@
 package com.dochiri.tooltestlab.order.application.exception;
 
-public final class NotOrderOwnerException extends OrderApplicationException {
+import static java.util.Objects.requireNonNull;
 
-    public NotOrderOwnerException() {
-        super(OrderApplicationErrorCode.NOT_ORDER_OWNER, "자신의 주문만 조회/취소할 수 있습니다.");
+public final class NotOrderOwnerException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final OrderApplicationErrorCode errorCode;
+
+    private NotOrderOwnerException(final OrderApplicationErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+    }
+
+    public static NotOrderOwnerException notOrderOwner() {
+        return new NotOrderOwnerException(OrderApplicationErrorCode.NOT_ORDER_OWNER);
+    }
+
+    public OrderApplicationErrorCode code() {
+        return errorCode;
     }
 }

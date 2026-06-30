@@ -12,7 +12,7 @@ public record CartId(String value) {
         requireNonNull(value, "장바구니 ID는 null일 수 없습니다.");
         final String stripped = value.strip();
         if (stripped.isBlank()) {
-            throw new InvalidCartIdException();
+            throw InvalidCartIdException.invalidCartId();
         }
         value = stripped;
     }

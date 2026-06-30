@@ -5,11 +5,13 @@ import com.dochiri.tooltestlab.cart.domain.model.CartId;
 import com.dochiri.tooltestlab.cart.domain.model.CartItem;
 import com.dochiri.tooltestlab.cart.domain.model.CartItems;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.order.domain.model.Quantity;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.product.domain.model.ProductName;
 import com.dochiri.tooltestlab.shared.model.Money;
 
 import java.util.List;
+import java.util.UUID;
 
 final class CartMapper {
 
@@ -19,23 +21,28 @@ final class CartMapper {
 
     static Cart toDomain(final CartEntity entity, final List<CartItemEntity> itemEntities) {
         final List<CartItem> domainItems = itemEntities.stream()
-                .map(e -> new CartItem(new ProductId(e.getProductPublicId()),
-                        new ProductName(e.getProductName()), e.getQuantity(), Money.of(e.getUnitPrice())))
+                .map(e -> new CartItem(new ProductId(e.getProductId()),
+                        new ProductName(e.getProductName()), new Quantity(e.getQuantity()), Money.of(e.getUnitPrice())))
                 .toList();
         return new Cart(
-                new CartId(entity.getPublicId()),
-                new MemberId(entity.getMemberPublicId()),
+                new CartId(entity.getCartId()),
+                new MemberId(entity.getMemberId()),
                 CartItems.from(domainItems));
     }
 
     static CartEntity toEntity(final Cart domain) {
-        return new CartEntity(null, domain.id().value(), domain.memberId().value());
+        return CartEntity.create(domain.id().value(), domain.memberId().value());
     }
 
-    static List<CartItemEntity> toItemEntities(final Cart domain, final Long cartId) {
+    static List<CartItemEntity> toItemEntities(final Cart domain, final String cartId) {
         return domain.items().values().stream()
-                .map(i -> new CartItemEntity(null, cartId, i.productId().value(), i.productName().value(),
-                        i.quantity(), i.unitPrice().amount()))
+                .map(i -> CartItemEntity.create(
+                        UUID.randomUUID().toString().replace("-", ""),
+                        cartId,
+                        i.productId().value(),
+                        i.productName().value(),
+                        i.quantity().value(),
+                        i.unitPrice().amount()))
                 .toList();
     }
 }

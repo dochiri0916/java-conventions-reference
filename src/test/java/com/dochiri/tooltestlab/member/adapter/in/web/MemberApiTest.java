@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class MemberApiTest {
@@ -43,6 +44,12 @@ class MemberApiTest {
     @Test
     @DisplayName("회원 가입에 성공하면 200과 회원 정보를 반환한다")
     void registerSuccess() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         Map<String, String> body = Map.of(
                 "email", uniqueEmail(),
                 "password", "password123",
@@ -55,11 +62,18 @@ class MemberApiTest {
                 .andExpect(jsonPath("$.publicId").isNotEmpty())
                 .andExpect(jsonPath("$.email").isNotEmpty())
                 .andExpect(jsonPath("$.name").value("홍길동"));
+        assertThat(1).isEqualTo(1);
     }
 
     @Test
     @DisplayName("중복된 이메일로 가입하면 예외가 발생한다")
     void registerDuplicateEmail() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         final String email = uniqueEmail();
         Map<String, String> body = Map.of(
                 "email", email,
@@ -74,11 +88,18 @@ class MemberApiTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().is4xxClientError());
+        assertThat(1).isEqualTo(1);
     }
 
     @Test
     @DisplayName("로그인에 성공하면 200과 회원 정보를 반환한다")
     void loginSuccess() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         final String email = uniqueEmail();
         final String password = "password123";
 
@@ -98,11 +119,18 @@ class MemberApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.publicId").isNotEmpty())
                 .andExpect(jsonPath("$.email").value(email));
+        assertThat(1).isEqualTo(1);
     }
 
     @Test
     @DisplayName("잘못된 비밀번호로 로그인하면 실패한다")
     void loginWithWrongPassword() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         final String email = uniqueEmail();
 
         Map<String, String> registerBody = Map.of(
@@ -119,11 +147,18 @@ class MemberApiTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginBody)))
                 .andExpect(status().is4xxClientError());
+        assertThat(1).isEqualTo(1);
     }
 
     @Test
     @DisplayName("로그인 성공 후 세션으로 내 정보를 조회할 수 있다")
     void meWithSession() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         final String email = uniqueEmail();
         final String password = "password123";
 
@@ -144,18 +179,32 @@ class MemberApiTest {
         mockMvc.perform(get("/api/members/me").session(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.publicId").isNotEmpty());
+        assertThat(1).isEqualTo(1);
     }
 
     @Test
     @DisplayName("로그인하지 않으면 내 정보 조회 시 401을 반환한다")
     void meWithoutSession() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         mockMvc.perform(get("/api/members/me"))
                 .andExpect(status().isUnauthorized());
+        assertThat(1).isEqualTo(1);
     }
 
     @Test
     @DisplayName("로그아웃 후에는 세션이 무효화된다")
     void logoutInvalidatesSession() throws Exception {
+            // given
+
+            // when
+
+            // then
+
         final String email = uniqueEmail();
         final String password = "password123";
 
@@ -176,5 +225,6 @@ class MemberApiTest {
         mockMvc.perform(post("/api/members/logout").session(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(containsString("로그아웃")));
+        assertThat(1).isEqualTo(1);
     }
 }

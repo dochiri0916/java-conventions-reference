@@ -1,8 +1,23 @@
 package com.dochiri.tooltestlab.order.domain.exception;
 
-public final class InvalidOrderIdException extends OrderDomainException {
+import static java.util.Objects.requireNonNull;
 
-    public InvalidOrderIdException() {
-        super(OrderDomainErrorCode.INVALID_ORDER_ID, "주문 ID는 빈 값일 수 없습니다.");
+public final class InvalidOrderIdException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final OrderDomainErrorCode errorCode;
+
+    private InvalidOrderIdException(final OrderDomainErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+    }
+
+    public static InvalidOrderIdException invalidOrderId() {
+        return new InvalidOrderIdException(OrderDomainErrorCode.INVALID_ORDER_ID);
+    }
+
+    public OrderDomainErrorCode code() {
+        return errorCode;
     }
 }

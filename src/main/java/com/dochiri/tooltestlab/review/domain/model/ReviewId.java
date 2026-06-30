@@ -11,7 +11,7 @@ public record ReviewId(String value) {
     public ReviewId {
         value = requireNonNull(value).strip();
         if (value.isBlank()) {
-            throw new InvalidReviewIdException();
+            throw InvalidReviewIdException.invalidReviewId();
         }
     }
 

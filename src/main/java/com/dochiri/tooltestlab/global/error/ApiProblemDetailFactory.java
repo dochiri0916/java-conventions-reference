@@ -8,6 +8,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.Instant;
+import java.util.Locale;
 
 @Component
 public class ApiProblemDetailFactory {
@@ -45,7 +46,7 @@ public class ApiProblemDetailFactory {
 
     private URI typeUri(final ProblemType type) {
         return UriComponentsBuilder.fromUri(baseUri)
-                .pathSegment("problems", type.name().toLowerCase())
+                .pathSegment("problems", type.name().toLowerCase(Locale.ROOT))
                 .build()
                 .toUri();
     }

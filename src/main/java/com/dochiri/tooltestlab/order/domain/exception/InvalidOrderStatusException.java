@@ -4,15 +4,45 @@ import com.dochiri.tooltestlab.order.domain.model.OrderId;
 
 import static java.util.Objects.requireNonNull;
 
-public final class InvalidOrderStatusException extends OrderDomainException {
+public final class InvalidOrderStatusException extends RuntimeException {
 
-    public InvalidOrderStatusException(final OrderId orderId, final String expected, final String actual) {
-        super(
-                OrderDomainErrorCode.BAD_ORDER_STATUS,
-                "주문[%s]의 상태가 유효하지 않습니다. 예상=%s, 실제=%s".formatted(orderId.value(), expected, actual));
-        requireNonNull(orderId);
-        requireNonNull(expected);
-        requireNonNull(actual);
+    private static final long serialVersionUID = 1L;
+
+    private final OrderDomainErrorCode errorCode;
+    private final OrderId orderIdField;
+    private final String expectedField;
+    private final String actualField;
+
+    private InvalidOrderStatusException(final OrderDomainErrorCode errorCode,
+                                        final OrderId orderId,
+                                        final String expected,
+                                        final String actual) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+        this.orderIdField = requireNonNull(orderId);
+        this.expectedField = requireNonNull(expected);
+        this.actualField = requireNonNull(actual);
     }
 
+    public static InvalidOrderStatusException badOrderStatus(final OrderId orderId,
+                                                              final String expected,
+                                                              final String actual) {
+        return new InvalidOrderStatusException(OrderDomainErrorCode.BAD_ORDER_STATUS, orderId, expected, actual);
+    }
+
+    public OrderDomainErrorCode code() {
+        return errorCode;
+    }
+
+    public OrderId orderId() {
+        return orderIdField;
+    }
+
+    public String expected() {
+        return expectedField;
+    }
+
+    public String actual() {
+        return actualField;
+    }
 }

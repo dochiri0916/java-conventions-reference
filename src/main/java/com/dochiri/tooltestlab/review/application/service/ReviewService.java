@@ -2,16 +2,11 @@ package com.dochiri.tooltestlab.review.application.service;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.review.application.command.WriteReviewCommand;
 import com.dochiri.tooltestlab.review.application.exception.DuplicateReviewException;
 import com.dochiri.tooltestlab.review.application.exception.NotReviewOwnerException;
 import com.dochiri.tooltestlab.review.application.exception.ReviewNotFoundException;
-import com.dochiri.tooltestlab.review.application.port.in.DeleteReviewUseCase;
-import com.dochiri.tooltestlab.review.application.port.in.GetProductReviewsUseCase;
-import com.dochiri.tooltestlab.review.application.port.in.WriteReviewUseCase;
+import com.dochiri.tooltestlab.review.application.port.in.*;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
-import com.dochiri.tooltestlab.review.application.result.GetProductReviewsResult;
-import com.dochiri.tooltestlab.review.application.result.WriteReviewResult;
 import com.dochiri.tooltestlab.review.domain.model.Rating;
 import com.dochiri.tooltestlab.review.domain.model.Review;
 import com.dochiri.tooltestlab.review.domain.model.ReviewContent;
@@ -22,7 +17,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class ReviewService implements WriteReviewUseCase, GetProductReviewsUseCase, DeleteReviewUseCase {
+public final class ReviewService implements WriteReviewUseCase, GetProductReviewsUseCase, DeleteReviewUseCase {
 
     private final ReviewRepositoryPort reviewRepositoryPort;
 
@@ -33,7 +28,7 @@ public class ReviewService implements WriteReviewUseCase, GetProductReviewsUseCa
     @Override
     public WriteReviewResult write(final WriteReviewCommand command) {
         if (reviewRepositoryPort.existsByMemberIdAndProductId(command.memberPublicId(), command.productPublicId())) {
-            throw new DuplicateReviewException();
+            throw DuplicateReviewException.duplicateReview();
         }
 
         final Review review = Review.create(
@@ -66,10 +61,10 @@ public class ReviewService implements WriteReviewUseCase, GetProductReviewsUseCa
     @Override
     public void delete(final String reviewPublicId, final String memberPublicId) {
         final Review review = reviewRepositoryPort.findByPublicId(reviewPublicId)
-                .orElseThrow(() -> new ReviewNotFoundException(reviewPublicId));
+                .orElseThrow(() -> ReviewNotFoundException.reviewNotFound(reviewPublicId));
 
         if (!review.memberId().value().equals(memberPublicId)) {
-            throw new NotReviewOwnerException();
+            throw NotReviewOwnerException.notReviewOwner();
         }
 
         reviewRepositoryPort.deleteByPublicId(reviewPublicId);

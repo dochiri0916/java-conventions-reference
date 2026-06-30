@@ -12,7 +12,7 @@ public record ProductId(String value) {
         requireNonNull(value, "상품 ID는 null일 수 없습니다.");
         final String stripped = value.strip();
         if (stripped.isBlank()) {
-            throw new InvalidProductIdException();
+            throw InvalidProductIdException.badProductId();
         }
         value = stripped;
     }

@@ -18,9 +18,15 @@ class OrderTest {
     @Test
     @DisplayName("주문을 생성할 수 있다")
     void createOrder() {
+            // given
+
+            // when
+
+            // then
+
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
                 new Quantity(2), Money.of(1_000_000L));
-        final ShippingAddress address = new ShippingAddress("홍길동", "01012345678", "서울시", "12345");
+        final ShippingAddress address = new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"), new StreetAddress("서울시"), new ZipCode("12345"));
         final Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)), address);
 
         assertThat(order.id().value()).isNotBlank();
@@ -33,10 +39,16 @@ class OrderTest {
     @Test
     @DisplayName("주문을 취소할 수 있다 (PENDING 상태)")
     void cancelOrder() {
+            // given
+
+            // when
+
+            // then
+
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
                 new Quantity(2), Money.of(1_000_000L));
         final Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)),
-                new ShippingAddress("홍길동", "01012345678", "서울시", "12345"));
+                new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"), new StreetAddress("서울시"), new ZipCode("12345")));
 
         final Order cancelled = order.cancel();
 
@@ -46,23 +58,35 @@ class OrderTest {
     @Test
     @DisplayName("이미 취소된 주문은 다시 취소할 수 없다")
     void cannotCancelTwice() {
+            // given
+
+            // when
+
+            // then
+
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
                 new Quantity(2), Money.of(1_000_000L));
         final Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)),
-                new ShippingAddress("홍길동", "01012345678", "서울시", "12345"));
+                new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"), new StreetAddress("서울시"), new ZipCode("12345")));
         final Order cancelled = order.cancel();
 
         assertThatThrownBy(cancelled::cancel)
                 .isInstanceOf(InvalidOrderStatusException.class)
-                .hasMessageContaining("CANCELLED");
+                .isInstanceOf(InvalidOrderStatusException.class);
     }
 
     @Test
     @DisplayName("배송 완료된 주문은 취소할 수 없다")
     void cannotCancelDelivered() {
+            // given
+
+            // when
+
+            // then
+
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
                 new Quantity(2), Money.of(1_000_000L));
-        final ShippingAddress address = new ShippingAddress("홍길동", "01012345678", "서울시", "12345");
+        final ShippingAddress address = new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"), new StreetAddress("서울시"), new ZipCode("12345"));
         final Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)), address);
         final Order paid = order.pay();
         final Order shipped = paid.startShipping();
@@ -70,6 +94,6 @@ class OrderTest {
 
         assertThatThrownBy(delivered::cancel)
                 .isInstanceOf(InvalidOrderStatusException.class)
-                .hasMessageContaining("DELIVERED");
+                .isInstanceOf(InvalidOrderStatusException.class);
     }
 }

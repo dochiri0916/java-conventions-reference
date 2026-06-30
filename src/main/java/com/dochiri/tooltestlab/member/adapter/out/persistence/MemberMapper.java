@@ -1,11 +1,6 @@
 package com.dochiri.tooltestlab.member.adapter.out.persistence;
 
-import com.dochiri.tooltestlab.member.domain.model.Email;
-import com.dochiri.tooltestlab.member.domain.model.Member;
-import com.dochiri.tooltestlab.member.domain.model.MemberId;
-import com.dochiri.tooltestlab.member.domain.model.MemberName;
-import com.dochiri.tooltestlab.member.domain.model.MemberStatus;
-import com.dochiri.tooltestlab.member.domain.model.Password;
+import com.dochiri.tooltestlab.member.domain.model.*;
 
 final class MemberMapper {
 
@@ -15,7 +10,7 @@ final class MemberMapper {
 
     static Member toDomain(final MemberEntity entity) {
         return new Member(
-                new MemberId(entity.getPublicId()),
+                new MemberId(entity.getMemberId()),
                 new Email(entity.getEmail()),
                 new Password(entity.getPassword()),
                 new MemberName(entity.getName()),
@@ -23,8 +18,7 @@ final class MemberMapper {
     }
 
     static MemberEntity toEntity(final Member domain) {
-        return new MemberEntity(
-                null,
+        return MemberEntity.create(
                 domain.id().value(),
                 domain.email().value(),
                 domain.password().value(),

@@ -7,9 +7,9 @@ import java.util.List;
 
 interface OrderLineJpaRepository extends JpaRepository<OrderLineEntity, Long> {
 
-    List<OrderLineEntity> findByOrderIdOrderById(Long orderId);
+    List<OrderLineEntity> findByOrderIdOrderById(String orderId);
 
-    List<OrderLineEntity> findByOrderIdIn(Collection<Long> orderIds);
+    List<OrderLineEntity> findByOrderIdIn(Collection<String> orderIds);
 
-    void deleteByOrderId(Long orderId);
+    void deleteByOrderId(String orderId);
 }

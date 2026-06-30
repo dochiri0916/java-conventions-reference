@@ -5,6 +5,7 @@ import com.dochiri.tooltestlab.order.application.exception.OrderNotFoundExceptio
 import com.dochiri.tooltestlab.order.application.port.in.CancelOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
 import com.dochiri.tooltestlab.order.domain.event.OrderCancelledEvent;
+import com.dochiri.tooltestlab.order.domain.model.OrderCancelledItems;
 import com.dochiri.tooltestlab.order.domain.model.Order;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class CancelOrderService implements CancelOrderUseCase {
+public final class CancelOrderService implements CancelOrderUseCase {
 
     private final OrderRepositoryPort orderRepositoryPort;
     private final ApplicationEventPublisher eventPublisher;
@@ -28,10 +29,10 @@ public class CancelOrderService implements CancelOrderUseCase {
     @Override
     public void cancel(final String memberPublicId, final String orderPublicId) {
         final Order order = orderRepositoryPort.findByPublicId(orderPublicId)
-                .orElseThrow(() -> new OrderNotFoundException(orderPublicId));
+                .orElseThrow(() -> OrderNotFoundException.orderNotFound(orderPublicId));
 
         if (!order.memberId().value().equals(memberPublicId)) {
-            throw new NotOrderOwnerException();
+            throw NotOrderOwnerException.notOrderOwner();
         }
 
         final Order cancelled = order.cancel();
@@ -40,6 +41,6 @@ public class CancelOrderService implements CancelOrderUseCase {
         final List<OrderCancelledEvent.ItemDetail> itemDetails = cancelled.items().values().stream()
                 .map(i -> new OrderCancelledEvent.ItemDetail(i.productId(), i.quantity()))
                 .toList();
-        eventPublisher.publishEvent(new OrderCancelledEvent(cancelled.id(), itemDetails));
+        eventPublisher.publishEvent(new OrderCancelledEvent(cancelled.id(), new OrderCancelledItems(itemDetails)));
     }
 }

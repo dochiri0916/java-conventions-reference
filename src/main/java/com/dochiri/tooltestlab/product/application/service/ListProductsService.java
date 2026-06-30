@@ -1,9 +1,9 @@
 package com.dochiri.tooltestlab.product.application.service;
 
 import com.dochiri.tooltestlab.category.domain.model.Category;
+import com.dochiri.tooltestlab.product.application.port.in.ListProductsResult;
 import com.dochiri.tooltestlab.product.application.port.in.ListProductsUseCase;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.product.application.result.ListProductsResult;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class ListProductsService implements ListProductsUseCase {
+public final class ListProductsService implements ListProductsUseCase {
 
     private final ProductRepositoryPort productRepositoryPort;
 

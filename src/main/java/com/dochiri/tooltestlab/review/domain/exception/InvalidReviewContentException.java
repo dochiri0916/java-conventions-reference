@@ -1,8 +1,23 @@
 package com.dochiri.tooltestlab.review.domain.exception;
 
-public final class InvalidReviewContentException extends ReviewDomainException {
+import static java.util.Objects.requireNonNull;
 
-    public InvalidReviewContentException() {
-        super(ReviewDomainErrorCode.BAD_RVW_CONTENT, "리뷰 내용은 빈 값일 수 없습니다.");
+public final class InvalidReviewContentException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final ReviewDomainErrorCode errorCode;
+
+    private InvalidReviewContentException(final ReviewDomainErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+    }
+
+    public static InvalidReviewContentException badRvwContent() {
+        return new InvalidReviewContentException(ReviewDomainErrorCode.BAD_RVW_CONTENT);
+    }
+
+    public ReviewDomainErrorCode code() {
+        return errorCode;
     }
 }

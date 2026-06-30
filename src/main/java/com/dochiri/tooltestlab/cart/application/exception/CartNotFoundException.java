@@ -1,9 +1,29 @@
 package com.dochiri.tooltestlab.cart.application.exception;
 
-public final class CartNotFoundException extends CartApplicationException {
+import static java.util.Objects.requireNonNull;
 
-    public CartNotFoundException(final String memberPublicId) {
-        super(CartErrorCode.CART_NOT_FOUND,
-                "해당 회원의 장바구니를 찾을 수 없습니다. memberPublicId=" + memberPublicId);
+public final class CartNotFoundException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final CartErrorCode errorCode;
+    private final String memberPublicId;
+
+    private CartNotFoundException(final CartErrorCode errorCode, final String memberPublicId) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+        this.memberPublicId = requireNonNull(memberPublicId);
+    }
+
+    public static CartNotFoundException cartNotFound(final String memberPublicId) {
+        return new CartNotFoundException(CartErrorCode.CART_NOT_FOUND, memberPublicId);
+    }
+
+    public CartErrorCode code() {
+        return errorCode;
+    }
+
+    public String memberPublicId() {
+        return memberPublicId;
     }
 }

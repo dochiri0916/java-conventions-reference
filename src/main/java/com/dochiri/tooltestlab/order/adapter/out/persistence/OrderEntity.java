@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderEntity {
 
+    @Getter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,10 +21,10 @@ public class OrderEntity {
     private Long version;
 
     @Column(nullable = false, unique = true, length = 32)
-    private String publicId;
+    private String orderId;
 
     @Column(nullable = false, length = 32)
-    private String memberPublicId;
+    private String memberId;
 
     @Column(nullable = false, length = 20)
     private String status;
@@ -43,11 +44,11 @@ public class OrderEntity {
     @Column(nullable = false, length = 10)
     private String zipCode;
 
-    private OrderEntity(final Long id, final String publicId, final String memberPublicId, final String status, final long totalAmount,
+    private OrderEntity(final Long id, final String orderId, final String memberId, final String status, final long totalAmount,
                         String recipientName, final String phone, final String address, final String zipCode) {
         this.id = id;
-        this.publicId = publicId;
-        this.memberPublicId = memberPublicId;
+        this.orderId = orderId;
+        this.memberId = memberId;
         this.status = status;
         this.totalAmount = totalAmount;
         this.recipientName = recipientName;
@@ -60,16 +61,16 @@ public class OrderEntity {
         return new OrderEntity(
                 null, domain.id().value(), domain.memberId().value(), domain.status().name(),
                 domain.totalAmount().amount(),
-                domain.shippingAddress().recipientName(), domain.shippingAddress().phone(),
-                domain.shippingAddress().address(), domain.shippingAddress().zipCode());
+                domain.shippingAddress().recipientName().value(), domain.shippingAddress().phone().value(),
+                domain.shippingAddress().address().value(), domain.shippingAddress().zipCode().value());
     }
 
     void apply(final Order domain) {
         this.status = domain.status().name();
         this.totalAmount = domain.totalAmount().amount();
-        this.recipientName = domain.shippingAddress().recipientName();
-        this.phone = domain.shippingAddress().phone();
-        this.address = domain.shippingAddress().address();
-        this.zipCode = domain.shippingAddress().zipCode();
+        this.recipientName = domain.shippingAddress().recipientName().value();
+        this.phone = domain.shippingAddress().phone().value();
+        this.address = domain.shippingAddress().address().value();
+        this.zipCode = domain.shippingAddress().zipCode().value();
     }
 }

@@ -1,8 +1,23 @@
 package com.dochiri.tooltestlab.review.application.exception;
 
-public final class NotReviewOwnerException extends ReviewApplicationException {
+import static java.util.Objects.requireNonNull;
 
-    public NotReviewOwnerException() {
-        super(ReviewApplicationErrorCode.NOT_REVIEW_OWNER, "본인이 작성한 리뷰만 삭제할 수 있습니다.");
+public final class NotReviewOwnerException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final ReviewApplicationErrorCode errorCode;
+
+    private NotReviewOwnerException(final ReviewApplicationErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+    }
+
+    public static NotReviewOwnerException notReviewOwner() {
+        return new NotReviewOwnerException(ReviewApplicationErrorCode.NOT_REVIEW_OWNER);
+    }
+
+    public ReviewApplicationErrorCode code() {
+        return errorCode;
     }
 }

@@ -4,26 +4,17 @@ import com.dochiri.tooltestlab.global.web.LoginMember;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.adapter.in.web.request.PlaceOrderRequest;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.OrderResponse;
-import com.dochiri.tooltestlab.order.application.command.PlaceOrderCommand;
-import com.dochiri.tooltestlab.order.application.exception.NotOrderOwnerException;
-import com.dochiri.tooltestlab.order.application.port.in.CancelOrderUseCase;
-import com.dochiri.tooltestlab.order.application.port.in.GetOrderUseCase;
-import com.dochiri.tooltestlab.order.application.port.in.ListOrdersUseCase;
-import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderUseCase;
-import com.dochiri.tooltestlab.order.application.result.GetOrderResult;
-import com.dochiri.tooltestlab.order.application.result.ListOrdersResult;
-import com.dochiri.tooltestlab.order.application.result.PlaceOrderResult;
-import com.dochiri.tooltestlab.order.domain.model.ShippingAddress;
+import com.dochiri.tooltestlab.order.adapter.in.web.response.OrderSummaryResponse;
+import com.dochiri.tooltestlab.order.application.port.in.*;
+import com.dochiri.tooltestlab.order.domain.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -47,10 +38,18 @@ public class OrderController {
     }
 
     @Operation(summary = "주문 생성", description = "장바구니에 담긴 상품으로 주문을 생성합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "주문 생성 성공"),
+            @ApiResponse(responseCode = "400", description = "빈 장바구니 또는 잘못된 배송지"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
+            @ApiResponse(responseCode = "409", description = "재고 부족")
+    })
     @PostMapping
-    public ResponseEntity<OrderResponse> place(@LoginMember String memberPublicId, @RequestBody PlaceOrderRequest request) {
+    public ResponseEntity<OrderResponse> place(@Parameter(hidden = true) @LoginMember String memberPublicId,
+                                                @Valid @RequestBody PlaceOrderRequest request) {
         final ShippingAddress shippingAddress = new ShippingAddress(
-                request.recipientName(), request.phone(), request.address(), request.zipCode());
+                new RecipientName(request.recipientName()), new Phone(request.phone()),
+                new StreetAddress(request.address()), new ZipCode(request.zipCode()));
         final PlaceOrderResult result = placeOrderUseCase.place(new PlaceOrderCommand(new MemberId(memberPublicId), shippingAddress));
 
         final var items = result.items().stream()
@@ -61,25 +60,33 @@ public class OrderController {
     }
 
     @Operation(summary = "주문 목록 조회", description = "로그인된 회원의 주문 목록을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "주문 목록 조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 요청")
+    })
     @GetMapping
-    public ResponseEntity<List<Map<String, Object>>> list(@LoginMember String memberPublicId) {
+    public ResponseEntity<List<OrderSummaryResponse>> list(
+            @Parameter(hidden = true) @LoginMember String memberPublicId) {
         final ListOrdersResult result = listOrdersUseCase.listByMember(memberPublicId);
         final var body = result.orders().stream()
-                .map(o -> Map.<String, Object>of("publicId", o.publicId(), "status", o.status(), "totalAmount", o.totalAmount(), "itemCount", o.itemCount()))
+                .map(o -> new OrderSummaryResponse(o.publicId(), o.status(), o.totalAmount(), o.itemCount()))
                 .toList();
         return ResponseEntity.ok(body);
     }
 
     @Operation(summary = "주문 상세 조회", description = "주문 publicId로 주문 상세 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "주문 상세 조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
+            @ApiResponse(responseCode = "403", description = "주문 소유자가 아님"),
+            @ApiResponse(responseCode = "404", description = "주문이 존재하지 않음")
+    })
     @GetMapping("/{publicId}")
     public ResponseEntity<OrderResponse> get(
-            @LoginMember String memberPublicId,
+            @Parameter(hidden = true) @LoginMember String memberPublicId,
             @Parameter(description = "주문 publicId", example = "a1b2c3d4e5f6")
             @PathVariable String publicId) {
-        final GetOrderResult result = getOrderUseCase.getOrder(publicId);
-        if (!result.memberPublicId().equals(memberPublicId)) {
-            throw new NotOrderOwnerException();
-        }
+        final GetOrderResult result = getOrderUseCase.getOrder(memberPublicId, publicId);
         final var items = result.items().stream()
                 .map(i -> new OrderResponse.Item(i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.totalPrice()))
                 .toList();
@@ -88,9 +95,16 @@ public class OrderController {
     }
 
     @Operation(summary = "주문 취소", description = "주문을 취소합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "주문 취소 성공"),
+            @ApiResponse(responseCode = "400", description = "취소할 수 없는 주문 상태"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
+            @ApiResponse(responseCode = "403", description = "주문 소유자가 아님"),
+            @ApiResponse(responseCode = "404", description = "주문이 존재하지 않음")
+    })
     @PostMapping("/{publicId}/cancel")
     public ResponseEntity<Map<String, String>> cancel(
-            @LoginMember String memberPublicId,
+            @Parameter(hidden = true) @LoginMember String memberPublicId,
             @Parameter(description = "주문 publicId", example = "a1b2c3d4e5f6")
             @PathVariable String publicId) {
         cancelOrderUseCase.cancel(memberPublicId, publicId);

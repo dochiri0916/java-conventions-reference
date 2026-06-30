@@ -1,12 +1,6 @@
 package com.dochiri.tooltestlab.cart.adapter.out.persistence;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartEntity {
 
+    @Getter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,14 +20,18 @@ public class CartEntity {
     private Long version;
 
     @Column(nullable = false, unique = true, length = 32)
-    private String publicId;
+    private String cartId;
 
     @Column(nullable = false, unique = true, length = 32)
-    private String memberPublicId;
+    private String memberId;
 
-    public CartEntity(final Long id, final String publicId, final String memberPublicId) {
+    private CartEntity(final Long id, final String cartId, final String memberId) {
         this.id = id;
-        this.publicId = publicId;
-        this.memberPublicId = memberPublicId;
+        this.cartId = cartId;
+        this.memberId = memberId;
+    }
+
+    static CartEntity create(final String cartId, final String memberId) {
+        return new CartEntity(null, cartId, memberId);
     }
 }

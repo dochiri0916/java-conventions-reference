@@ -12,7 +12,7 @@ public record MemberId(String value) {
         requireNonNull(value, "회원 ID는 null일 수 없습니다.");
         final String stripped = value.strip();
         if (stripped.isBlank()) {
-            throw new InvalidMemberIdException();
+            throw InvalidMemberIdException.invalidMemberId();
         }
         value = stripped;
     }

@@ -7,7 +7,7 @@ public record Stock(int value) {
 
     public Stock {
         if (value < 0) {
-            throw new InvalidStockException("재고는 0 이상이어야 합니다. 입력값: " + value);
+            throw InvalidStockException.invalidStock("재고는 0 이상이어야 합니다. 입력값: " + value);
         }
     }
 
@@ -17,17 +17,17 @@ public record Stock(int value) {
 
     public Stock decrease(final int quantity) {
         if (quantity <= 0) {
-            throw new InvalidStockException("감소 수량은 1 이상이어야 합니다. 입력값: " + quantity);
+            throw InvalidStockException.invalidStock("감소 수량은 1 이상이어야 합니다. 입력값: " + quantity);
         }
         if (this.value < quantity) {
-            throw new InsufficientStockException(this.value, quantity);
+            throw InsufficientStockException.lowStock(this.value, quantity);
         }
         return new Stock(value - quantity);
     }
 
     public Stock increase(final int quantity) {
         if (quantity <= 0) {
-            throw new InvalidStockException("증가 수량은 1 이상이어야 합니다. 입력값: " + quantity);
+            throw InvalidStockException.invalidStock("증가 수량은 1 이상이어야 합니다. 입력값: " + quantity);
         }
         return new Stock(value + quantity);
     }

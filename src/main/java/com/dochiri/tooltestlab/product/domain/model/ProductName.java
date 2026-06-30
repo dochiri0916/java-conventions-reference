@@ -10,7 +10,7 @@ public record ProductName(String value) {
         requireNonNull(value, "상품명은 null일 수 없습니다.");
         value = value.strip();
         if (value.isBlank()) {
-            throw new InvalidProductNameException();
+            throw InvalidProductNameException.badProductName();
         }
     }
 }

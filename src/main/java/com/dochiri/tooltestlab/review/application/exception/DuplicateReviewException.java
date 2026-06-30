@@ -1,8 +1,23 @@
 package com.dochiri.tooltestlab.review.application.exception;
 
-public final class DuplicateReviewException extends ReviewApplicationException {
+import static java.util.Objects.requireNonNull;
 
-    public DuplicateReviewException() {
-        super(ReviewApplicationErrorCode.DUPLICATE_REVIEW, "이미 이 상품에 리뷰를 작성하셨습니다.");
+public final class DuplicateReviewException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final ReviewApplicationErrorCode errorCode;
+
+    private DuplicateReviewException(final ReviewApplicationErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+    }
+
+    public static DuplicateReviewException duplicateReview() {
+        return new DuplicateReviewException(ReviewApplicationErrorCode.DUPLICATE_REVIEW);
+    }
+
+    public ReviewApplicationErrorCode code() {
+        return errorCode;
     }
 }

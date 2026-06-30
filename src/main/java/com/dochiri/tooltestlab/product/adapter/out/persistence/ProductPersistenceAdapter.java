@@ -9,14 +9,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 @Repository
-@Transactional(readOnly = true)
 @ConditionalOnProperty(name = "tool-test-lab.concurrency.safe", havingValue = "false", matchIfMissing = true)
 class ProductPersistenceAdapter implements ProductRepositoryPort {
 
@@ -29,9 +27,8 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
     }
 
     @Override
-    @Transactional
     public Product save(final Product product, final List<Category> categories) {
-        final Optional<ProductEntity> existing = productJpaRepository.findByPublicId(product.id().value());
+        final Optional<ProductEntity> existing = productJpaRepository.findByProductId(product.id().value());
         final ProductEntity entity;
         if (existing.isPresent()) {
             entity = existing.get();
@@ -41,10 +38,8 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
         }
 
         if (!categories.isEmpty()) {
-            final List<String> categoryPublicIds = categories.stream().map(c -> c.id().value()).toList();
-            final List<CategoryEntity> managedCategories = categoryJpaRepository.findAllByPublicIdIn(categoryPublicIds);
-            final List<Long> categoryIds = managedCategories.stream().map(CategoryEntity::getId).toList();
-            entity.replaceCategoryIds(categoryIds);
+            final List<String> categoryIds = categories.stream().map(c -> c.id().value()).toList();
+            entity.replaceCategoryIdValues(categoryIds);
         }
 
         final ProductEntity saved = productJpaRepository.save(entity);
@@ -53,7 +48,7 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
 
     @Override
     public Optional<Product> findByPublicId(final String publicId) {
-        return productJpaRepository.findByPublicId(publicId).map(ProductMapper::toDomain);
+        return productJpaRepository.findByProductId(publicId).map(ProductMapper::toDomain);
     }
 
     @Override
@@ -64,20 +59,19 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
 
     @Override
     public List<Category> findCategoriesByProductPublicId(final String productPublicId) {
-        final ProductEntity product = productJpaRepository.findByPublicId(productPublicId).orElse(null);
+        final ProductEntity product = productJpaRepository.findByProductId(productPublicId).orElse(null);
         if (product == null) {
             return List.of();
         }
-        final List<Long> categoryIds = product.getCategoryIds();
+        final List<String> categoryIds = product.getCategoryIdValues();
         if (categoryIds.isEmpty()) {
             return List.of();
         }
-        final List<CategoryEntity> categories = categoryJpaRepository.findAllById(categoryIds);
+        final List<CategoryEntity> categories = categoryJpaRepository.findAllByCategoryIdIn(categoryIds);
         return ProductMapper.toDomainCategories(categories);
     }
 
     @Override
-    @Transactional
     public Category saveCategory(final Category category) {
         final CategoryEntity entity = ProductMapper.toEntity(category);
         final CategoryEntity saved = categoryJpaRepository.save(entity);
@@ -86,13 +80,13 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
 
     @Override
     public Optional<Category> findCategoryByPublicId(final String publicId) {
-        return categoryJpaRepository.findByPublicId(publicId).map(ProductMapper::toDomain);
+        return categoryJpaRepository.findByCategoryId(publicId).map(ProductMapper::toDomain);
     }
 
     @Override
     public List<Category> findCategoriesByPublicIds(final Set<String> publicIds) {
         return ProductMapper.toDomainCategories(
-                categoryJpaRepository.findAllByPublicIdIn(List.copyOf(publicIds)));
+                categoryJpaRepository.findAllByCategoryIdIn(List.copyOf(publicIds)));
     }
 
     @Override

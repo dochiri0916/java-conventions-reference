@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +20,6 @@ import java.util.Optional;
  * UNIQUE 제약 위반이 발생할 수 있다. 이 경우 한 번 재시도한다.
  */
 @Repository
-@Transactional(readOnly = true)
 @ConditionalOnProperty(name = "tool-test-lab.concurrency.safe", havingValue = "true")
 class SafeCartPersistenceAdapter implements CartRepositoryPort {
 
@@ -36,7 +34,6 @@ class SafeCartPersistenceAdapter implements CartRepositoryPort {
     }
 
     @Override
-    @Transactional
     public Cart save(final Cart cart) {
         try {
             return doSave(cart);
@@ -45,14 +42,14 @@ class SafeCartPersistenceAdapter implements CartRepositoryPort {
             // 동시에 최초 생성되는 경우 UNIQUE 제약 위반이 발생할 수 있다.
             // 재시도: 이제는 상대 트랜잭션이 생성한 장바구니가 존재하므로
             // PESSIMISTIC_WRITE 락을 잡고 재조회할 수 있다.
-            log.debug("장바구니 동시 생성 감지, 재시도합니다. memberPublicId={}", cart.memberId().value());
+            log.debug("장바구니 동시 생성 감지, 재시도합니다. memberId={}", cart.memberId().value());
             return doSave(cart);
         }
     }
 
     private Cart doSave(final Cart cart) {
         // PESSIMISTIC_WRITE로 락을 잡고 조회 → 동시 수정 방지
-        final Optional<CartEntity> existing = cartJpaRepository.findByMemberPublicIdForUpdate(cart.memberId().value());
+        final Optional<CartEntity> existing = cartJpaRepository.findByMemberIdForUpdate(cart.memberId().value());
         final CartEntity cartEntity;
         if (existing.isPresent()) {
             cartEntity = existing.get();
@@ -61,8 +58,8 @@ class SafeCartPersistenceAdapter implements CartRepositoryPort {
         }
         final CartEntity savedCart = cartJpaRepository.save(cartEntity);
 
-        cartItemJpaRepository.deleteByCartId(savedCart.getId());
-        final List<CartItemEntity> itemEntities = CartMapper.toItemEntities(cart, savedCart.getId());
+        cartItemJpaRepository.deleteByCartId(cart.id().value());
+        final List<CartItemEntity> itemEntities = CartMapper.toItemEntities(cart, cart.id().value());
         final List<CartItemEntity> savedItems = cartItemJpaRepository.saveAll(itemEntities);
 
         return CartMapper.toDomain(savedCart, savedItems);
@@ -70,8 +67,8 @@ class SafeCartPersistenceAdapter implements CartRepositoryPort {
 
     @Override
     public Optional<Cart> findByMemberId(final String memberPublicId) {
-        return cartJpaRepository.findByMemberPublicId(memberPublicId).flatMap(cartEntity -> {
-            final List<CartItemEntity> items = cartItemJpaRepository.findByCartId(cartEntity.getId());
+        return cartJpaRepository.findByMemberId(memberPublicId).flatMap(cartEntity -> {
+            final List<CartItemEntity> items = cartItemJpaRepository.findByCartId(cartEntity.getCartId());
             return Optional.of(CartMapper.toDomain(cartEntity, items));
         });
     }

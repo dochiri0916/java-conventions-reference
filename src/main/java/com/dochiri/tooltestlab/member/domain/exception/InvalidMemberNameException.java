@@ -1,8 +1,23 @@
 package com.dochiri.tooltestlab.member.domain.exception;
 
-public final class InvalidMemberNameException extends MemberDomainException {
+import static java.util.Objects.requireNonNull;
 
-    public InvalidMemberNameException() {
-        super(MemberDomainErrorCode.INVALID_MBR_NAME, "이름은 빈 값일 수 없습니다.");
+public final class InvalidMemberNameException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final MemberDomainErrorCode errorCode;
+
+    private InvalidMemberNameException(final MemberDomainErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+    }
+
+    public static InvalidMemberNameException invalidMbrName() {
+        return new InvalidMemberNameException(MemberDomainErrorCode.INVALID_MBR_NAME);
+    }
+
+    public MemberDomainErrorCode code() {
+        return errorCode;
     }
 }

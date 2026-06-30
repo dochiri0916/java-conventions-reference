@@ -11,4 +11,7 @@ public record RegisterProductRequest(
         @Schema(description = "가격 (원 단위)", example = "3690000") long priceAmount,
         @Schema(description = "재고 수량", example = "100") int stock,
         @Schema(description = "카테고리 ID 목록", example = "[\"cat01\", \"cat02\"]") List<String> categoryIds) {
+    public RegisterProductRequest {
+        categoryIds = categoryIds != null ? List.copyOf(categoryIds) : List.of();
+    }
 }

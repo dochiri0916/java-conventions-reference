@@ -9,9 +9,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 interface ProductJpaRepository extends JpaRepository<ProductEntity, Long> {
-    Optional<ProductEntity> findByPublicId(String publicId);
+    Optional<ProductEntity> findByProductId(String productId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT p FROM ProductEntity p WHERE p.publicId = :publicId")
-    Optional<ProductEntity> findByPublicIdForUpdate(@Param("publicId") String publicId);
+    @Query("SELECT p FROM ProductEntity p WHERE p.productId = :productId")
+    Optional<ProductEntity> findByProductIdForUpdate(@Param("productId") String productId);
 }

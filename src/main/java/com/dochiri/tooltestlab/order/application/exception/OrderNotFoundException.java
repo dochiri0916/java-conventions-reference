@@ -1,12 +1,29 @@
 package com.dochiri.tooltestlab.order.application.exception;
 
-public class OrderNotFoundException extends OrderApplicationException {
+import static java.util.Objects.requireNonNull;
 
-    public OrderNotFoundException(final String publicId) {
-        super(
-                OrderApplicationErrorCode.ORDER_NOT_FOUND,
-                "해당 주문을 찾을 수 없습니다. publicId=" + publicId
-        );
+public final class OrderNotFoundException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final OrderApplicationErrorCode errorCode;
+    private final String publicId;
+
+    private OrderNotFoundException(final OrderApplicationErrorCode errorCode, final String publicId) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+        this.publicId = requireNonNull(publicId);
     }
 
+    public static OrderNotFoundException orderNotFound(final String publicId) {
+        return new OrderNotFoundException(OrderApplicationErrorCode.ORDER_NOT_FOUND, publicId);
+    }
+
+    public OrderApplicationErrorCode code() {
+        return errorCode;
+    }
+
+    public String publicId() {
+        return publicId;
+    }
 }

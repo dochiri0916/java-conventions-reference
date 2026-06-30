@@ -10,7 +10,7 @@ public record ReviewContent(String value) {
         requireNonNull(value, "리뷰 내용은 null일 수 없습니다.");
         value = value.strip();
         if (value.isBlank()) {
-            throw new InvalidReviewContentException();
+            throw InvalidReviewContentException.badRvwContent();
         }
     }
 }

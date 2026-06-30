@@ -1,8 +1,23 @@
 package com.dochiri.tooltestlab.review.domain.exception;
 
-public final class InvalidReviewIdException extends ReviewDomainException {
+import static java.util.Objects.requireNonNull;
 
-    public InvalidReviewIdException() {
-        super(ReviewDomainErrorCode.INVALID_REVIEW_ID, "리뷰 ID는 공백일 수 없습니다.");
+public final class InvalidReviewIdException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final ReviewDomainErrorCode errorCode;
+
+    private InvalidReviewIdException(final ReviewDomainErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+    }
+
+    public static InvalidReviewIdException invalidReviewId() {
+        return new InvalidReviewIdException(ReviewDomainErrorCode.INVALID_REVIEW_ID);
+    }
+
+    public ReviewDomainErrorCode code() {
+        return errorCode;
     }
 }

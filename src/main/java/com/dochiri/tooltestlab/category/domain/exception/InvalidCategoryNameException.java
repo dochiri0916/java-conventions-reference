@@ -1,8 +1,23 @@
 package com.dochiri.tooltestlab.category.domain.exception;
 
-public final class InvalidCategoryNameException extends CategoryDomainException {
+import static java.util.Objects.requireNonNull;
 
-    public InvalidCategoryNameException() {
-        super(CategoryDomainErrorCode.INVALID_CAT_NAME, "카테고리명은 빈 값일 수 없습니다.");
+public final class InvalidCategoryNameException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    private final CategoryDomainErrorCode errorCode;
+
+    private InvalidCategoryNameException(final CategoryDomainErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+    }
+
+    public static InvalidCategoryNameException invalidCatName() {
+        return new InvalidCategoryNameException(CategoryDomainErrorCode.INVALID_CAT_NAME);
+    }
+
+    public CategoryDomainErrorCode code() {
+        return errorCode;
     }
 }

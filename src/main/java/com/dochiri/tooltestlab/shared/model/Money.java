@@ -14,7 +14,7 @@ public record Money(long amount) {
         return new Money(amount);
     }
 
-    public static Money ZERO = new Money(0);
+    public static final Money ZERO = new Money(0);
 
     public Money add(Money other) {
         Objects.requireNonNull(other, "더할 금액은 null일 수 없습니다.");

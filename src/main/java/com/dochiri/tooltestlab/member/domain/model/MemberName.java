@@ -10,7 +10,7 @@ public record MemberName(String value) {
         requireNonNull(value, "이름은 null일 수 없습니다.");
         value = value.strip();
         if (value.isBlank()) {
-            throw new InvalidMemberNameException();
+            throw InvalidMemberNameException.invalidMbrName();
         }
     }
 }

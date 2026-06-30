@@ -9,9 +9,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 interface CartJpaRepository extends JpaRepository<CartEntity, Long> {
-    Optional<CartEntity> findByMemberPublicId(String memberPublicId);
+    Optional<CartEntity> findByMemberId(String memberId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT c FROM CartEntity c WHERE c.memberPublicId = :memberPublicId")
-    Optional<CartEntity> findByMemberPublicIdForUpdate(@Param("memberPublicId") String memberPublicId);
+    @Query("SELECT c FROM CartEntity c WHERE c.memberId = :memberId")
+    Optional<CartEntity> findByMemberIdForUpdate(@Param("memberId") String memberId);
 }

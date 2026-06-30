@@ -1,12 +1,6 @@
 package com.dochiri.tooltestlab.member.adapter.out.persistence;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberEntity {
 
+    @Getter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,7 +20,7 @@ public class MemberEntity {
     private Long version;
 
     @Column(nullable = false, unique = true, length = 32)
-    private String publicId;
+    private String memberId;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -39,12 +34,16 @@ public class MemberEntity {
     @Column(nullable = false, length = 20)
     private String status;
 
-    public MemberEntity(final Long id, final String publicId, final String email, final String password, final String name, final String status) {
+    private MemberEntity(final Long id, final String memberId, final String email, final String password, final String name, final String status) {
         this.id = id;
-        this.publicId = publicId;
+        this.memberId = memberId;
         this.email = email;
         this.password = password;
         this.name = name;
         this.status = status;
+    }
+
+    static MemberEntity create(final String memberId, final String email, final String password, final String name, final String status) {
+        return new MemberEntity(null, memberId, email, password, name, status);
     }
 }
