@@ -1,15 +1,19 @@
 package com.dochiri.tooltestlab.adapter;
 
 import com.dochiri.tooltestlab.category.domain.model.Category;
+import com.dochiri.tooltestlab.category.domain.model.CategoryName;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
 import com.dochiri.tooltestlab.member.domain.model.*;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.product.domain.model.Money;
+import com.dochiri.tooltestlab.product.domain.model.Product;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,6 +41,21 @@ class PersistenceAdapterIntegrationTest {
             // then
         assertThat(found).isPresent();
         assertThat(found.get().id().value()).isEqualTo(saved.id().value());
+    }
+
+    @Test
+    @DisplayName("기존 상품을 카테고리와 함께 업데이트할 수 있다")
+    void updateProductWithCategories() {
+        // given
+        var product = Product.create("상품명", "설명", Money.of(10000), 10);
+        var category = Category.create(new CategoryName("카테고리"));
+        var saved = productRepositoryPort.save(product, List.of(category));
+
+        // when
+        var updated = productRepositoryPort.save(saved, List.of(category));
+
+        // then
+        assertThat(updated.id()).isEqualTo(saved.id());
     }
 
     @Test
