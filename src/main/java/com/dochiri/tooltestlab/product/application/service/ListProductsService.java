@@ -4,6 +4,7 @@ import com.dochiri.tooltestlab.category.domain.model.Category;
 import com.dochiri.tooltestlab.product.application.port.in.ListProductsResult;
 import com.dochiri.tooltestlab.product.application.port.in.ListProductsUseCase;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,16 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public final class ListProductsService implements ListProductsUseCase {
 
     private final ProductRepositoryPort productRepositoryPort;
 
-    public ListProductsService(final ProductRepositoryPort productRepositoryPort) {
-        this.productRepositoryPort = productRepositoryPort;
-    }
-
     @Override
+    @Transactional(readOnly = true)
     public ListProductsResult list(final int page, final int size) {
         final Page<com.dochiri.tooltestlab.product.domain.model.Product> productPage =
                 productRepositoryPort.findAll(page, size);

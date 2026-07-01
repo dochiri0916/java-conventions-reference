@@ -10,27 +10,26 @@ class ProductAppExceptionTest {
     @Test
     @DisplayName("ProductNotFoundException 정상 생성")
     void productNotFound() {
-            // given
+        // given
+        var expectedCode = ProductErrorCode.PRODUCT_NOT_FOUND;
+        var expectedPublicId = "prod123";
 
-            // when
+        // when
+        var ex = ProductNotFoundException.productNotFound(expectedPublicId);
 
-            // then
-
-        var ex = ProductNotFoundException.productNotFound("prod123");
-        assertThat(ex.code()).isEqualTo(ProductErrorCode.PRODUCT_NOT_FOUND);
-        assertThat(ex.productPublicId()).isEqualTo("prod123");
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.productPublicId()).isEqualTo(expectedPublicId);
     }
 
     @Test
     @DisplayName("ProductErrorCode 모든 코드가 title을 가진다")
     void errorCodes() {
-            // given
+        // given
+        var codes = ProductErrorCode.values();
 
-            // when
-
-            // then
-
-        for (var code : ProductErrorCode.values()) {
+        // when & then
+        for (var code : codes) {
             assertThat(code.title()).isNotBlank();
         }
     }

@@ -6,7 +6,8 @@ import com.dochiri.tooltestlab.product.application.port.in.RegisterProductResult
 import com.dochiri.tooltestlab.product.application.port.in.RegisterProductUseCase;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.product.domain.model.Product;
-import com.dochiri.tooltestlab.shared.model.Money;
+import com.dochiri.tooltestlab.product.domain.model.Money;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,16 +15,13 @@ import java.util.HashSet;
 import java.util.List;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public final class RegisterProductService implements RegisterProductUseCase {
 
     private final ProductRepositoryPort productRepositoryPort;
 
-    public RegisterProductService(final ProductRepositoryPort productRepositoryPort) {
-        this.productRepositoryPort = productRepositoryPort;
-    }
-
     @Override
+    @Transactional
     public RegisterProductResult register(final RegisterProductCommand command) {
         final Product product = Product.create(
                 command.name(),

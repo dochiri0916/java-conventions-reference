@@ -1,7 +1,5 @@
 package com.dochiri.tooltestlab.member.adapter.in.web;
 
-import com.dochiri.tooltestlab.global.web.LoginCheckInterceptor;
-import com.dochiri.tooltestlab.global.web.LoginMember;
 import com.dochiri.tooltestlab.member.adapter.in.web.request.LoginMemberRequest;
 import com.dochiri.tooltestlab.member.adapter.in.web.request.RegisterMemberRequest;
 import com.dochiri.tooltestlab.member.adapter.in.web.response.MemberResponse;
@@ -13,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,16 +19,12 @@ import java.util.Map;
 
 @Tag(name = "회원", description = "회원 가입, 로그인, 로그아웃 API")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/members")
 public class MemberController {
 
     private final RegisterMemberUseCase registerMemberUseCase;
     private final LoginMemberUseCase loginMemberUseCase;
-
-    public MemberController(final RegisterMemberUseCase registerMemberUseCase, final LoginMemberUseCase loginMemberUseCase) {
-        this.registerMemberUseCase = registerMemberUseCase;
-        this.loginMemberUseCase = loginMemberUseCase;
-    }
 
     @Operation(summary = "회원 가입", description = "새로운 회원을 등록합니다.")
     @ApiResponses({

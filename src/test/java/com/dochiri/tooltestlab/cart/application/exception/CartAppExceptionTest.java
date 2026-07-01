@@ -10,27 +10,26 @@ class CartAppExceptionTest {
     @Test
     @DisplayName("CartNotFoundException 정상 생성")
     void cartNotFound() {
-            // given
+        // given
+        var memberPublicId = "member123";
+        var expectedCode = CartErrorCode.CART_NOT_FOUND;
 
-            // when
+        // when
+        var ex = CartNotFoundException.cartNotFound(memberPublicId);
 
-            // then
-
-        var ex = CartNotFoundException.cartNotFound("member123");
-        assertThat(ex.code()).isEqualTo(CartErrorCode.CART_NOT_FOUND);
-        assertThat(ex.memberPublicId()).isEqualTo("member123");
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.memberPublicId()).isEqualTo(memberPublicId);
     }
 
     @Test
     @DisplayName("CartErrorCode 모든 코드가 title을 가진다")
     void errorCodes() {
-            // given
+        // given
+        var codes = CartErrorCode.values();
 
-            // when
-
-            // then
-
-        for (var code : CartErrorCode.values()) {
+        // when & then
+        for (var code : codes) {
             assertThat(code.title()).isNotBlank();
         }
     }

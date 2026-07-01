@@ -9,7 +9,7 @@ public final class InvalidOrderStatusException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private final OrderDomainErrorCode errorCode;
-    private final OrderId orderIdField;
+    private final transient OrderId orderIdField;
     private final String expectedField;
     private final String actualField;
 

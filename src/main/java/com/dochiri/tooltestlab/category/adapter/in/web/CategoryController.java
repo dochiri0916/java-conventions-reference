@@ -17,19 +17,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.List;
 import java.util.Map;
 
 @Tag(name = "카테고리", description = "카테고리 등록, 조회 API")
 @RestController
 @RequestMapping("/api/categories")
+@RequiredArgsConstructor
 public class CategoryController {
 
     private final RegisterCategoryUseCase registerCategoryUseCase;
-
-    public CategoryController(final RegisterCategoryUseCase registerCategoryUseCase) {
-        this.registerCategoryUseCase = registerCategoryUseCase;
-    }
 
     @Operation(summary = "카테고리 등록", description = "새로운 카테고리를 등록합니다.")
     @ApiResponses({

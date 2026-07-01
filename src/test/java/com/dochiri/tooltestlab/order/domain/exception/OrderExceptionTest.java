@@ -11,70 +11,73 @@ class OrderExceptionTest {
     @Test
     @DisplayName("InvalidOrderIdException 정상 생성")
     void invalidOrderId() {
-            // given
+        // given
+        var expectedCode = OrderDomainErrorCode.INVALID_ORDER_ID;
 
-            // when
-
-            // then
-
+        // when
         var ex = InvalidOrderIdException.invalidOrderId();
-        assertThat(ex.code()).isEqualTo(OrderDomainErrorCode.INVALID_ORDER_ID);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("InvalidOrderLinesException 정상 생성")
     void badOrderLines() {
-            // given
+        // given
+        var expectedCode = OrderDomainErrorCode.BAD_ORDER_LINES;
+        var expectedDetail = "detail";
 
-            // when
+        // when
+        var ex = InvalidOrderLinesException.badOrderLines(expectedDetail);
 
-            // then
-
-        var ex = InvalidOrderLinesException.badOrderLines("detail");
-        assertThat(ex.code()).isEqualTo(OrderDomainErrorCode.BAD_ORDER_LINES);
-        assertThat(ex.detail()).isEqualTo("detail");
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.detail()).isEqualTo(expectedDetail);
     }
 
     @Test
     @DisplayName("InvalidQuantityException 정상 생성")
     void invalidQuantity() {
-            // given
+        // given
+        var expectedCode = OrderDomainErrorCode.INVALID_QUANTITY;
+        var expectedValue = 0;
 
-            // when
+        // when
+        var ex = InvalidQuantityException.invalidQuantity(expectedValue);
 
-            // then
-
-        var ex = InvalidQuantityException.invalidQuantity(0);
-        assertThat(ex.code()).isEqualTo(OrderDomainErrorCode.INVALID_QUANTITY);
-        assertThat(ex.value()).isEqualTo(0);
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.value()).isEqualTo(expectedValue);
     }
 
     @Test
     @DisplayName("InvalidShippingAddressException 정상 생성")
     void badShippingAddr() {
-            // given
+        // given
+        var expectedCode = OrderDomainErrorCode.BAD_SHIPPING_ADDR;
+        var expectedDetail = "detail";
 
-            // when
+        // when
+        var ex = InvalidShippingAddressException.badShippingAddr(expectedDetail);
 
-            // then
-
-        var ex = InvalidShippingAddressException.badShippingAddr("detail");
-        assertThat(ex.code()).isEqualTo(OrderDomainErrorCode.BAD_SHIPPING_ADDR);
-        assertThat(ex.detail()).isEqualTo("detail");
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.detail()).isEqualTo(expectedDetail);
     }
 
     @Test
     @DisplayName("InvalidOrderStatusException 정상 생성")
     void badOrderStatus() {
-            // given
-
-            // when
-
-            // then
-
+        // given
+        var expectedCode = OrderDomainErrorCode.BAD_ORDER_STATUS;
         var orderId = OrderId.generate();
+
+        // when
         var ex = InvalidOrderStatusException.badOrderStatus(orderId, "CANCELLED", "DELIVERED");
-        assertThat(ex.code()).isEqualTo(OrderDomainErrorCode.BAD_ORDER_STATUS);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
         assertThat(ex.orderId()).isEqualTo(orderId);
         assertThat(ex.expected()).isEqualTo("CANCELLED");
         assertThat(ex.actual()).isEqualTo("DELIVERED");
@@ -83,13 +86,11 @@ class OrderExceptionTest {
     @Test
     @DisplayName("OrderDomainErrorCode 모든 코드가 title을 가진다")
     void errorCodes() {
-            // given
+        // given
+        var codes = OrderDomainErrorCode.values();
 
-            // when
-
-            // then
-
-        for (var code : OrderDomainErrorCode.values()) {
+        // when & then
+        for (var code : codes) {
             assertThat(code.title()).isNotBlank();
         }
     }

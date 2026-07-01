@@ -14,174 +14,158 @@ class MemberVoTest {
     @Test
     @DisplayName("Email 생성 - 정상")
     void emailValid() {
-            // given
+        // given
+        var expectedValue = "test@example.com";
 
-            // when
+        // when
+        var email = new Email(expectedValue);
 
-            // then
-
-        var email = new Email("test@example.com");
-        assertThat(email.value()).isEqualTo("test@example.com");
+        // then
+        assertThat(email.value()).isEqualTo(expectedValue);
     }
 
     @Test
     @DisplayName("Email 생성 - null이면 NullPointerException")
     void emailNull() {
-            // given
+        // given
+        var expectedException = NullPointerException.class;
 
-            // when
-
-            // then
-
+        // when & then
         assertThatThrownBy(() -> new Email(null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(expectedException);
     }
 
     @Test
     @DisplayName("Email 생성 - blank면 예외")
     void emailBlank() {
-            // given
+        // given
+        var blankEmail = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new Email("  "))
+        // when & then
+        assertThatThrownBy(() -> new Email(blankEmail))
                 .isInstanceOf(InvalidEmailException.class);
     }
 
     @Test
     @DisplayName("MemberId 생성 - 정상")
     void memberIdValid() {
-            // given
+        // given
+        var expectedValue = "abc123";
 
-            // when
+        // when
+        var id = new MemberId(expectedValue);
 
-            // then
-
-        var id = new MemberId("abc123");
-        assertThat(id.value()).isEqualTo("abc123");
+        // then
+        assertThat(id.value()).isEqualTo(expectedValue);
     }
 
     @Test
     @DisplayName("MemberId 생성 - null이면 NullPointerException")
     void memberIdNull() {
-            // given
+        // given
+        var expectedException = NullPointerException.class;
 
-            // when
-
-            // then
-
+        // when & then
         assertThatThrownBy(() -> new MemberId(null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(expectedException);
     }
 
     @Test
     @DisplayName("MemberId.generate는 UUID 포맷의 값을 생성한다")
     void memberIdGenerate() {
-            // given
+        // given
+        var expectedSize = 32;
 
-            // when
-
-            // then
-
+        // when
         var id = MemberId.generate();
-        assertThat(id.value()).hasSize(32);
+
+        // then
+        assertThat(id.value()).hasSize(expectedSize);
         assertThat(id.value()).doesNotContain("-");
     }
 
     @Test
     @DisplayName("MemberName 생성 - 정상")
     void memberNameValid() {
-            // given
+        // given
+        var expectedValue = "홍길동";
 
-            // when
+        // when
+        var name = new MemberName(expectedValue);
 
-            // then
-
-        var name = new MemberName("홍길동");
-        assertThat(name.value()).isEqualTo("홍길동");
+        // then
+        assertThat(name.value()).isEqualTo(expectedValue);
     }
 
     @Test
     @DisplayName("MemberName 생성 - null이면 NullPointerException")
     void memberNameNull() {
-            // given
+        // given
+        var expectedException = NullPointerException.class;
 
-            // when
-
-            // then
-
+        // when & then
         assertThatThrownBy(() -> new MemberName(null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(expectedException);
     }
 
     @Test
     @DisplayName("MemberName 생성 - blank면 예외")
     void memberNameBlank() {
-            // given
+        // given
+        var blankName = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new MemberName("  "))
+        // when & then
+        assertThatThrownBy(() -> new MemberName(blankName))
                 .isInstanceOf(InvalidMemberNameException.class);
     }
 
     @Test
     @DisplayName("Password 생성 - 정상")
     void passwordValid() {
-            // given
+        // given
+        var expectedValue = "encrypted123";
 
-            // when
+        // when
+        var pw = new Password(expectedValue);
 
-            // then
-
-        var pw = new Password("encrypted123");
-        assertThat(pw.value()).isEqualTo("encrypted123");
+        // then
+        assertThat(pw.value()).isEqualTo(expectedValue);
     }
 
     @Test
     @DisplayName("Password 생성 - null이면 NullPointerException")
     void passwordNull() {
-            // given
+        // given
+        var expectedException = NullPointerException.class;
 
-            // when
-
-            // then
-
+        // when & then
         assertThatThrownBy(() -> new Password(null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(expectedException);
     }
 
     @Test
     @DisplayName("Password 생성 - blank면 예외")
     void passwordBlank() {
-            // given
+        // given
+        var blankPassword = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new Password("  "))
+        // when & then
+        assertThatThrownBy(() -> new Password(blankPassword))
                 .isInstanceOf(InvalidPasswordException.class);
     }
 
     @Test
     @DisplayName("Member 생성 - 정상")
     void memberCreate() {
-            // given
-
-            // when
-
-            // then
-
-        var id = MemberId.generate();
+        // given
         var email = new Email("test@test.com");
         var name = new MemberName("홍길동");
         var password = new Password("enc");
+
+        // when
         var member = Member.create(email, password, name);
+
+        // then
         assertThat(member.id()).isNotNull();
         assertThat(member.email()).isEqualTo(email);
         assertThat(member.name()).isEqualTo(name);
@@ -190,18 +174,14 @@ class MemberVoTest {
     @Test
     @DisplayName("Member 생성자는 null을 거부한다")
     void memberNullChecks() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var id = MemberId.generate();
         var email = new Email("test@test.com");
         var name = new MemberName("홍길동");
         var password = new Password("enc");
         var status = MemberStatus.ACTIVE;
 
+        // when & then
         assertThatThrownBy(() -> new Member(null, email, password, name, status))
                 .isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> new Member(id, null, password, name, status))

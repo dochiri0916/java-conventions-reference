@@ -12,26 +12,29 @@ class RegisterProductRequestTest {
     @Test
     @DisplayName("categoryIds가 null이면 empty list로 변환")
     void nullCategoryIds() {
-            // given
+        // given
+        var name = "상품";
+        var description = "설명";
+        var priceAmount = 1000;
+        var stock = 10;
 
-            // when
+        // when
+        var req = new RegisterProductRequest(name, description, priceAmount, stock, null);
 
-            // then
-
-        var req = new RegisterProductRequest("상품", "설명", 1000, 10, null);
+        // then
         assertThat(req.categoryIds()).isEmpty();
     }
 
     @Test
     @DisplayName("categoryIds가 있으면 copyOf")
     void nonNullCategoryIds() {
-            // given
+        // given
+        var categoryIds = List.of("cat1");
 
-            // when
+        // when
+        var req = new RegisterProductRequest("상품", "설명", 1000, 10, categoryIds);
 
-            // then
-
-        var req = new RegisterProductRequest("상품", "설명", 1000, 10, List.of("cat1"));
+        // then
         assertThat(req.categoryIds()).containsExactly("cat1");
     }
 }

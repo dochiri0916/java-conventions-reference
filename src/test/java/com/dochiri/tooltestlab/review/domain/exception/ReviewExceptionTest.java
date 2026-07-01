@@ -10,53 +10,52 @@ class ReviewExceptionTest {
     @Test
     @DisplayName("InvalidReviewIdException 정상 생성")
     void invalidReviewId() {
-            // given
+        // given
+        var expectedCode = ReviewDomainErrorCode.INVALID_REVIEW_ID;
 
-            // when
-
-            // then
-
+        // when
         var ex = InvalidReviewIdException.invalidReviewId();
-        assertThat(ex.code()).isEqualTo(ReviewDomainErrorCode.INVALID_REVIEW_ID);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("InvalidReviewContentException 정상 생성")
     void badRvwContent() {
-            // given
+        // given
+        var expectedCode = ReviewDomainErrorCode.BAD_RVW_CONTENT;
 
-            // when
-
-            // then
-
+        // when
         var ex = InvalidReviewContentException.badRvwContent();
-        assertThat(ex.code()).isEqualTo(ReviewDomainErrorCode.BAD_RVW_CONTENT);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("InvalidRatingException 정상 생성")
     void invalidRating() {
-            // given
+        // given
+        var rating = 6;
+        var expectedCode = ReviewDomainErrorCode.INVALID_RATING;
 
-            // when
+        // when
+        var ex = InvalidRatingException.invalidRating(rating);
 
-            // then
-
-        var ex = InvalidRatingException.invalidRating(6);
-        assertThat(ex.code()).isEqualTo(ReviewDomainErrorCode.INVALID_RATING);
-        assertThat(ex.rating()).isEqualTo(6);
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.rating()).isEqualTo(rating);
     }
 
     @Test
     @DisplayName("ReviewDomainErrorCode 모든 코드가 title을 가진다")
     void errorCodes() {
-            // given
+        // given
+        var codes = ReviewDomainErrorCode.values();
 
-            // when
-
-            // then
-
-        for (var code : ReviewDomainErrorCode.values()) {
+        // when & then
+        for (var code : codes) {
             assertThat(code.title()).isNotBlank();
         }
     }

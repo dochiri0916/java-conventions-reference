@@ -6,23 +6,20 @@ import com.dochiri.tooltestlab.member.application.port.in.LoginMemberResult;
 import com.dochiri.tooltestlab.member.application.port.in.LoginMemberUseCase;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
 import com.dochiri.tooltestlab.member.domain.model.Member;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public final class LoginMemberService implements LoginMemberUseCase {
 
     private final MemberRepositoryPort memberRepositoryPort;
     private final PasswordEncoder passwordEncoder;
 
-    public LoginMemberService(final MemberRepositoryPort memberRepositoryPort, final PasswordEncoder passwordEncoder) {
-        this.memberRepositoryPort = memberRepositoryPort;
-        this.passwordEncoder = passwordEncoder;
-    }
-
     @Override
+    @Transactional(readOnly = true)
     public LoginMemberResult login(final LoginMemberCommand command) {
         final Member member = memberRepositoryPort.findByEmail(command.email())
                 .orElseThrow(LoginFailedException::loginFailed);

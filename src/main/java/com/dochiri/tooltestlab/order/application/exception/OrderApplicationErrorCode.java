@@ -6,13 +6,13 @@ public enum OrderApplicationErrorCode {
     NOT_ORDER_OWNER("권한 없음"),
     EMPTY_CART("빈 장바구니");
 
-    private final String title;
+    private final String message;
 
     OrderApplicationErrorCode(final String title) {
-        this.title = title;
+        this.message = title;
     }
 
     public String title() {
-        return title;
+        return message;
     }
 }

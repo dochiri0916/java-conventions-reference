@@ -5,6 +5,7 @@ import com.dochiri.tooltestlab.category.adapter.out.persistence.CategoryJpaRepos
 import com.dochiri.tooltestlab.category.domain.model.Category;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.product.domain.model.Product;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,33 +16,32 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
+@RequiredArgsConstructor
 @ConditionalOnProperty(name = "tool-test-lab.concurrency.safe", havingValue = "false", matchIfMissing = true)
 class ProductPersistenceAdapter implements ProductRepositoryPort {
 
     private final ProductJpaRepository productJpaRepository;
     private final CategoryJpaRepository categoryJpaRepository;
 
-    ProductPersistenceAdapter(final ProductJpaRepository productJpaRepository, final CategoryJpaRepository categoryJpaRepository) {
-        this.productJpaRepository = productJpaRepository;
-        this.categoryJpaRepository = categoryJpaRepository;
-    }
-
     @Override
     public Product save(final Product product, final List<Category> categories) {
         final Optional<ProductEntity> existing = productJpaRepository.findByProductId(product.id().value());
-        final ProductEntity entity;
         if (existing.isPresent()) {
-            entity = existing.get();
+            final ProductEntity entity = existing.get();
             ProductMapper.updateEntity(entity, product);
-        } else {
-            entity = ProductMapper.toEntity(product);
+            if (!categories.isEmpty()) {
+                final List<String> categoryIds = categories.stream().map(c -> c.id().value()).toList();
+                entity.replaceCategoryIdValues(categoryIds);
+            }
+            final ProductEntity saved = productJpaRepository.save(entity);
+            return ProductMapper.toDomain(saved);
         }
 
+        final ProductEntity entity = ProductMapper.toEntity(product);
         if (!categories.isEmpty()) {
             final List<String> categoryIds = categories.stream().map(c -> c.id().value()).toList();
             entity.replaceCategoryIdValues(categoryIds);
         }
-
         final ProductEntity saved = productJpaRepository.save(entity);
         return ProductMapper.toDomain(saved);
     }

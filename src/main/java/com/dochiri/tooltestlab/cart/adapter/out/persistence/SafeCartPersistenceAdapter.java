@@ -2,6 +2,7 @@ package com.dochiri.tooltestlab.cart.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -20,18 +21,14 @@ import java.util.Optional;
  * UNIQUE 제약 위반이 발생할 수 있다. 이 경우 한 번 재시도한다.
  */
 @Repository
+@RequiredArgsConstructor
 @ConditionalOnProperty(name = "tool-test-lab.concurrency.safe", havingValue = "true")
 class SafeCartPersistenceAdapter implements CartRepositoryPort {
 
-    private static final Logger log = LoggerFactory.getLogger(SafeCartPersistenceAdapter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SafeCartPersistenceAdapter.class);
 
     private final CartJpaRepository cartJpaRepository;
     private final CartItemJpaRepository cartItemJpaRepository;
-
-    SafeCartPersistenceAdapter(final CartJpaRepository cartJpaRepository, final CartItemJpaRepository cartItemJpaRepository) {
-        this.cartJpaRepository = cartJpaRepository;
-        this.cartItemJpaRepository = cartItemJpaRepository;
-    }
 
     @Override
     public Cart save(final Cart cart) {
@@ -42,26 +39,27 @@ class SafeCartPersistenceAdapter implements CartRepositoryPort {
             // 동시에 최초 생성되는 경우 UNIQUE 제약 위반이 발생할 수 있다.
             // 재시도: 이제는 상대 트랜잭션이 생성한 장바구니가 존재하므로
             // PESSIMISTIC_WRITE 락을 잡고 재조회할 수 있다.
-            log.debug("장바구니 동시 생성 감지, 재시도합니다. memberId={}", cart.memberId().value());
+            LOG.debug("장바구니 동시 생성 감지, 재시도합니다. memberId={}", cart.memberId().value());
             return doSave(cart);
         }
     }
 
     private Cart doSave(final Cart cart) {
-        // PESSIMISTIC_WRITE로 락을 잡고 조회 → 동시 수정 방지
         final Optional<CartEntity> existing = cartJpaRepository.findByMemberIdForUpdate(cart.memberId().value());
-        final CartEntity cartEntity;
         if (existing.isPresent()) {
-            cartEntity = existing.get();
-        } else {
-            cartEntity = CartMapper.toEntity(cart);
+            final CartEntity cartEntity = existing.get();
+            final CartEntity savedCart = cartJpaRepository.save(cartEntity);
+            cartItemJpaRepository.deleteByCartId(cart.id().value());
+            final List<CartItemEntity> itemEntities = CartMapper.toItemEntities(cart, cart.id().value());
+            final List<CartItemEntity> savedItems = cartItemJpaRepository.saveAll(itemEntities);
+            return CartMapper.toDomain(savedCart, savedItems);
         }
-        final CartEntity savedCart = cartJpaRepository.save(cartEntity);
 
+        final CartEntity cartEntity = CartMapper.toEntity(cart);
+        final CartEntity savedCart = cartJpaRepository.save(cartEntity);
         cartItemJpaRepository.deleteByCartId(cart.id().value());
         final List<CartItemEntity> itemEntities = CartMapper.toItemEntities(cart, cart.id().value());
         final List<CartItemEntity> savedItems = cartItemJpaRepository.saveAll(itemEntities);
-
         return CartMapper.toDomain(savedCart, savedItems);
     }
 

@@ -12,6 +12,7 @@ import java.util.List;
 @Table(name = "products")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SuppressWarnings("PMD.ImmutableField")
 public class ProductEntity {
 
     @Getter(AccessLevel.NONE)
@@ -78,6 +79,7 @@ public class ProductEntity {
      * 연관된 Category ID 목록을 교체한다. PersistenceAdapter에서 managed entity로 동기화할 때만 사용.
      */
     void replaceCategoryIdValues(final List<String> categoryIdValues) {
-        this.categoryIdValues = categoryIdValues;
+        this.categoryIdValues.clear();
+        this.categoryIdValues.addAll(categoryIdValues);
     }
 }

@@ -16,12 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class OrderApiTest {
@@ -33,9 +31,9 @@ class OrderApiTest {
 
     private MockMvc mockMvc;
     private MockHttpSession session;
-    private String productPublicId;
 
     @BeforeEach
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     void setUp() throws Exception {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 
@@ -67,7 +65,7 @@ class OrderApiTest {
                         .content(objectMapper.writeValueAsString(productBody)))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
-        productPublicId = objectMapper.readTree(productResponse).get("publicId").asText();
+        final String productPublicId = objectMapper.readTree(productResponse).get("publicId").asText();
 
         Map<String, Object> cartBody = Map.of("productPublicId", productPublicId, "quantity", 2);
         mockMvc.perform(post("/api/cart/items")
@@ -79,40 +77,34 @@ class OrderApiTest {
     @Test
     @DisplayName("장바구니 상품으로 주문을 생성할 수 있다")
     void placeOrder() throws Exception {
-            // given
-
-            // when
-
-            // then
-
+        // given
         Map<String, String> body = Map.of(
                 "recipientName", "홍길동",
                 "phone", "010-1234-5678",
                 "address", "서울특별시 강남구 테헤란로 123",
                 "zipCode", "06164");
 
-        mockMvc.perform(post("/api/orders")
+        // when
+        var result = mockMvc.perform(post("/api/orders")
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.publicId").isNotEmpty())
-                .andExpect(jsonPath("$.status").value("PENDING"))
-                .andExpect(jsonPath("$.totalAmount").value(100_000))
-                .andExpect(jsonPath("$.recipientName").value("홍길동"))
-                .andExpect(jsonPath("$.items", hasSize(1)));
-        assertThat(1).isEqualTo(1);
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(200);
+        var json = objectMapper.readTree(result.getResponse().getContentAsString());
+        assertThat(json.get("publicId").asText()).isNotEmpty();
+        assertThat(json.get("status").asText()).isEqualTo("PENDING");
+        assertThat(json.get("totalAmount").asInt()).isEqualTo(100_000);
+        assertThat(json.get("recipientName").asText()).isEqualTo("홍길동");
+        assertThat(json.get("items")).hasSize(1);
     }
 
     @Test
     @DisplayName("주문 목록을 조회할 수 있다")
     void listOrders() throws Exception {
-            // given
-
-            // when
-
-            // then
-
+        // given
         Map<String, String> body = Map.of(
                 "recipientName", "홍길동",
                 "phone", "010-1234-5678",
@@ -123,23 +115,22 @@ class OrderApiTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(body)));
 
-        mockMvc.perform(get("/api/orders").session(session))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
-                .andExpect(jsonPath("$[0].publicId").isNotEmpty())
-                .andExpect(jsonPath("$[0].status").isNotEmpty());
-        assertThat(1).isEqualTo(1);
+        // when
+        var result = mockMvc.perform(get("/api/orders").session(session))
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(200);
+        var json = objectMapper.readTree(result.getResponse().getContentAsString());
+        assertThat(json).hasSizeGreaterThanOrEqualTo(1);
+        assertThat(json.get(0).get("publicId").asText()).isNotEmpty();
+        assertThat(json.get(0).get("status").asText()).isNotEmpty();
     }
 
     @Test
     @DisplayName("주문 상세를 조회할 수 있다")
-    void getOrder() throws Exception {
-            // given
-
-            // when
-
-            // then
-
+    void retrieveOrder() throws Exception {
+        // given
         Map<String, String> body = Map.of(
                 "recipientName", "홍길동",
                 "phone", "010-1234-5678",
@@ -153,23 +144,22 @@ class OrderApiTest {
                 .andReturn().getResponse().getContentAsString();
         final String orderPublicId = objectMapper.readTree(response).get("publicId").asText();
 
-        mockMvc.perform(get("/api/orders/" + orderPublicId).session(session))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.publicId").value(orderPublicId))
-                .andExpect(jsonPath("$.items", hasSize(1)))
-                .andExpect(jsonPath("$.status").value("PENDING"));
-        assertThat(1).isEqualTo(1);
+        // when
+        var result = mockMvc.perform(get("/api/orders/" + orderPublicId).session(session))
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(200);
+        var json = objectMapper.readTree(result.getResponse().getContentAsString());
+        assertThat(json.get("publicId").asText()).isEqualTo(orderPublicId);
+        assertThat(json.get("items")).hasSize(1);
+        assertThat(json.get("status").asText()).isEqualTo("PENDING");
     }
 
     @Test
     @DisplayName("주문을 취소할 수 있다")
     void cancelOrder() throws Exception {
-            // given
-
-            // when
-
-            // then
-
+        // given
         Map<String, String> body = Map.of(
                 "recipientName", "홍길동",
                 "phone", "010-1234-5678",
@@ -183,31 +173,32 @@ class OrderApiTest {
                 .andReturn().getResponse().getContentAsString();
         final String orderPublicId = objectMapper.readTree(response).get("publicId").asText();
 
-        mockMvc.perform(post("/api/orders/" + orderPublicId + "/cancel").session(session))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(containsString("취소")));
-        assertThat(1).isEqualTo(1);
+        // when
+        var result = mockMvc.perform(post("/api/orders/" + orderPublicId + "/cancel").session(session))
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(200);
+        assertThat(result.getResponse().getContentAsString()).contains("취소");
     }
 
     @Test
     @DisplayName("인증되지 않은 사용자는 주문을 생성할 수 없다")
     void placeOrderWithoutAuth() throws Exception {
-            // given
-
-            // when
-
-            // then
-
+        // given
         Map<String, String> body = Map.of(
                 "recipientName", "홍길동",
                 "phone", "010-1234-5678",
                 "address", "서울특별시 강남구",
                 "zipCode", "06164");
 
-        mockMvc.perform(post("/api/orders")
+        // when
+        var result = mockMvc.perform(post("/api/orders")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
-                .andExpect(status().isUnauthorized());
-        assertThat(1).isEqualTo(1);
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(401);
     }
 }

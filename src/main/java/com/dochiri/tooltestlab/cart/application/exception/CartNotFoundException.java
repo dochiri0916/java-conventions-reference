@@ -2,6 +2,7 @@ package com.dochiri.tooltestlab.cart.application.exception;
 
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public final class CartNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

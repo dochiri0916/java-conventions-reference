@@ -4,9 +4,10 @@ import com.dochiri.tooltestlab.order.application.exception.NotOrderOwnerExceptio
 import com.dochiri.tooltestlab.order.application.exception.OrderNotFoundException;
 import com.dochiri.tooltestlab.order.application.port.in.CancelOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
-import com.dochiri.tooltestlab.order.domain.event.OrderCancelledEvent;
+import com.dochiri.tooltestlab.order.domain.event.OrderCancelled;
 import com.dochiri.tooltestlab.order.domain.model.OrderCancelledItems;
 import com.dochiri.tooltestlab.order.domain.model.Order;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,19 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public final class CancelOrderService implements CancelOrderUseCase {
 
     private final OrderRepositoryPort orderRepositoryPort;
     private final ApplicationEventPublisher eventPublisher;
 
-    public CancelOrderService(final OrderRepositoryPort orderRepositoryPort,
-                               ApplicationEventPublisher eventPublisher) {
-        this.orderRepositoryPort = orderRepositoryPort;
-        this.eventPublisher = eventPublisher;
-    }
-
     @Override
+    @Transactional
     public void cancel(final String memberPublicId, final String orderPublicId) {
         final Order order = orderRepositoryPort.findByPublicId(orderPublicId)
                 .orElseThrow(() -> OrderNotFoundException.orderNotFound(orderPublicId));
@@ -38,9 +34,9 @@ public final class CancelOrderService implements CancelOrderUseCase {
         final Order cancelled = order.cancel();
         orderRepositoryPort.save(cancelled);
 
-        final List<OrderCancelledEvent.ItemDetail> itemDetails = cancelled.items().values().stream()
-                .map(i -> new OrderCancelledEvent.ItemDetail(i.productId(), i.quantity()))
+        final List<OrderCancelled.ItemDetail> itemDetails = cancelled.items().values().stream()
+                .map(i -> new OrderCancelled.ItemDetail(i.productId(), i.quantity()))
                 .toList();
-        eventPublisher.publishEvent(new OrderCancelledEvent(cancelled.id(), new OrderCancelledItems(itemDetails)));
+        eventPublisher.publishEvent(new OrderCancelled(cancelled.id(), new OrderCancelledItems(itemDetails)));
     }
 }

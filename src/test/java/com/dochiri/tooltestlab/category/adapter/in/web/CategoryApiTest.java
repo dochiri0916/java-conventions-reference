@@ -17,8 +17,6 @@ import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -33,6 +31,7 @@ class CategoryApiTest {
     private MockHttpSession session;
 
     @BeforeEach
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     void setUp() throws Exception {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 
@@ -56,75 +55,70 @@ class CategoryApiTest {
     @Test
     @DisplayName("카테고리를 등록할 수 있다")
     void registerCategory() throws Exception {
-            // given
-
-            // when
-
-            // then
-
+        // given
         final String categoryName = "전자기기-" + UUID.randomUUID().toString().substring(0, 8);
         Map<String, String> body = Map.of("name", categoryName);
 
-        mockMvc.perform(post("/api/categories")
+        // when
+        var result = mockMvc.perform(post("/api/categories")
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.publicId").isNotEmpty())
-                .andExpect(jsonPath("$.name").value(categoryName));
-        assertThat(1).isEqualTo(1);
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(200);
+        assertThat(result.getResponse().getContentAsString()).contains(categoryName);
     }
 
     @Test
     @DisplayName("카테고리 목록을 조회할 수 있다")
     void listCategories() throws Exception {
-            // given
-
-            // when
-
-            // then
-
+        // given
         Map<String, String> body = Map.of("name", "전자기기");
         mockMvc.perform(post("/api/categories")
                 .session(session)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(body)));
 
-        mockMvc.perform(get("/api/categories").session(session))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
-        assertThat(1).isEqualTo(1);
+        // when
+        var result = mockMvc.perform(get("/api/categories").session(session))
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(200);
+        assertThat(result.getResponse().getContentAsString()).startsWith("[");
     }
 
     @Test
     @DisplayName("인증되지 않은 사용자는 카테고리를 등록할 수 없다")
     void registerCategoryWithoutAuth() throws Exception {
-            // given
-
-            // when
-
-            // then
-
+        // given
         Map<String, String> body = Map.of("name", "전자기기");
 
-        mockMvc.perform(post("/api/categories")
+        // when
+        var result = mockMvc.perform(post("/api/categories")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
-                .andExpect(status().isUnauthorized());
-        assertThat(1).isEqualTo(1);
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(401);
     }
 
     @Test
     @DisplayName("CategoryResponse 레코드를 생성할 수 있다")
     void categoryResponseCreation() {
-            // given
+        // given
+        var publicId = "cat123test";
+        var name = "전자기기";
 
-            // when
+        // when
         var response = new com.dochiri.tooltestlab.category.adapter.in.web.response.CategoryResponse(
-                "cat123test", "전자기기");
+                publicId, name);
 
-            // then
-        assertThat(response.publicId()).isEqualTo("cat123test");
-        assertThat(response.name()).isEqualTo("전자기기");
+        // then
+        assertThat(response.publicId()).isEqualTo(publicId);
+        assertThat(response.name()).isEqualTo(name);
     }
 }

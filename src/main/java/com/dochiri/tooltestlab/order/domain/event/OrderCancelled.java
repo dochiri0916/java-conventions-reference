@@ -7,11 +7,11 @@ import com.dochiri.tooltestlab.product.domain.model.ProductId;
 
 import static java.util.Objects.requireNonNull;
 
-public record OrderCancelledEvent(
+public record OrderCancelled(
         OrderId orderId,
         OrderCancelledItems items) {
 
-    public OrderCancelledEvent {
+    public OrderCancelled {
         requireNonNull(orderId, "주문 ID는 null일 수 없습니다.");
         requireNonNull(items, "주문 상품 목록은 null일 수 없습니다.");
     }

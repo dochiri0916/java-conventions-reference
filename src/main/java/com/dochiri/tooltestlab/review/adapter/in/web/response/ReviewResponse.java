@@ -10,6 +10,10 @@ public record ReviewResponse(
         @Schema(description = "리뷰 목록") List<ReviewData> reviews,
         @Schema(description = "평균 평점", example = "4.5") double averageRating) {
 
+    public ReviewResponse {
+        reviews = List.copyOf(reviews);
+    }
+
     @Schema(description = "리뷰 데이터")
     public record ReviewData(
             @Schema(description = "리뷰 publicId", example = "r1e2v3i4e5w6") String publicId,

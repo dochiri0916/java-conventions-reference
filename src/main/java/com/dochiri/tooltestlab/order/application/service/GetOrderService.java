@@ -6,20 +6,18 @@ import com.dochiri.tooltestlab.order.application.port.in.GetOrderResult;
 import com.dochiri.tooltestlab.order.application.port.in.GetOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
 import com.dochiri.tooltestlab.order.domain.model.Order;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public final class GetOrderService implements GetOrderUseCase {
 
     private final OrderRepositoryPort orderRepositoryPort;
 
-    public GetOrderService(final OrderRepositoryPort orderRepositoryPort) {
-        this.orderRepositoryPort = orderRepositoryPort;
-    }
-
     @Override
+    @Transactional(readOnly = true)
     public GetOrderResult getOrder(final String memberPublicId, final String publicId) {
         final Order order = orderRepositoryPort.findByPublicId(publicId)
                 .orElseThrow(() -> OrderNotFoundException.orderNotFound(publicId));

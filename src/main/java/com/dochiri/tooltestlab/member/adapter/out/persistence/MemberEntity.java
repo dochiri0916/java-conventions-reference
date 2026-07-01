@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "members")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SuppressWarnings("PMD.ImmutableField")
 public class MemberEntity {
 
     @Getter(AccessLevel.NONE)

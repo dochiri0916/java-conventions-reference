@@ -2,6 +2,7 @@ package com.dochiri.tooltestlab.review.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
 import com.dochiri.tooltestlab.review.domain.model.Review;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
@@ -15,14 +16,11 @@ import java.util.Optional;
  * 중복 리뷰 작성 시 {@link DataIntegrityViolationException}을 의미 있는 예외로 변환한다.
  */
 @Repository
+@RequiredArgsConstructor
 @ConditionalOnProperty(name = "tool-test-lab.concurrency.safe", havingValue = "true")
 class SafeReviewPersistenceAdapter implements ReviewRepositoryPort {
 
     private final ReviewJpaRepository reviewJpaRepository;
-
-    SafeReviewPersistenceAdapter(final ReviewJpaRepository reviewJpaRepository) {
-        this.reviewJpaRepository = reviewJpaRepository;
-    }
 
     @Override
     public Review save(final Review review) {

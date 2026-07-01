@@ -29,55 +29,54 @@ class ReviewServiceMockTest {
     @Mock
     private ReviewRepositoryPort reviewRepositoryPort;
 
-    private ReviewService reviewService;
+    private WriteReviewService writeReviewService;
+    private GetProductReviewsService getProductReviewsService;
+    private DeleteReviewService deleteReviewService;
 
     @BeforeEach
     void setUp() {
-        reviewService = new ReviewService(reviewRepositoryPort);
+        writeReviewService = new WriteReviewService(reviewRepositoryPort);
+        getProductReviewsService = new GetProductReviewsService(reviewRepositoryPort);
+        deleteReviewService = new DeleteReviewService(reviewRepositoryPort);
     }
 
     @Test
     @DisplayName("write - 중복 리뷰 예외")
     void writeDuplicate() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         when(reviewRepositoryPort.existsByMemberIdAndProductId("m1", "p1")).thenReturn(true);
         var cmd = new WriteReviewCommand("m1", "p1", 5, "좋아요");
-        assertThatThrownBy(() -> reviewService.write(cmd))
+
+        // when & then
+        assertThatThrownBy(() -> writeReviewService.write(cmd))
                 .isInstanceOf(DuplicateReviewException.class);
     }
 
     @Test
     @DisplayName("write 성공")
     void writeSuccess() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         when(reviewRepositoryPort.existsByMemberIdAndProductId("m1", "p1")).thenReturn(false);
         when(reviewRepositoryPort.save(any())).thenAnswer(inv -> inv.getArgument(0));
         var cmd = new WriteReviewCommand("m1", "p1", 5, "좋아요");
-        var result = reviewService.write(cmd);
+
+        // when
+        var result = writeReviewService.write(cmd);
+
+        // then
         assertThat(result.publicId()).isNotNull();
     }
 
     @Test
     @DisplayName("getByProduct - 빈 리스트")
-    void getByProductEmpty() {
-            // given
-
-            // when
-
-            // then
-
+    void retrieveByProductEmpty() {
+        // given
         when(reviewRepositoryPort.findByProductId("p1")).thenReturn(List.of());
-        var result = reviewService.getByProduct("p1");
+
+        // when
+        var result = getProductReviewsService.getByProduct("p1");
+
+        // then
         assertThat(result.reviews()).isEmpty();
         assertThat(result.averageRating()).isEqualTo(0.0);
     }
@@ -85,29 +84,23 @@ class ReviewServiceMockTest {
     @Test
     @DisplayName("delete - 리뷰 없음 예외")
     void deleteNotFound() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         when(reviewRepositoryPort.findByPublicId("nonexistent")).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> reviewService.delete("nonexistent", "m1"))
+
+        // when & then
+        assertThatThrownBy(() -> deleteReviewService.delete("nonexistent", "m1"))
                 .isInstanceOf(ReviewNotFoundException.class);
     }
 
     @Test
     @DisplayName("delete - 리뷰 소유자 아님 예외")
     void deleteNotOwner() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var review = Review.create(new MemberId("owner"), new ProductId("p1"), new Rating(5), new ReviewContent("좋아요"));
         when(reviewRepositoryPort.findByPublicId(review.id().value())).thenReturn(Optional.of(review));
-        assertThatThrownBy(() -> reviewService.delete(review.id().value(), "otherUser"))
+
+        // when & then
+        assertThatThrownBy(() -> deleteReviewService.delete(review.id().value(), "otherUser"))
                 .isInstanceOf(NotReviewOwnerException.class);
     }
 }

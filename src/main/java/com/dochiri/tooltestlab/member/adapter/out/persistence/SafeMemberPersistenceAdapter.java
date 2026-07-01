@@ -2,6 +2,7 @@ package com.dochiri.tooltestlab.member.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
 import com.dochiri.tooltestlab.member.domain.model.Member;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
@@ -13,14 +14,11 @@ import java.util.Optional;
  * 이메일 중복 체크 시 PESSIMISTIC_WRITE 락으로 동시 등록을 방지한다.
  */
 @Repository
+@RequiredArgsConstructor
 @ConditionalOnProperty(name = "tool-test-lab.concurrency.safe", havingValue = "true")
 class SafeMemberPersistenceAdapter implements MemberRepositoryPort {
 
     private final MemberJpaRepository jpaRepository;
-
-    SafeMemberPersistenceAdapter(final MemberJpaRepository jpaRepository) {
-        this.jpaRepository = jpaRepository;
-    }
 
     @Override
     public Member save(final Member member) {

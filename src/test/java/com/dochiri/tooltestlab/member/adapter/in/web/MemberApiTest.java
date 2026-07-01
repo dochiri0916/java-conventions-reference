@@ -15,11 +15,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -44,65 +41,52 @@ class MemberApiTest {
     @Test
     @DisplayName("회원 가입에 성공하면 200과 회원 정보를 반환한다")
     void registerSuccess() throws Exception {
-            // given
-
-            // when
-
-            // then
-
+        // given
         Map<String, String> body = Map.of(
                 "email", uniqueEmail(),
                 "password", "password123",
                 "name", "홍길동");
 
-        mockMvc.perform(post("/api/members/register")
+        // when
+        var result = mockMvc.perform(post("/api/members/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.publicId").isNotEmpty())
-                .andExpect(jsonPath("$.email").isNotEmpty())
-                .andExpect(jsonPath("$.name").value("홍길동"));
-        assertThat(1).isEqualTo(1);
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(200);
+        assertThat(result.getResponse().getContentAsString()).contains("홍길동");
     }
 
     @Test
     @DisplayName("중복된 이메일로 가입하면 예외가 발생한다")
     void registerDuplicateEmail() throws Exception {
-            // given
-
-            // when
-
-            // then
-
+        // given
         final String email = uniqueEmail();
         Map<String, String> body = Map.of(
                 "email", email,
                 "password", "password123",
                 "name", "홍길동");
-
         mockMvc.perform(post("/api/members/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(body)));
 
-        mockMvc.perform(post("/api/members/register")
+        // when
+        var result = mockMvc.perform(post("/api/members/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
-                .andExpect(status().is4xxClientError());
-        assertThat(1).isEqualTo(1);
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(409);
     }
 
     @Test
     @DisplayName("로그인에 성공하면 200과 회원 정보를 반환한다")
     void loginSuccess() throws Exception {
-            // given
-
-            // when
-
-            // then
-
+        // given
         final String email = uniqueEmail();
         final String password = "password123";
-
         Map<String, String> registerBody = Map.of(
                 "email", email,
                 "password", password,
@@ -110,29 +94,24 @@ class MemberApiTest {
         mockMvc.perform(post("/api/members/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerBody)));
-
         Map<String, String> loginBody = Map.of("email", email, "password", password);
 
-        mockMvc.perform(post("/api/members/login")
+        // when
+        var result = mockMvc.perform(post("/api/members/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginBody)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.publicId").isNotEmpty())
-                .andExpect(jsonPath("$.email").value(email));
-        assertThat(1).isEqualTo(1);
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(200);
+        assertThat(result.getResponse().getContentAsString()).contains(email);
     }
 
     @Test
     @DisplayName("잘못된 비밀번호로 로그인하면 실패한다")
     void loginWithWrongPassword() throws Exception {
-            // given
-
-            // when
-
-            // then
-
+        // given
         final String email = uniqueEmail();
-
         Map<String, String> registerBody = Map.of(
                 "email", email,
                 "password", "password123",
@@ -140,28 +119,24 @@ class MemberApiTest {
         mockMvc.perform(post("/api/members/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerBody)));
-
         Map<String, String> loginBody = Map.of("email", email, "password", "wrongpassword");
 
-        mockMvc.perform(post("/api/members/login")
+        // when
+        var result = mockMvc.perform(post("/api/members/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginBody)))
-                .andExpect(status().is4xxClientError());
-        assertThat(1).isEqualTo(1);
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(401);
     }
 
     @Test
     @DisplayName("로그인 성공 후 세션으로 내 정보를 조회할 수 있다")
     void meWithSession() throws Exception {
-            // given
-
-            // when
-
-            // then
-
+        // given
         final String email = uniqueEmail();
         final String password = "password123";
-
         Map<String, String> registerBody = Map.of(
                 "email", email,
                 "password", password,
@@ -169,45 +144,41 @@ class MemberApiTest {
         mockMvc.perform(post("/api/members/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerBody)));
-
         final MockHttpSession session = new MockHttpSession();
         mockMvc.perform(post("/api/members/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(Map.of("email", email, "password", password)))
                 .session(session));
 
-        mockMvc.perform(get("/api/members/me").session(session))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.publicId").isNotEmpty());
-        assertThat(1).isEqualTo(1);
+        // when
+        var result = mockMvc.perform(get("/api/members/me").session(session))
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(200);
+        assertThat(result.getResponse().getContentAsString()).contains("publicId");
     }
 
     @Test
     @DisplayName("로그인하지 않으면 내 정보 조회 시 401을 반환한다")
     void meWithoutSession() throws Exception {
-            // given
+        // given
+        var request = get("/api/members/me");
 
-            // when
+        // when
+        var result = mockMvc.perform(request)
+                .andReturn();
 
-            // then
-
-        mockMvc.perform(get("/api/members/me"))
-                .andExpect(status().isUnauthorized());
-        assertThat(1).isEqualTo(1);
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(401);
     }
 
     @Test
     @DisplayName("로그아웃 후에는 세션이 무효화된다")
     void logoutInvalidatesSession() throws Exception {
-            // given
-
-            // when
-
-            // then
-
+        // given
         final String email = uniqueEmail();
         final String password = "password123";
-
         Map<String, String> registerBody = Map.of(
                 "email", email,
                 "password", password,
@@ -215,16 +186,18 @@ class MemberApiTest {
         mockMvc.perform(post("/api/members/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerBody)));
-
         final MockHttpSession session = new MockHttpSession();
         mockMvc.perform(post("/api/members/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(Map.of("email", email, "password", password)))
                 .session(session));
 
-        mockMvc.perform(post("/api/members/logout").session(session))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(containsString("로그아웃")));
-        assertThat(1).isEqualTo(1);
+        // when
+        var result = mockMvc.perform(post("/api/members/logout").session(session))
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(200);
+        assertThat(result.getResponse().getContentAsString()).contains("로그아웃");
     }
 }

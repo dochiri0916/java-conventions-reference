@@ -10,53 +10,52 @@ class OrderAppExceptionTest {
     @Test
     @DisplayName("EmptyCartException 정상 생성")
     void emptyCart() {
-            // given
+        // given
+        var expectedCode = OrderApplicationErrorCode.EMPTY_CART;
 
-            // when
-
-            // then
-
+        // when
         var ex = EmptyCartException.emptyCart();
-        assertThat(ex.code()).isEqualTo(OrderApplicationErrorCode.EMPTY_CART);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("NotOrderOwnerException 정상 생성")
     void notOrderOwner() {
-            // given
+        // given
+        var expectedCode = OrderApplicationErrorCode.NOT_ORDER_OWNER;
 
-            // when
-
-            // then
-
+        // when
         var ex = NotOrderOwnerException.notOrderOwner();
-        assertThat(ex.code()).isEqualTo(OrderApplicationErrorCode.NOT_ORDER_OWNER);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("OrderNotFoundException 정상 생성")
     void orderNotFound() {
-            // given
+        // given
+        var expectedCode = OrderApplicationErrorCode.ORDER_NOT_FOUND;
+        var expectedPublicId = "order123";
 
-            // when
+        // when
+        var ex = OrderNotFoundException.orderNotFound(expectedPublicId);
 
-            // then
-
-        var ex = OrderNotFoundException.orderNotFound("order123");
-        assertThat(ex.code()).isEqualTo(OrderApplicationErrorCode.ORDER_NOT_FOUND);
-        assertThat(ex.publicId()).isEqualTo("order123");
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.publicId()).isEqualTo(expectedPublicId);
     }
 
     @Test
     @DisplayName("OrderApplicationErrorCode 모든 코드가 title을 가진다")
     void errorCodes() {
-            // given
+        // given
+        var codes = OrderApplicationErrorCode.values();
 
-            // when
-
-            // then
-
-        for (var code : OrderApplicationErrorCode.values()) {
+        // when & then
+        for (var code : codes) {
             assertThat(code.title()).isNotBlank();
         }
     }

@@ -1,5 +1,7 @@
 package com.dochiri.tooltestlab.domain;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import com.dochiri.tooltestlab.cart.domain.model.CartId;
 import com.dochiri.tooltestlab.category.domain.model.CategoryId;
 import com.dochiri.tooltestlab.category.domain.model.CategoryName;
@@ -12,27 +14,29 @@ import com.dochiri.tooltestlab.product.domain.model.Stock;
 import com.dochiri.tooltestlab.review.domain.model.Rating;
 import com.dochiri.tooltestlab.review.domain.model.ReviewContent;
 import com.dochiri.tooltestlab.review.domain.model.ReviewId;
-import com.dochiri.tooltestlab.shared.model.MaxCount;
-import com.dochiri.tooltestlab.shared.model.Money;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidMaxCountException;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidMoneyException;
+import com.dochiri.tooltestlab.product.domain.exception.ProductDomainErrorCode;
+import com.dochiri.tooltestlab.product.domain.model.MaxCount;
+import com.dochiri.tooltestlab.product.domain.model.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SuppressFBWarnings(value = "RV", justification = "Return value used to verify immutability or exception")
 class VoEdgeCaseTest {
 
     // ── MemberId ──
     @Test
     @DisplayName("MemberId blank 예외")
     void memberIdBlank() {
-            // given
+        // given
+        var blankValue = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new MemberId("  "))
+        // when & then
+        assertThatThrownBy(() -> new MemberId(blankValue))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -40,28 +44,26 @@ class VoEdgeCaseTest {
     @Test
     @DisplayName("ProductId 정상 생성 및 generate")
     void productId() {
-            // given
+        // given
+        var idValue = "prod1";
 
-            // when
-
-            // then
-
-        var id = new ProductId("prod1");
-        assertThat(id.value()).isEqualTo("prod1");
+        // when
+        var id = new ProductId(idValue);
         var gen = ProductId.generate();
+
+        // then
+        assertThat(id.value()).isEqualTo(idValue);
         assertThat(gen.value()).hasSize(32);
     }
 
     @Test
     @DisplayName("ProductId blank 예외")
     void productIdBlank() {
-            // given
+        // given
+        var blankValue = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new ProductId("  "))
+        // when & then
+        assertThatThrownBy(() -> new ProductId(blankValue))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -69,13 +71,11 @@ class VoEdgeCaseTest {
     @Test
     @DisplayName("ProductName blank 예외")
     void productNameBlank() {
-            // given
+        // given
+        var blankValue = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new ProductName("  "))
+        // when & then
+        assertThatThrownBy(() -> new ProductName(blankValue))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -83,13 +83,11 @@ class VoEdgeCaseTest {
     @Test
     @DisplayName("ProductDescription blank 예외")
     void productDescriptionBlank() {
-            // given
+        // given
+        var blankValue = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new ProductDescription("  "))
+        // when & then
+        assertThatThrownBy(() -> new ProductDescription(blankValue))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -97,29 +95,26 @@ class VoEdgeCaseTest {
     @Test
     @DisplayName("Stock 음수 예외")
     void stockNegative() {
-            // given
+        // given
+        var negativeValue = -1;
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new Stock(-1))
+        // when & then
+        assertThatThrownBy(() -> new Stock(negativeValue))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("Stock 감소 예외")
     void stockDecreaseNegative() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var stock = new Stock(10);
-        assertThatThrownBy(() -> stock.decrease(0))
+        var zeroAmount = 0;
+        var excessAmount = 11;
+
+        // when & then
+        assertThatThrownBy(() -> stock.decrease(zeroAmount))
                 .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> stock.decrease(11))
+        assertThatThrownBy(() -> stock.decrease(excessAmount))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -127,15 +122,14 @@ class VoEdgeCaseTest {
     @Test
     @DisplayName("Quantity 0 이하 예외")
     void quantityZeroOrLess() {
-            // given
+        // given
+        var zeroValue = 0;
+        var negativeValue = -1;
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new Quantity(0))
+        // when & then
+        assertThatThrownBy(() -> new Quantity(zeroValue))
                 .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> new Quantity(-1))
+        assertThatThrownBy(() -> new Quantity(negativeValue))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -143,15 +137,15 @@ class VoEdgeCaseTest {
     @Test
     @DisplayName("OrderId blank 예외 및 generate")
     void orderId() {
-            // given
+        // given
+        var blankValue = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new OrderId("  "))
-                .isInstanceOf(RuntimeException.class);
+        // when
         var gen = OrderId.generate();
+
+        // then
+        assertThatThrownBy(() -> new OrderId(blankValue))
+                .isInstanceOf(RuntimeException.class);
         assertThat(gen.value()).hasSize(32);
     }
 
@@ -159,15 +153,15 @@ class VoEdgeCaseTest {
     @Test
     @DisplayName("CartId blank 예외 및 generate")
     void cartId() {
-            // given
+        // given
+        var blankValue = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new CartId("  "))
-                .isInstanceOf(RuntimeException.class);
+        // when
         var gen = CartId.generate();
+
+        // then
+        assertThatThrownBy(() -> new CartId(blankValue))
+                .isInstanceOf(RuntimeException.class);
         assertThat(gen.value()).hasSize(32);
     }
 
@@ -175,15 +169,15 @@ class VoEdgeCaseTest {
     @Test
     @DisplayName("CategoryId blank 예외 및 generate")
     void categoryId() {
-            // given
+        // given
+        var blankValue = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new CategoryId("  "))
-                .isInstanceOf(RuntimeException.class);
+        // when
         var gen = CategoryId.generate();
+
+        // then
+        assertThatThrownBy(() -> new CategoryId(blankValue))
+                .isInstanceOf(RuntimeException.class);
         assertThat(gen.value()).hasSize(32);
     }
 
@@ -191,13 +185,11 @@ class VoEdgeCaseTest {
     @Test
     @DisplayName("CategoryName blank 예외")
     void categoryNameBlank() {
-            // given
+        // given
+        var blankValue = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new CategoryName("  "))
+        // when & then
+        assertThatThrownBy(() -> new CategoryName(blankValue))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -205,31 +197,34 @@ class VoEdgeCaseTest {
     @Test
     @DisplayName("Rating 경계값")
     void ratingBoundary() {
-            // given
+        // given
+        var tooSmallValue = 0;
+        var tooLargeValue = 6;
+        var minValid = 1;
+        var maxValid = 5;
 
-            // when
+        // when
+        var validMin = new Rating(minValid);
+        var validMax = new Rating(maxValid);
 
-            // then
-
-        assertThatThrownBy(() -> new Rating(0))
+        // then
+        assertThatThrownBy(() -> new Rating(tooSmallValue))
                 .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> new Rating(6))
+        assertThatThrownBy(() -> new Rating(tooLargeValue))
                 .isInstanceOf(RuntimeException.class);
-        assertThat(new Rating(1).value()).isEqualTo(1);
-        assertThat(new Rating(5).value()).isEqualTo(5);
+        assertThat(validMin.value()).isEqualTo(minValid);
+        assertThat(validMax.value()).isEqualTo(maxValid);
     }
 
     // ── ReviewContent ──
     @Test
     @DisplayName("ReviewContent blank 예외")
     void reviewContentBlank() {
-            // given
+        // given
+        var blankValue = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new ReviewContent("  "))
+        // when & then
+        assertThatThrownBy(() -> new ReviewContent(blankValue))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -237,15 +232,15 @@ class VoEdgeCaseTest {
     @Test
     @DisplayName("ReviewId blank 예외 및 generate")
     void reviewId() {
-            // given
+        // given
+        var blankValue = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new ReviewId("  "))
-                .isInstanceOf(RuntimeException.class);
+        // when
         var gen = ReviewId.generate();
+
+        // then
+        assertThatThrownBy(() -> new ReviewId(blankValue))
+                .isInstanceOf(RuntimeException.class);
         assertThat(gen.value()).hasSize(32);
     }
 
@@ -253,19 +248,17 @@ class VoEdgeCaseTest {
     @Test
     @DisplayName("Shipping VOs blank 예외")
     void shippingVosBlank() {
-            // given
+        // given
+        var blankValue = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new RecipientName("  "))
+        // when & then
+        assertThatThrownBy(() -> new RecipientName(blankValue))
                 .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> new Phone("  "))
+        assertThatThrownBy(() -> new Phone(blankValue))
                 .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> new StreetAddress("  "))
+        assertThatThrownBy(() -> new StreetAddress(blankValue))
                 .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> new ZipCode("  "))
+        assertThatThrownBy(() -> new ZipCode(blankValue))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -273,106 +266,148 @@ class VoEdgeCaseTest {
     @Test
     @DisplayName("MaxCount 0 이하 예외")
     void maxCountInvalid() {
-            // given
+        // given
+        var zeroValue = 0;
+        var negativeValue = -1;
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> MaxCount.of(0))
-                .isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> MaxCount.of(-1))
-                .isInstanceOf(RuntimeException.class);
+        // when & then
+        assertThatThrownBy(() -> MaxCount.of(zeroValue))
+                .isInstanceOf(InvalidMaxCountException.class)
+                .extracting(e -> ((InvalidMaxCountException) e).code())
+                .isEqualTo(ProductDomainErrorCode.MAX_COUNT_NOT_POSITIVE);
+        assertThatThrownBy(() -> MaxCount.of(negativeValue))
+                .isInstanceOf(InvalidMaxCountException.class);
     }
 
     // ── Money ──
     @Test
     @DisplayName("Money 연산")
     void moneyOperations() {
-            // given
+        // given
+        var hundred = Money.of(100);
+        var twoHundred = Money.of(200);
+        var expectedSum = Money.of(300);
+        var expectedMultiplied = Money.of(300);
+        var negativeValue = -1;
 
-            // when
+        // when
+        var sum = hundred.add(twoHundred);
+        var multiplied = hundred.multiply(3);
 
-            // then
-
+        // then
         assertThat(Money.ZERO.amount()).isEqualTo(0);
-        assertThat(Money.of(100).add(Money.of(200))).isEqualTo(Money.of(300));
-        assertThat(Money.of(100).multiply(3)).isEqualTo(Money.of(300));
-        assertThatThrownBy(() -> Money.of(-1))
-                .isInstanceOf(RuntimeException.class);
+        assertThat(sum).isEqualTo(expectedSum);
+        assertThat(multiplied).isEqualTo(expectedMultiplied);
+        assertThatThrownBy(() -> Money.of(negativeValue))
+                .isInstanceOf(InvalidMoneyException.class)
+                .extracting(e -> ((InvalidMoneyException) e).code())
+                .isEqualTo(ProductDomainErrorCode.MONEY_NEGATIVE);
+    }
+
+    @Test
+    @DisplayName("Money add에 null을 전달하면 InvalidMoneyException이 발생한다")
+    void moneyAddNull() {
+        // given
+        var zero = Money.ZERO;
+
+        // when & then
+        assertThatThrownBy(() -> zero.add(null))
+                .isInstanceOf(InvalidMoneyException.class)
+                .extracting(e -> ((InvalidMoneyException) e).code())
+                .isEqualTo(ProductDomainErrorCode.MONEY_ADD_NULL);
+    }
+
+    @Test
+    @DisplayName("Money multiply에 음수를 전달하면 InvalidMoneyException이 발생한다")
+    void moneyMultiplyNegative() {
+        // given
+        var money = Money.of(100);
+        var negativeMultiplier = -1;
+
+        // when & then
+        assertThatThrownBy(() -> money.multiply(negativeMultiplier))
+                .isInstanceOf(InvalidMoneyException.class)
+                .extracting(e -> ((InvalidMoneyException) e).code())
+                .isEqualTo(ProductDomainErrorCode.MONEY_MULTIPLY_NEGATIVE);
     }
 
     @Test
     @DisplayName("Quantity.from 정상")
     void quantityFrom() {
-            // given
+        // given
+        var value = 5;
 
-            // when
+        // when
+        var q = Quantity.from(value);
 
-            // then
-
-        var q = Quantity.from(5);
-        assertThat(q.value()).isEqualTo(5);
+        // then
+        assertThat(q.value()).isEqualTo(value);
     }
 
     @Test
     @DisplayName("Stock.increase 정상")
     void stockIncrease() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var stock = new Stock(5);
-        var increased = stock.increase(3);
+        var increaseAmount = 3;
+
+        // when
+        var increased = stock.increase(increaseAmount);
+
+        // then
         assertThat(increased.value()).isEqualTo(8);
     }
 
     @Test
     @DisplayName("Stock - 0 확인 및 양수 확인")
     void stockMethods() {
-            // given
+        // given
+        var zeroStock = new Stock(0);
+        var positiveStock = new Stock(1);
 
-            // when
+        // when
+        var zeroIsZero = zeroStock.isZero();
+        var positiveIsPositive = positiveStock.isPositive();
+        var zeroIsPositive = zeroStock.isPositive();
 
-            // then
-
-        assertThat(new Stock(0).isZero()).isTrue();
-        assertThat(new Stock(1).isPositive()).isTrue();
-        assertThat(new Stock(0).isPositive()).isFalse();
+        // then
+        assertThat(zeroIsZero).isTrue();
+        assertThat(positiveIsPositive).isTrue();
+        assertThat(zeroIsPositive).isFalse();
     }
 
     @Test
     @DisplayName("OrderLine 총 가격")
     void orderLineTotalPrice2() {
-            // given
+        // given
+        var productId = new com.dochiri.tooltestlab.product.domain.model.ProductId("p1");
+        var productName = new com.dochiri.tooltestlab.product.domain.model.ProductName("상품");
+        var quantity = new Quantity(3);
+        var unitPrice = Money.of(1000);
 
-            // when
-
-            // then
-
+        // when
         var line = new com.dochiri.tooltestlab.order.domain.model.OrderLine(
-                new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("상품"),
-                new Quantity(3), Money.of(1000));
+                productId, productName, quantity, unitPrice);
+
+        // then
         assertThat(line.totalPrice()).isEqualTo(Money.of(3000));
     }
 
     @Test
     @DisplayName("OrderLines 팩토리 생성")
     void orderLinesFromFactory() {
-            // given
-
-            // when
-
-            // then
-
+        // given
+        var productId = new com.dochiri.tooltestlab.product.domain.model.ProductId("p1");
+        var productName = new com.dochiri.tooltestlab.product.domain.model.ProductName("상품");
+        var quantity = new Quantity(1);
+        var unitPrice = Money.of(1000);
         var line = new com.dochiri.tooltestlab.order.domain.model.OrderLine(
-                new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("상품"),
-                new Quantity(1), Money.of(1000));
+                productId, productName, quantity, unitPrice);
+
+        // when
         var lines = com.dochiri.tooltestlab.order.domain.model.OrderLines.from(java.util.List.of(line));
+
+        // then
         assertThat(lines.size()).isEqualTo(1);
     }
 }

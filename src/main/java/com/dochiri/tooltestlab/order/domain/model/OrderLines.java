@@ -2,8 +2,8 @@ package com.dochiri.tooltestlab.order.domain.model;
 
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderLinesException;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.shared.model.MaxCount;
-import com.dochiri.tooltestlab.shared.model.Money;
+import com.dochiri.tooltestlab.product.domain.model.MaxCount;
+import com.dochiri.tooltestlab.product.domain.model.Money;
 
 import java.util.Arrays;
 import java.util.List;

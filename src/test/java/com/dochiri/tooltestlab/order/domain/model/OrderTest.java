@@ -4,7 +4,7 @@ import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.product.domain.model.ProductName;
-import com.dochiri.tooltestlab.shared.model.Money;
+import com.dochiri.tooltestlab.product.domain.model.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,17 +18,15 @@ class OrderTest {
     @Test
     @DisplayName("주문을 생성할 수 있다")
     void createOrder() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
                 new Quantity(2), Money.of(1_000_000L));
         final ShippingAddress address = new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"), new StreetAddress("서울시"), new ZipCode("12345"));
+
+        // when
         final Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)), address);
 
+        // then
         assertThat(order.id().value()).isNotBlank();
         assertThat(order.memberId()).isEqualTo(new MemberId("member1"));
         assertThat(order.items().size()).isEqualTo(1);
@@ -39,51 +37,38 @@ class OrderTest {
     @Test
     @DisplayName("주문을 취소할 수 있다 (PENDING 상태)")
     void cancelOrder() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
                 new Quantity(2), Money.of(1_000_000L));
         final Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)),
                 new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"), new StreetAddress("서울시"), new ZipCode("12345")));
 
+        // when
         final Order cancelled = order.cancel();
 
+        // then
         assertThat(cancelled.status()).isEqualTo(OrderStatus.CANCELLED);
     }
 
     @Test
     @DisplayName("이미 취소된 주문은 다시 취소할 수 없다")
     void cannotCancelTwice() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
                 new Quantity(2), Money.of(1_000_000L));
         final Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)),
                 new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"), new StreetAddress("서울시"), new ZipCode("12345")));
         final Order cancelled = order.cancel();
 
+        // when & then
         assertThatThrownBy(cancelled::cancel)
-                .isInstanceOf(InvalidOrderStatusException.class)
                 .isInstanceOf(InvalidOrderStatusException.class);
     }
 
     @Test
     @DisplayName("배송 완료된 주문은 취소할 수 없다")
     void cannotCancelDelivered() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
                 new Quantity(2), Money.of(1_000_000L));
         final ShippingAddress address = new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"), new StreetAddress("서울시"), new ZipCode("12345"));
@@ -92,8 +77,8 @@ class OrderTest {
         final Order shipped = paid.startShipping();
         final Order delivered = shipped.deliver();
 
+        // when & then
         assertThatThrownBy(delivered::cancel)
-                .isInstanceOf(InvalidOrderStatusException.class)
                 .isInstanceOf(InvalidOrderStatusException.class);
     }
 }

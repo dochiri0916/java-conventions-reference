@@ -11,6 +11,10 @@ public record ProductListResponse(
         @Schema(description = "페이지 크기", example = "20") int size,
         @Schema(description = "전체 상품 수", example = "150") long totalCount) {
 
+    public ProductListResponse {
+        products = List.copyOf(products);
+    }
+
     @Schema(description = "상품 요약")
     public record ProductSummary(
             @Schema(description = "상품 publicId", example = "a1b2c3d4e5f6") String publicId,
@@ -19,5 +23,9 @@ public record ProductListResponse(
             @Schema(description = "재고 수량", example = "100") int stock,
             @Schema(description = "상품 상태", example = "ACTIVE") String status,
             @Schema(description = "카테고리명 목록", example = "[\"전자기기\"]") List<String> categoryNames) {
+
+        public ProductSummary {
+            categoryNames = List.copyOf(categoryNames);
+        }
     }
 }

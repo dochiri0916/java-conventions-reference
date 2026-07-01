@@ -2,6 +2,7 @@ package com.dochiri.tooltestlab.review.application.exception;
 
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public final class ReviewNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

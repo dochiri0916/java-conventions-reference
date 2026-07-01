@@ -1,13 +1,13 @@
 package com.dochiri.tooltestlab.order.domain.model;
 
-import com.dochiri.tooltestlab.order.domain.event.OrderCancelledEvent;
+import com.dochiri.tooltestlab.order.domain.event.OrderCancelled;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderLinesException;
 
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
-public record OrderCancelledItems(List<OrderCancelledEvent.ItemDetail> values) {
+public record OrderCancelledItems(List<OrderCancelled.ItemDetail> values) {
 
     public OrderCancelledItems {
         requireNonNull(values, "주문 상품 목록은 null일 수 없습니다.");

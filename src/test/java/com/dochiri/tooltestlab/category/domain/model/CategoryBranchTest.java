@@ -10,81 +10,82 @@ class CategoryBranchTest {
     @Test
     @DisplayName("create 성공")
     void create() {
-            // given
+        // given
+        var expectedName = "전자기기";
 
-            // when
+        // when
+        var cat = Category.create(new CategoryName(expectedName));
 
-            // then
-
-        var cat = Category.create(new CategoryName("전자기기"));
+        // then
         assertThat(cat.id()).isNotNull();
-        assertThat(cat.name().value()).isEqualTo("전자기기");
+        assertThat(cat.name().value()).isEqualTo(expectedName);
     }
 
     @Test
     @DisplayName("equals - 다른 타입 false")
     void equalsDifferentType() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var cat = Category.create(new CategoryName("전자기기"));
-        assertThat(cat.equals("string")).isFalse();
+        var otherObject = new Object();
+
+        // when
+        var result = cat.equals(otherObject);
+
+        // then
+        assertThat(result).isFalse();
     }
 
     @Test
     @DisplayName("equals - 다른 인스턴스 같은 ID")
     void equalsDifferentInstanceSameId() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var c1 = Category.create(new CategoryName("전자기기"));
         var c2 = new Category(c1.id(), new CategoryName("의류"));
-        assertThat(c1.equals(c2)).isTrue();
+
+        // when
+        var result = c1.equals(c2);
+
+        // then
+        assertThat(result).isTrue();
     }
 
     @Test
     @DisplayName("equals - 자기 자신과 비교하면 true")
     void equalsSelf() {
-            // given
+        // given
         var cat = Category.create(new CategoryName("전자기기"));
 
-            // when
+        // when
         var result = cat.equals(cat);
 
-            // then
+        // then
         assertThat(result).isTrue();
     }
 
     @Test
     @DisplayName("equals - 다른 ID를 가지면 false")
     void equalsDifferentId() {
-            // given
+        // given
         var c1 = Category.create(new CategoryName("전자기기"));
         var c2 = Category.create(new CategoryName("의류"));
 
-            // when
+        // when
         var result = c1.equals(c2);
 
-            // then
+        // then
         assertThat(result).isFalse();
     }
 
     @Test
     @DisplayName("hashCode는 id 기반")
     void hashCodeBasedOnId() {
-            // given
+        // given
         var cat = Category.create(new CategoryName("전자기기"));
 
-            // when
+        // when
         var hash = cat.hashCode();
 
-            // then
+        // then
         assertThat(hash).isEqualTo(cat.id().hashCode());
     }
 }

@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.order.adapter.in.web;
 
-import com.dochiri.tooltestlab.global.web.LoginMember;
+import com.dochiri.tooltestlab.member.adapter.in.web.LoginMember;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.adapter.in.web.request.PlaceOrderRequest;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.OrderResponse;
@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,20 +23,13 @@ import java.util.Map;
 @Tag(name = "주문", description = "주문 생성, 조회, 취소 API")
 @RestController
 @RequestMapping("/api/orders")
+@RequiredArgsConstructor
 public class OrderController {
 
     private final PlaceOrderUseCase placeOrderUseCase;
     private final GetOrderUseCase getOrderUseCase;
     private final ListOrdersUseCase listOrdersUseCase;
     private final CancelOrderUseCase cancelOrderUseCase;
-
-    public OrderController(final PlaceOrderUseCase placeOrderUseCase, final GetOrderUseCase getOrderUseCase,
-                           ListOrdersUseCase listOrdersUseCase, final CancelOrderUseCase cancelOrderUseCase) {
-        this.placeOrderUseCase = placeOrderUseCase;
-        this.getOrderUseCase = getOrderUseCase;
-        this.listOrdersUseCase = listOrdersUseCase;
-        this.cancelOrderUseCase = cancelOrderUseCase;
-    }
 
     @Operation(summary = "주문 생성", description = "장바구니에 담긴 상품으로 주문을 생성합니다.")
     @ApiResponses({
@@ -53,7 +47,7 @@ public class OrderController {
         final PlaceOrderResult result = placeOrderUseCase.place(new PlaceOrderCommand(new MemberId(memberPublicId), shippingAddress));
 
         final var items = result.items().stream()
-                .map(i -> new OrderResponse.Item(i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), (long) i.quantity() * i.unitPrice()))
+                .map(i -> new OrderResponse.Item(i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.quantity() * i.unitPrice()))
                 .toList();
         return ResponseEntity.ok(new OrderResponse(result.publicId(), null, result.status(), result.totalAmount(),
                 request.recipientName(), request.phone(), request.address(), request.zipCode(), items));

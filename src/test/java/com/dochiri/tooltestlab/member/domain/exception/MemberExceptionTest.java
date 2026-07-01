@@ -10,65 +10,63 @@ class MemberExceptionTest {
     @Test
     @DisplayName("InvalidEmailException 정상 생성")
     void invalidEmail() {
-            // given
+        // given
+        var expectedCode = MemberDomainErrorCode.INVALID_EMAIL;
 
-            // when
-
-            // then
-
+        // when
         var ex = InvalidEmailException.invalidEmail();
-        assertThat(ex.code()).isEqualTo(MemberDomainErrorCode.INVALID_EMAIL);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("InvalidMemberIdException 정상 생성")
     void invalidMemberId() {
-            // given
+        // given
+        var expectedCode = MemberDomainErrorCode.INVALID_MEMBER_ID;
 
-            // when
-
-            // then
-
+        // when
         var ex = InvalidMemberIdException.invalidMemberId();
-        assertThat(ex.code()).isEqualTo(MemberDomainErrorCode.INVALID_MEMBER_ID);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("InvalidMemberNameException 정상 생성")
     void invalidMbrName() {
-            // given
+        // given
+        var expectedCode = MemberDomainErrorCode.INVALID_MBR_NAME;
 
-            // when
-
-            // then
-
+        // when
         var ex = InvalidMemberNameException.invalidMbrName();
-        assertThat(ex.code()).isEqualTo(MemberDomainErrorCode.INVALID_MBR_NAME);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("InvalidPasswordException 정상 생성")
     void invalidPassword() {
-            // given
+        // given
+        var expectedCode = MemberDomainErrorCode.INVALID_PASSWORD;
 
-            // when
-
-            // then
-
+        // when
         var ex = InvalidPasswordException.invalidPassword();
-        assertThat(ex.code()).isEqualTo(MemberDomainErrorCode.INVALID_PASSWORD);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("MemberDomainErrorCode 모든 코드가 title을 가진다")
     void errorCodes() {
-            // given
+        // given
+        var codes = MemberDomainErrorCode.values();
 
-            // when
-
-            // then
-
-        for (var code : MemberDomainErrorCode.values()) {
+        // when & then
+        for (var code : codes) {
             assertThat(code.title()).isNotBlank();
         }
     }

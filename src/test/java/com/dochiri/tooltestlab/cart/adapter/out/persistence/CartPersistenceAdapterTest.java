@@ -6,7 +6,7 @@ import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.domain.model.Quantity;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.product.domain.model.ProductName;
-import com.dochiri.tooltestlab.shared.model.Money;
+import com.dochiri.tooltestlab.product.domain.model.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +59,7 @@ class CartPersistenceAdapterTest {
 
     @Test
     @DisplayName("동시 생성으로 인한 UNIQUE 제약 위반 시 재시도 로직이 실행된다")
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     void retryOnUniqueConstraintViolation() {
             // given
         var memberId = new MemberId("cartTestMem3");

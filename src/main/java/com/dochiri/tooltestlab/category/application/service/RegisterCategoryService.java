@@ -6,20 +6,18 @@ import com.dochiri.tooltestlab.category.application.port.in.RegisterCategoryUseC
 import com.dochiri.tooltestlab.category.domain.model.Category;
 import com.dochiri.tooltestlab.category.domain.model.CategoryName;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public final class RegisterCategoryService implements RegisterCategoryUseCase {
 
     private final ProductRepositoryPort productRepositoryPort;
 
-    public RegisterCategoryService(final ProductRepositoryPort productRepositoryPort) {
-        this.productRepositoryPort = productRepositoryPort;
-    }
-
     @Override
+    @Transactional
     public RegisterCategoryResult register(final RegisterCategoryCommand command) {
         final Category saved = productRepositoryPort.saveCategory(Category.create(new CategoryName(command.name())));
         return new RegisterCategoryResult(saved.id().value(), saved.name().value());

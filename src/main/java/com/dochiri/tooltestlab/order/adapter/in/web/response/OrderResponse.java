@@ -16,6 +16,10 @@ public record OrderResponse(
         @Schema(description = "우편번호", example = "06164") String zipCode,
         @Schema(description = "주문 상품 목록") List<Item> items) {
 
+    public OrderResponse {
+        items = List.copyOf(items);
+    }
+
     @Schema(description = "주문 상품")
     public record Item(
             @Schema(description = "상품 publicId", example = "p1r2o3d4u5c6") String productPublicId,

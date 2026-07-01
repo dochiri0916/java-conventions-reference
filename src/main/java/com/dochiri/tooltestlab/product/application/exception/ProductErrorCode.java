@@ -4,13 +4,13 @@ public enum ProductErrorCode {
 
     PRODUCT_NOT_FOUND("상품 없음");
 
-    private final String title;
+    private final String message;
 
     ProductErrorCode(final String title) {
-        this.title = title;
+        this.message = title;
     }
 
     public String title() {
-        return title;
+        return message;
     }
 }

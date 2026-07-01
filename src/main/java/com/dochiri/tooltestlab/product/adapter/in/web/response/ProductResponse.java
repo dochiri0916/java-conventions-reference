@@ -13,4 +13,8 @@ public record ProductResponse(
         @Schema(description = "재고 수량", example = "100") int stock,
         @Schema(description = "상품 상태", example = "ACTIVE") String status,
         @Schema(description = "카테고리명 목록", example = "[\"전자기기\", \"노트북\"]") List<String> categoryNames) {
+
+    public ProductResponse {
+        categoryNames = List.copyOf(categoryNames);
+    }
 }

@@ -27,34 +27,17 @@ dependencies {
     implementation 'org.springframework.security:spring-security-crypto'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
     compileOnly 'org.projectlombok:lombok'
+    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.9.8'
     runtimeOnly 'com.h2database:h2'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testCompileOnly 'org.projectlombok:lombok'
+    testCompileOnly 'com.github.spotbugs:spotbugs-annotations:4.9.8'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
-}
-
-pmd {
-    ruleSets = []
-    ruleSetFiles = files("$rootDir/config/pmd/ruleset.xml")
-}
-
-spotbugs {
-    excludeFilter = file("$rootDir/config/spotbugs/exclude.xml")
-}
-
-jacocoTestCoverageVerification {
-    afterEvaluate {
-        classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                '**/Safe*PersistenceAdapter.class'
-            ])
-        }))
-    }
 }

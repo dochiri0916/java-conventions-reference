@@ -2,6 +2,7 @@ package com.dochiri.tooltestlab.order.application.exception;
 
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public final class OrderNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

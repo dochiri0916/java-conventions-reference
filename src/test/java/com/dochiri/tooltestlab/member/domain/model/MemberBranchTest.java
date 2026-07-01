@@ -10,69 +10,69 @@ class MemberBranchTest {
     @Test
     @DisplayName("회원 탈퇴")
     void withdraw() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var member = Member.create(new Email("test@test.com"), new Password("pw"), new MemberName("홍길동"));
+
+        // when
         var withdrawn = member.withdraw();
+
+        // then
         assertThat(withdrawn.status()).isEqualTo(MemberStatus.WITHDRAWN);
     }
 
     @Test
     @DisplayName("equals - 다른 타입 false")
     void equalsDifferentType() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var member = Member.create(new Email("test@test.com"), new Password("pw"), new MemberName("홍길동"));
-        assertThat(member.equals("string")).isFalse();
+        var otherObject = new Object();
+
+        // when
+        var result = member.equals(otherObject);
+
+        // then
+        assertThat(result).isFalse();
     }
 
     @Test
     @DisplayName("equals - 다른 인스턴스 같은 ID")
     void equalsDifferentInstanceSameId() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var m1 = Member.create(new Email("a@a.com"), new Password("pw"), new MemberName("A"));
         var m2 = new Member(m1.id(), new Email("b@b.com"), new Password("pw2"), new MemberName("B"), MemberStatus.ACTIVE);
-        assertThat(m1.equals(m2)).isTrue();
+
+        // when
+        var result = m1.equals(m2);
+
+        // then
+        assertThat(result).isTrue();
         assertThat(m1.hashCode()).isEqualTo(m2.hashCode());
     }
 
     @Test
     @DisplayName("equals - 자기 자신과 비교하면 true")
     void equalsSelf() {
-            // given
+        // given
         var member = Member.create(new Email("test@test.com"), new Password("pw"), new MemberName("홍길동"));
 
-            // when
+        // when
         var result = member.equals(member);
 
-            // then
+        // then
         assertThat(result).isTrue();
     }
 
     @Test
     @DisplayName("equals - 다른 ID를 가지면 false")
     void equalsDifferentId() {
-            // given
+        // given
         var m1 = Member.create(new Email("a@a.com"), new Password("pw"), new MemberName("A"));
         var m2 = Member.create(new Email("b@b.com"), new Password("pw2"), new MemberName("B"));
 
-            // when
+        // when
         var result = m1.equals(m2);
 
-            // then
+        // then
         assertThat(result).isFalse();
     }
 }

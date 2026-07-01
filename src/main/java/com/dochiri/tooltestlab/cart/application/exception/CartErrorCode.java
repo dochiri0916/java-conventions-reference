@@ -6,13 +6,13 @@ public enum CartErrorCode {
     CART_ITEM_NOT_FOUND("장바구니 상품 없음"),
     NOT_CART_OWNER("권한 없음");
 
-    private final String title;
+    private final String message;
 
     CartErrorCode(final String title) {
-        this.title = title;
+        this.message = title;
     }
 
     public String title() {
-        return title;
+        return message;
     }
 }

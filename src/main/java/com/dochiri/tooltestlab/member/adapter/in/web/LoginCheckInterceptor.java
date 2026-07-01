@@ -1,4 +1,4 @@
-package com.dochiri.tooltestlab.global.web;
+package com.dochiri.tooltestlab.member.adapter.in.web;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

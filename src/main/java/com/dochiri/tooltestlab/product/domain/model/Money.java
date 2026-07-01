@@ -1,12 +1,14 @@
-package com.dochiri.tooltestlab.shared.model;
+package com.dochiri.tooltestlab.product.domain.model;
 
-import java.util.Objects;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidMoneyException;
 
 public record Money(long amount) {
 
+    public static final Money ZERO = new Money(0);
+
     public Money {
         if (amount < 0) {
-            throw new IllegalArgumentException("금액은 0 이상이어야 합니다. 입력값: " + amount);
+            throw InvalidMoneyException.negative(amount);
         }
     }
 
@@ -14,16 +16,16 @@ public record Money(long amount) {
         return new Money(amount);
     }
 
-    public static final Money ZERO = new Money(0);
-
     public Money add(Money other) {
-        Objects.requireNonNull(other, "더할 금액은 null일 수 없습니다.");
+        if (other == null) {
+            throw InvalidMoneyException.addNull();
+        }
         return new Money(this.amount + other.amount);
     }
 
     public Money multiply(int quantity) {
         if (quantity < 0) {
-            throw new IllegalArgumentException("수량은 0 이상이어야 합니다. 입력값: " + quantity);
+            throw InvalidMoneyException.multiplyNegative(quantity);
         }
         return new Money(this.amount * quantity);
     }

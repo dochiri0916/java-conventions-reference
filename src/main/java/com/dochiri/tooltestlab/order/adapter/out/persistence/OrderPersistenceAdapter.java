@@ -23,20 +23,21 @@ class OrderPersistenceAdapter implements OrderRepositoryPort {
     @Override
     public Order save(final Order order) {
         final Optional<OrderEntity> existing = orderJpaRepository.findByOrderId(order.id().value());
-        final OrderEntity entity;
         if (existing.isPresent()) {
-            entity = existing.get();
+            final OrderEntity entity = existing.get();
             entity.apply(order);
-        } else {
-            entity = OrderMapper.toEntity(order);
+            final OrderEntity savedOrder = orderJpaRepository.save(entity);
+            orderLineJpaRepository.deleteByOrderId(order.id().value());
+            final List<OrderLineEntity> items = OrderMapper.toItemEntities(order, order.id().value());
+            orderLineJpaRepository.saveAll(items);
+            return OrderMapper.toDomain(savedOrder, items);
         }
-        final OrderEntity savedOrder = orderJpaRepository.save(entity);
 
-        // items: 기존 삭제 후 새로 저장 (orphanRemoval 수동 구현)
+        final OrderEntity entity = OrderMapper.toEntity(order);
+        final OrderEntity savedOrder = orderJpaRepository.save(entity);
         orderLineJpaRepository.deleteByOrderId(order.id().value());
         final List<OrderLineEntity> items = OrderMapper.toItemEntities(order, order.id().value());
         orderLineJpaRepository.saveAll(items);
-
         return OrderMapper.toDomain(savedOrder, items);
     }
 

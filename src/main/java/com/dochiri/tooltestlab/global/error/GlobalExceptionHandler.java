@@ -1,8 +1,13 @@
 package com.dochiri.tooltestlab.global.error;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,19 +21,12 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final ApiProblemDetailFactory problemDetailFactory;
     private final ApiExceptionMapper exceptionMapper;
     private final MessageSource messageSource;
-
-    public GlobalExceptionHandler(final ApiProblemDetailFactory problemDetailFactory,
-                                   ApiExceptionMapper exceptionMapper,
-                                   MessageSource messageSource) {
-        this.problemDetailFactory = problemDetailFactory;
-        this.exceptionMapper = exceptionMapper;
-        this.messageSource = messageSource;
-    }
 
     // ── Domain / Application 예외 (code() 메서드로 error code 추출) ─────
 
@@ -53,11 +51,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     // ── Fallback ───────────────────────────────────────────────────────
 
-    @SuppressWarnings("PMD.UnusedFormalParameter")
     private ResponseEntity<ProblemDetail> handleUnexpected(Exception ex) {
         final Locale locale = LocaleContextHolder.getLocale();
         final String title = messageSource.getMessage("error.internal.title", null, "Internal Server Error", locale);
-        final String detail = messageSource.getMessage("error.internal.detail", null, "An unexpected error occurred.", locale);
+        final String detail = messageSource.getMessage("error.internal.detail", null,
+                "An unexpected error occurred.", locale);
         final ProblemDetail body = problemDetailFactory.create(
                 "INTERNAL_SERVER_ERROR", title,
                 detail, HttpStatus.INTERNAL_SERVER_ERROR, ProblemType.INTERNAL_ERROR);
@@ -73,8 +71,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatusCode status,
             WebRequest request) {
         final Locale locale = LocaleContextHolder.getLocale();
-        final String detail = messageSource.getMessage("error.validation.detail", null, "Request validation failed.", locale);
-        final String title = messageSource.getMessage("error.validation.title", null, "Validation failed", locale);
+        final String detail = messageSource.getMessage("error.validation.detail", null,
+                "Request validation failed.", locale);
+        final String title = messageSource.getMessage("error.validation.title", null,
+                "Validation failed", locale);
         final ProblemDetail body = ProblemDetail.forStatusAndDetail(status, detail);
         body.setTitle(title);
         body.setProperty("code", "VALIDATION_ERROR");

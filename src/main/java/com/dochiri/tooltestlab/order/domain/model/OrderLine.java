@@ -2,7 +2,7 @@ package com.dochiri.tooltestlab.order.domain.model;
 
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.product.domain.model.ProductName;
-import com.dochiri.tooltestlab.shared.model.Money;
+import com.dochiri.tooltestlab.product.domain.model.Money;
 
 import static java.util.Objects.requireNonNull;
 

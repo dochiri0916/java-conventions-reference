@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.review.adapter.in.web;
 
-import com.dochiri.tooltestlab.global.web.LoginMember;
+import com.dochiri.tooltestlab.member.adapter.in.web.LoginMember;
 import com.dochiri.tooltestlab.review.adapter.in.web.request.WriteReviewRequest;
 import com.dochiri.tooltestlab.review.adapter.in.web.response.ReviewResponse;
 import com.dochiri.tooltestlab.review.application.port.in.*;
@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,19 +19,12 @@ import java.util.Map;
 @Tag(name = "리뷰", description = "리뷰 작성, 조회, 삭제 API")
 @RestController
 @RequestMapping("/api/reviews")
+@RequiredArgsConstructor
 public class ReviewController {
 
     private final WriteReviewUseCase writeReviewUseCase;
     private final GetProductReviewsUseCase getProductReviewsUseCase;
     private final DeleteReviewUseCase deleteReviewUseCase;
-
-    public ReviewController(final WriteReviewUseCase writeReviewUseCase,
-                            GetProductReviewsUseCase getProductReviewsUseCase,
-                            DeleteReviewUseCase deleteReviewUseCase) {
-        this.writeReviewUseCase = writeReviewUseCase;
-        this.getProductReviewsUseCase = getProductReviewsUseCase;
-        this.deleteReviewUseCase = deleteReviewUseCase;
-    }
 
     @Operation(summary = "리뷰 작성", description = "상품에 대한 리뷰를 작성합니다.")
     @ApiResponses({

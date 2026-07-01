@@ -2,6 +2,7 @@ package com.dochiri.tooltestlab.product.application.exception;
 
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public final class ProductNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

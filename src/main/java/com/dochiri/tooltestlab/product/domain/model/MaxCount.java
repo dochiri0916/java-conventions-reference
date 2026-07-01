@@ -1,10 +1,12 @@
-package com.dochiri.tooltestlab.shared.model;
+package com.dochiri.tooltestlab.product.domain.model;
+
+import com.dochiri.tooltestlab.product.domain.exception.InvalidMaxCountException;
 
 public record MaxCount(int value) {
 
     public MaxCount {
         if (value <= 0) {
-            throw new IllegalArgumentException("최대 개수는 0보다 커야 합니다. 입력값: " + value);
+            throw InvalidMaxCountException.notPositive(value);
         }
     }
 

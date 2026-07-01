@@ -11,6 +11,10 @@ public record CartResponse(
         @Schema(description = "장바구니 상품 목록") List<Item> items,
         @Schema(description = "총 금액 (원 단위)", example = "7380000") long totalAmount) {
 
+    public CartResponse {
+        items = List.copyOf(items);
+    }
+
     @Schema(description = "장바구니 상품")
     public record Item(
             @Schema(description = "상품 publicId", example = "p1r2o3d4u5c6") String productPublicId,

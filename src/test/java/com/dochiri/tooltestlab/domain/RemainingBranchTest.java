@@ -1,5 +1,7 @@
 package com.dochiri.tooltestlab.domain;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import com.dochiri.tooltestlab.cart.application.port.in.AddToCartCommand;
 import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartCommand;
 import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException;
@@ -14,7 +16,7 @@ import com.dochiri.tooltestlab.order.domain.model.Quantity;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.product.domain.model.ProductName;
 import com.dochiri.tooltestlab.review.application.port.in.WriteReviewCommand;
-import com.dochiri.tooltestlab.shared.model.Money;
+import com.dochiri.tooltestlab.product.domain.model.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +25,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SuppressFBWarnings(value = "RV", justification = "Return value used to verify immutability or exception")
 class RemainingBranchTest {
 
     // ── Commands ──
@@ -30,286 +33,277 @@ class RemainingBranchTest {
     @Test
     @DisplayName("AddToCartCommand - null 상품ID")
     void addToCartNullProduct() {
-            // given
+        // given
+        var memberId = "m1";
+        var quantity = 1;
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new AddToCartCommand("m1", null, 1))
+        // when & then
+        assertThatThrownBy(() -> new AddToCartCommand(memberId, null, quantity))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("AddToCartCommand - 공백 상품ID")
     void addToCartBlankProduct() {
-            // given
+        // given
+        var memberId = "m1";
+        var blankProductId = "  ";
+        var quantity = 1;
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new AddToCartCommand("m1", "  ", 1))
+        // when & then
+        assertThatThrownBy(() -> new AddToCartCommand(memberId, blankProductId, quantity))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("RemoveFromCartCommand - null 상품ID")
     void removeFromCartNullProduct() {
-            // given
+        // given
+        var memberId = "m1";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new RemoveFromCartCommand("m1", null))
+        // when & then
+        assertThatThrownBy(() -> new RemoveFromCartCommand(memberId, null))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("RemoveFromCartCommand - 공백 상품ID")
     void removeFromCartBlankProduct() {
-            // given
+        // given
+        var memberId = "m1";
+        var blankProductId = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new RemoveFromCartCommand("m1", "  "))
+        // when & then
+        assertThatThrownBy(() -> new RemoveFromCartCommand(memberId, blankProductId))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("RemoveFromCartCommand - 공백 회원ID")
     void removeFromCartBlankMember() {
-            // given
+        // given
+        var blankMemberId = "  ";
+        var productId = "p1";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new RemoveFromCartCommand("  ", "p1"))
+        // when & then
+        assertThatThrownBy(() -> new RemoveFromCartCommand(blankMemberId, productId))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("LoginMemberCommand - null 로그인")
     void loginMemberNull() {
-            // given
+        // given
+        var password = "pw";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new LoginMemberCommand(null, "pw"))
+        // when & then
+        assertThatThrownBy(() -> new LoginMemberCommand(null, password))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("LoginMemberCommand - 공백 이메일")
     void loginMemberBlank() {
-            // given
+        // given
+        var blankEmail = "  ";
+        var password = "pw";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new LoginMemberCommand("  ", "pw"))
+        // when & then
+        assertThatThrownBy(() -> new LoginMemberCommand(blankEmail, password))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("RegisterMemberCommand - null 이름")
     void registerMemberNullName() {
-            // given
+        // given
+        var email = "e@e.com";
+        var password = "pw";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new RegisterMemberCommand("e@e.com", "pw", null))
+        // when & then
+        assertThatThrownBy(() -> new RegisterMemberCommand(email, password, null))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("WriteReviewCommand - null 회원")
     void writeReviewNullMember() {
-            // given
+        // given
+        var productId = "p1";
+        var rating = 5;
+        var content = "content";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new WriteReviewCommand(null, "p1", 5, "content"))
+        // when & then
+        assertThatThrownBy(() -> new WriteReviewCommand(null, productId, rating, content))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("WriteReviewCommand - null 상품")
     void writeReviewNullProduct() {
-            // given
+        // given
+        var memberId = "m1";
+        var rating = 5;
+        var content = "content";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new WriteReviewCommand("m1", null, 5, "content"))
+        // when & then
+        assertThatThrownBy(() -> new WriteReviewCommand(memberId, null, rating, content))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("WriteReviewCommand - 평점 0")
     void writeReviewRatingZero() {
-            // given
+        // given
+        var memberId = "m1";
+        var productId = "p1";
+        var invalidRating = 0;
+        var content = "content";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new WriteReviewCommand("m1", "p1", 0, "content"))
+        // when & then
+        assertThatThrownBy(() -> new WriteReviewCommand(memberId, productId, invalidRating, content))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("WriteReviewCommand - 평점 6")
     void writeReviewRatingSix() {
-            // given
+        // given
+        var memberId = "m1";
+        var productId = "p1";
+        var invalidRating = 6;
+        var content = "content";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new WriteReviewCommand("m1", "p1", 6, "content"))
+        // when & then
+        assertThatThrownBy(() -> new WriteReviewCommand(memberId, productId, invalidRating, content))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("WriteReviewCommand - null 내용")
     void writeReviewNullContent() {
-            // given
+        // given
+        var memberId = "m1";
+        var productId = "p1";
+        var rating = 5;
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new WriteReviewCommand("m1", "p1", 5, null))
+        // when & then
+        assertThatThrownBy(() -> new WriteReviewCommand(memberId, productId, rating, null))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("WriteReviewCommand - 공백 회원ID")
     void writeReviewBlankMember() {
-            // given
+        // given
+        var blankMemberId = "  ";
+        var productId = "p1";
+        var rating = 5;
+        var content = "content";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new WriteReviewCommand("  ", "p1", 5, "content"))
+        // when & then
+        assertThatThrownBy(() -> new WriteReviewCommand(blankMemberId, productId, rating, content))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("WriteReviewCommand - 공백 상품ID")
     void writeReviewBlankProduct() {
-            // given
+        // given
+        var memberId = "m1";
+        var blankProductId = "  ";
+        var rating = 5;
+        var content = "content";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new WriteReviewCommand("m1", "  ", 5, "content"))
+        // when & then
+        assertThatThrownBy(() -> new WriteReviewCommand(memberId, blankProductId, rating, content))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("WriteReviewCommand - 공백 내용")
     void writeReviewBlankContent() {
-            // given
+        // given
+        var memberId = "m1";
+        var productId = "p1";
+        var rating = 5;
+        var blankContent = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new WriteReviewCommand("m1", "p1", 5, "  "))
+        // when & then
+        assertThatThrownBy(() -> new WriteReviewCommand(memberId, productId, rating, blankContent))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("LoginMemberCommand - null 비밀번호")
     void loginMemberNullPassword() {
-            // given
+        // given
+        var email = "e@e.com";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new LoginMemberCommand("e@e.com", null))
+        // when & then
+        assertThatThrownBy(() -> new LoginMemberCommand(email, null))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("LoginMemberCommand - 공백 비밀번호")
     void loginMemberBlankPassword() {
-            // given
+        // given
+        var email = "e@e.com";
+        var blankPassword = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new LoginMemberCommand("e@e.com", "  "))
+        // when & then
+        assertThatThrownBy(() -> new LoginMemberCommand(email, blankPassword))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("RegisterMemberCommand - null 비밀번호")
     void registerMemberNullPassword() {
-            // given
+        // given
+        var email = "e@e.com";
+        var name = "name";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new RegisterMemberCommand("e@e.com", null, "name"))
+        // when & then
+        assertThatThrownBy(() -> new RegisterMemberCommand(email, null, name))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("RegisterMemberCommand - 공백 비밀번호")
     void registerMemberBlankPassword() {
-            // given
+        // given
+        var email = "e@e.com";
+        var blankPassword = "  ";
+        var name = "name";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new RegisterMemberCommand("e@e.com", "  ", "name"))
+        // when & then
+        assertThatThrownBy(() -> new RegisterMemberCommand(email, blankPassword, name))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("RegisterMemberCommand - 공백 이름")
     void registerMemberBlankName() {
-            // given
+        // given
+        var email = "e@e.com";
+        var password = "pw";
+        var blankName = "  ";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new RegisterMemberCommand("e@e.com", "pw", "  "))
+        // when & then
+        assertThatThrownBy(() -> new RegisterMemberCommand(email, password, blankName))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("RegisterMemberCommand - null 이메일")
     void registerMemberNullEmail() {
-            // given
+        // given
+        var password = "pw";
+        var name = "name";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new RegisterMemberCommand(null, "pw", "name"))
+        // when & then
+        assertThatThrownBy(() -> new RegisterMemberCommand(null, password, name))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -318,14 +312,14 @@ class RemainingBranchTest {
     @Test
     @DisplayName("CartItem - 수량 증가")
     void cartItemIncrease() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var item = new CartItem(new ProductId("p1"), new ProductName("상품"), new Quantity(1), Money.of(1000));
-        var increased = item.increaseQuantity(2);
+        var increaseBy = 2;
+
+        // when
+        var increased = item.increaseQuantity(increaseBy);
+
+        // then
         assertThat(increased.quantity().value()).isEqualTo(3);
         assertThat(increased.totalPrice()).isEqualTo(Money.of(3000));
     }
@@ -333,29 +327,24 @@ class RemainingBranchTest {
     @Test
     @DisplayName("CartItem - 수량 증가 0 이하 예외")
     void cartItemIncreaseInvalid() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var item = new CartItem(new ProductId("p1"), new ProductName("상품"), new Quantity(1), Money.of(1000));
-        assertThatThrownBy(() -> item.increaseQuantity(0))
+        var invalidIncrease = 0;
+
+        // when & then
+        assertThatThrownBy(() -> item.increaseQuantity(invalidIncrease))
                 .isInstanceOf(InvalidCartItemException.class);
     }
 
     @Test
     @DisplayName("CartItems - 없는 상품 교체 예외")
     void cartItemsReplaceNotFound() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var items = CartItems.empty();
         var item = new CartItem(new ProductId("p1"), new ProductName("상품"), new Quantity(1), Money.of(1000));
         var newItem = new CartItem(new ProductId("p1"), new ProductName("상품"), new Quantity(2), Money.of(1000));
+
+        // when & then
         assertThatThrownBy(() -> items.replace(item, newItem))
                 .isInstanceOf(InvalidCartItemException.class);
     }
@@ -363,18 +352,23 @@ class RemainingBranchTest {
     @Test
     @DisplayName("CartItems - 상품ID로 찾기 및 포함 여부")
     void cartItemsFind() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var item = new CartItem(new ProductId("p1"), new ProductName("상품"), new Quantity(1), Money.of(1000));
         var items = CartItems.from(List.of(item));
-        assertThat(items.containsProduct(new ProductId("p1"))).isTrue();
-        assertThat(items.containsProduct(new ProductId("p2"))).isFalse();
-        assertThat(items.findByProductId(new ProductId("p1"))).isPresent();
-        assertThat(items.findByProductId(new ProductId("p2"))).isEmpty();
+        var existingProductId = new ProductId("p1");
+        var nonExistingProductId = new ProductId("p2");
+
+        // when
+        var containsExisting = items.containsProduct(existingProductId);
+        var containsNonExisting = items.containsProduct(nonExistingProductId);
+        var found = items.findByProductId(existingProductId);
+        var notFound = items.findByProductId(nonExistingProductId);
+
+        // then
+        assertThat(containsExisting).isTrue();
+        assertThat(containsNonExisting).isFalse();
+        assertThat(found).isPresent();
+        assertThat(notFound).isEmpty();
     }
 
     // ── OrderLine ──
@@ -382,27 +376,29 @@ class RemainingBranchTest {
     @Test
     @DisplayName("OrderLine 총 가격")
     void orderLineTotalPrice() {
-            // given
+        // given
+        var productId = new ProductId("p1");
+        var productName = new ProductName("상품");
+        var quantity = new Quantity(3);
+        var unitPrice = Money.of(1000);
 
-            // when
+        // when
+        var line = new OrderLine(productId, productName, quantity, unitPrice);
 
-            // then
-
-        var line = new OrderLine(new ProductId("p1"), new ProductName("상품"), new Quantity(3), Money.of(1000));
+        // then
         assertThat(line.totalPrice()).isEqualTo(Money.of(3000));
     }
 
     @Test
     @DisplayName("OrderLines 배열로부터 생성")
     void orderLinesFromArray() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var line = new OrderLine(new ProductId("p1"), new ProductName("상품"), new Quantity(1), Money.of(1000));
+
+        // when
         var lines = OrderLines.fromArray(line);
+
+        // then
         assertThat(lines.size()).isEqualTo(1);
     }
 
@@ -410,14 +406,13 @@ class RemainingBranchTest {
 
     @Test
     @DisplayName("CartId null 예외")
+    @SuppressFBWarnings(value = "NP", justification = "의도적인 null 입력 검증 테스트")
     void cartIdNull() {
-            // given
+        // given
+        String nullValue = null;
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> new CartId(null))
+        // when & then
+        assertThatThrownBy(() -> new CartId(nullValue))
                 .isInstanceOf(NullPointerException.class);
     }
 }

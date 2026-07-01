@@ -1,23 +1,18 @@
 package com.dochiri.tooltestlab.global.error;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.Instant;
 import java.util.Locale;
 
-@Component
+@RequiredArgsConstructor
 public class ApiProblemDetailFactory {
 
     private final URI baseUri;
-
-    public ApiProblemDetailFactory(@Value("${api.problem.base-uri}") URI baseUri) {
-        this.baseUri = baseUri;
-    }
 
     public ProblemDetail create(final ApiErrorCode errorCode, final String detail) {
         final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(errorCode.status(), detail);

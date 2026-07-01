@@ -13,7 +13,7 @@ import com.dochiri.tooltestlab.product.application.exception.ProductNotFoundExce
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.product.domain.exception.InsufficientStockException;
 import com.dochiri.tooltestlab.product.domain.model.*;
-import com.dochiri.tooltestlab.shared.model.Money;
+import com.dochiri.tooltestlab.product.domain.model.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,13 +79,10 @@ class OrderServiceMockTest {
     @Test
     @DisplayName("cancelOrder - 주문 없음 예외")
     void cancelOrderNotFound() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         when(orderRepositoryPort.findByPublicId("nonexistent")).thenReturn(Optional.empty());
+
+        // when & then
         assertThatThrownBy(() -> cancelOrderService.cancel("m1", "nonexistent"))
                 .isInstanceOf(OrderNotFoundException.class);
     }
@@ -94,43 +90,34 @@ class OrderServiceMockTest {
     @Test
     @DisplayName("cancelOrder - 주문 소유자 아님 예외")
     void cancelOrderNotOwner() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var order = createTestOrder("owner1");
         when(orderRepositoryPort.findByPublicId(order.id().value())).thenReturn(Optional.of(order));
+
+        // when & then
         assertThatThrownBy(() -> cancelOrderService.cancel("otherUser", order.id().value()))
                 .isInstanceOf(NotOrderOwnerException.class);
     }
 
     @Test
     @DisplayName("getOrder - 주문 없음 예외")
-    void getOrderNotFound() {
-            // given
-
-            // when
-
-            // then
-
+    void retrieveOrderNotFound() {
+        // given
         when(orderRepositoryPort.findByPublicId("nonexistent")).thenReturn(Optional.empty());
+
+        // when & then
         assertThatThrownBy(() -> getOrderService.getOrder("m1", "nonexistent"))
                 .isInstanceOf(OrderNotFoundException.class);
     }
 
     @Test
     @DisplayName("getOrder - 주문 소유자 아님 예외")
-    void getOrderNotOwner() {
-            // given
-
-            // when
-
-            // then
-
+    void retrieveOrderNotOwner() {
+        // given
         var order = createTestOrder("owner1");
         when(orderRepositoryPort.findByPublicId(order.id().value())).thenReturn(Optional.of(order));
+
+        // when & then
         assertThatThrownBy(() -> getOrderService.getOrder("otherUser", order.id().value()))
                 .isInstanceOf(NotOrderOwnerException.class);
     }
@@ -140,13 +127,11 @@ class OrderServiceMockTest {
     @Test
     @DisplayName("placeOrder - 장바구니를 찾을 수 없으면 EmptyCartException")
     void placeOrderCartNotFound() {
-            // given
+        // given
         var cmd = createPlaceOrderCommand();
         when(cartRepositoryPort.findByMemberId("m1")).thenReturn(Optional.empty());
 
-            // when
-
-            // then
+        // when & then
         assertThatThrownBy(() -> placeOrderService.place(cmd))
                 .isInstanceOf(EmptyCartException.class);
     }
@@ -154,14 +139,12 @@ class OrderServiceMockTest {
     @Test
     @DisplayName("placeOrder - 장바구니가 비어있으면 EmptyCartException")
     void placeOrderEmptyCart() {
-            // given
+        // given
         var cmd = createPlaceOrderCommand();
         var emptyCart = Cart.create(new MemberId("m1"));
         when(cartRepositoryPort.findByMemberId("m1")).thenReturn(Optional.of(emptyCart));
 
-            // when
-
-            // then
+        // when & then
         assertThatThrownBy(() -> placeOrderService.place(cmd))
                 .isInstanceOf(EmptyCartException.class);
     }
@@ -169,15 +152,13 @@ class OrderServiceMockTest {
     @Test
     @DisplayName("placeOrder - 상품을 찾을 수 없으면 ProductNotFoundException")
     void placeOrderProductNotFound() {
-            // given
+        // given
         var cmd = createPlaceOrderCommand();
         var cart = createCartWithItem("m1");
         when(cartRepositoryPort.findByMemberId("m1")).thenReturn(Optional.of(cart));
         when(productRepositoryPort.findByPublicId("p1")).thenReturn(Optional.empty());
 
-            // when
-
-            // then
+        // when & then
         assertThatThrownBy(() -> placeOrderService.place(cmd))
                 .isInstanceOf(ProductNotFoundException.class);
     }
@@ -185,7 +166,7 @@ class OrderServiceMockTest {
     @Test
     @DisplayName("placeOrder - 재고가 부족하면 InsufficientStockException")
     void placeOrderInsufficientStock() {
-            // given
+        // given
         var cmd = createPlaceOrderCommand();
         var cart = createCartWithItem("m1");
         var lowStockProduct = new Product(new ProductId("p1"), new ProductName("상품"),
@@ -194,9 +175,7 @@ class OrderServiceMockTest {
         when(cartRepositoryPort.findByMemberId("m1")).thenReturn(Optional.of(cart));
         when(productRepositoryPort.findByPublicId("p1")).thenReturn(Optional.of(lowStockProduct));
 
-            // when
-
-            // then
+        // when & then
         assertThatThrownBy(() -> placeOrderService.place(cmd))
                 .isInstanceOf(InsufficientStockException.class);
     }

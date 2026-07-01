@@ -6,22 +6,20 @@ import com.dochiri.tooltestlab.product.application.port.in.GetProductResult;
 import com.dochiri.tooltestlab.product.application.port.in.GetProductUseCase;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.product.domain.model.Product;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public final class GetProductService implements GetProductUseCase {
 
     private final ProductRepositoryPort productRepositoryPort;
 
-    public GetProductService(final ProductRepositoryPort productRepositoryPort) {
-        this.productRepositoryPort = productRepositoryPort;
-    }
-
     @Override
+    @Transactional(readOnly = true)
     public GetProductResult getProduct(final String publicId) {
         final Product product = productRepositoryPort.findByPublicId(publicId)
                 .orElseThrow(() -> ProductNotFoundException.productNotFound(publicId));

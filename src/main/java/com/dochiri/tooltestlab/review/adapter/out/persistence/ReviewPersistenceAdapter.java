@@ -2,6 +2,7 @@ package com.dochiri.tooltestlab.review.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
 import com.dochiri.tooltestlab.review.domain.model.Review;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
@@ -9,14 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 @ConditionalOnProperty(name = "tool-test-lab.concurrency.safe", havingValue = "false", matchIfMissing = true)
 class ReviewPersistenceAdapter implements ReviewRepositoryPort {
 
     private final ReviewJpaRepository reviewJpaRepository;
-
-    ReviewPersistenceAdapter(final ReviewJpaRepository reviewJpaRepository) {
-        this.reviewJpaRepository = reviewJpaRepository;
-    }
 
     @Override
     public Review save(final Review review) {

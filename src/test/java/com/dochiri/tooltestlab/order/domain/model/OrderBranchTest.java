@@ -2,7 +2,7 @@ package com.dochiri.tooltestlab.order.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
-import com.dochiri.tooltestlab.shared.model.Money;
+import com.dochiri.tooltestlab.product.domain.model.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,164 +29,148 @@ class OrderBranchTest {
     @Test
     @DisplayName("pay 성공")
     void paySuccess() {
-            // given
+        // given
+        var order = pending;
 
-            // when
+        // when
+        var paid = order.pay();
 
-            // then
-
-        var paid = pending.pay();
+        // then
         assertThat(paid.status()).isEqualTo(OrderStatus.PAID);
     }
 
     @Test
     @DisplayName("pay 실패 - PENDING이 아니면 예외")
     void payFail() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var paid = pending.pay();
+
+        // when & then
         assertThatThrownBy(paid::pay).isInstanceOf(InvalidOrderStatusException.class);
     }
 
     @Test
     @DisplayName("startShipping 성공")
     void startShippingSuccess() {
-            // given
+        // given
+        var paid = pending.pay();
 
-            // when
+        // when
+        var shipping = paid.startShipping();
 
-            // then
-
-        var shipping = pending.pay().startShipping();
+        // then
         assertThat(shipping.status()).isEqualTo(OrderStatus.SHIPPING);
     }
 
     @Test
     @DisplayName("startShipping 실패 - PAID가 아니면 예외")
     void startShippingFail() {
-            // given
+        // given
+        var order = pending;
 
-            // when
-
-            // then
-
-        assertThatThrownBy(pending::startShipping).isInstanceOf(InvalidOrderStatusException.class);
+        // when & then
+        assertThatThrownBy(order::startShipping).isInstanceOf(InvalidOrderStatusException.class);
     }
 
     @Test
     @DisplayName("deliver 성공")
     void deliverSuccess() {
-            // given
+        // given
+        var shipping = pending.pay().startShipping();
 
-            // when
+        // when
+        var delivered = shipping.deliver();
 
-            // then
-
-        var delivered = pending.pay().startShipping().deliver();
+        // then
         assertThat(delivered.status()).isEqualTo(OrderStatus.DELIVERED);
     }
 
     @Test
     @DisplayName("deliver 실패 - SHIPPING이 아니면 예외")
     void deliverFail() {
-            // given
+        // given
+        var order = pending;
 
-            // when
-
-            // then
-
-        assertThatThrownBy(pending::deliver).isInstanceOf(InvalidOrderStatusException.class);
+        // when & then
+        assertThatThrownBy(order::deliver).isInstanceOf(InvalidOrderStatusException.class);
     }
 
     @Test
     @DisplayName("cancel 성공 - PENDING 상태")
     void cancelPending() {
-            // given
+        // given
+        var order = pending;
 
-            // when
+        // when
+        var cancelled = order.cancel();
 
-            // then
-
-        var cancelled = pending.cancel();
+        // then
         assertThat(cancelled.status()).isEqualTo(OrderStatus.CANCELLED);
     }
 
     @Test
     @DisplayName("cancel 성공 - PAID 상태")
     void cancelPaid() {
-            // given
+        // given
+        var paid = pending.pay();
 
-            // when
+        // when
+        var cancelled = paid.cancel();
 
-            // then
-
-        var cancelled = pending.pay().cancel();
+        // then
         assertThat(cancelled.status()).isEqualTo(OrderStatus.CANCELLED);
     }
 
     @Test
     @DisplayName("cancel 실패 - DELIVERED 상태")
     void cancelDeliveredFail() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var delivered = pending.pay().startShipping().deliver();
+
+        // when & then
         assertThatThrownBy(delivered::cancel).isInstanceOf(InvalidOrderStatusException.class);
     }
 
     @Test
     @DisplayName("cancel 실패 - 이미 CANCELLED 상태")
     void cancelCancelledFail() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var cancelled = pending.cancel();
+
+        // when & then
         assertThatThrownBy(cancelled::cancel).isInstanceOf(InvalidOrderStatusException.class);
     }
 
     @Test
     @DisplayName("equals - 같은 ID면 true")
     void equalsSameId() {
-            // given
+        // given
+        var order = pending;
 
-            // when
+        // when
+        var result = order.equals(order);
 
-            // then
-
-        assertThat(pending.equals(pending)).isTrue();
+        // then
+        assertThat(result).isTrue();
     }
 
     @Test
     @DisplayName("equals - 다른 객체는 false")
     void equalsDifferentType() {
-            // given
+        // given
+        var otherObject = new Object();
 
-            // when
+        // when
+        var result = pending.equals(otherObject);
 
-            // then
-
-        assertThat(pending.equals("string")).isFalse();
+        // then
+        assertThat(result).isFalse();
     }
 
     @Test
     @DisplayName("equals - 다른 인스턴스 같은 ID")
     void equalsDifferentInstanceSameId() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var line = new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
                 new com.dochiri.tooltestlab.product.domain.model.ProductName("상품"),
                 new Quantity(1), Money.of(1000));
@@ -194,56 +178,53 @@ class OrderBranchTest {
                 new StreetAddress("서울시"), new ZipCode("12345"));
         var other = new Order(pending.id(), new MemberId("other"), OrderLines.from(List.of(line)),
                 OrderStatus.DELIVERED, address, Money.of(5000));
-        assertThat(pending.equals(other)).isTrue();
+
+        // when
+        var result = pending.equals(other);
+
+        // then
+        assertThat(result).isTrue();
     }
 
     @Test
     @DisplayName("hashCode는 id 기반")
     void hashCodeBasedOnId() {
-            // given
+        // given
+        var order = pending;
 
-            // when
+        // when
+        var hash = order.hashCode();
 
-            // then
-
-        assertThat(pending.hashCode()).isEqualTo(pending.id().hashCode());
+        // then
+        assertThat(hash).isEqualTo(order.id().hashCode());
     }
 
     @Test
     @DisplayName("OrderLines - 빈 목록 예외")
     void orderLinesEmpty() {
-            // given
+        // given
+        var emptyList = List.<OrderLine>of();
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> OrderLines.from(List.of()))
+        // when & then
+        assertThatThrownBy(() -> OrderLines.from(emptyList))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     @DisplayName("OrderLines - fromArray null 예외")
     void orderLinesFromArrayNull() {
-            // given
+        // given
+        var expectedException = NullPointerException.class;
 
-            // when
-
-            // then
-
+        // when & then
         assertThatThrownBy(() -> OrderLines.fromArray((OrderLine[]) null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(expectedException);
     }
 
     @Test
     @DisplayName("OrderLines totalAmount 계산")
     void orderLinesTotalAmount() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var line1 = new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
                 new com.dochiri.tooltestlab.product.domain.model.ProductName("A"),
                 new Quantity(2), Money.of(1000));
@@ -251,35 +232,37 @@ class OrderBranchTest {
                 new com.dochiri.tooltestlab.product.domain.model.ProductName("B"),
                 new Quantity(3), Money.of(500));
         var lines = OrderLines.from(List.of(line1, line2));
-        assertThat(lines.totalAmount()).isEqualTo(Money.of(3500));
+
+        // when
+        var total = lines.totalAmount();
+
+        // then
+        assertThat(total).isEqualTo(Money.of(3500));
         assertThat(lines.size()).isEqualTo(2);
     }
 
     @Test
     @DisplayName("OrderLines - null 목록이면 NullPointerException")
     void orderLinesNullValues() {
-            // given
+        // given
+        var expectedException = NullPointerException.class;
 
-            // when
-
-            // then
+        // when & then
         assertThatThrownBy(() -> new OrderLines(null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(expectedException);
     }
 
     @Test
     @DisplayName("OrderLines - null 요소가 포함되면 예외")
     void orderLinesNullElement() {
-            // given
+        // given
         var list = new java.util.ArrayList<OrderLine>();
         list.add(new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
                 new com.dochiri.tooltestlab.product.domain.model.ProductName("A"),
                 new Quantity(1), Money.of(1000)));
         list.add(null);
 
-            // when
-
-            // then
+        // when & then
         assertThatThrownBy(() -> OrderLines.from(list))
                 .isInstanceOf(RuntimeException.class);
     }
@@ -287,7 +270,7 @@ class OrderBranchTest {
     @Test
     @DisplayName("OrderLines - 최대 개수 초과 예외")
     void orderLinesMaxExceeded() {
-            // given
+        // given
         var list = new java.util.ArrayList<OrderLine>();
         for (int i = 0; i < 101; i++) {
             list.add(new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p" + i),
@@ -295,9 +278,7 @@ class OrderBranchTest {
                     new Quantity(1), Money.of(1000)));
         }
 
-            // when
-
-            // then
+        // when & then
         assertThatThrownBy(() -> OrderLines.from(list))
                 .isInstanceOf(RuntimeException.class);
     }
@@ -305,45 +286,46 @@ class OrderBranchTest {
     @Test
     @DisplayName("OrderLines - containsProduct 정상")
     void orderLinesContainsProduct() {
-            // given
+        // given
         var line = new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
                 new com.dochiri.tooltestlab.product.domain.model.ProductName("A"),
                 new Quantity(1), Money.of(1000));
         var lines = OrderLines.from(List.of(line));
+        var existingProductId = new com.dochiri.tooltestlab.product.domain.model.ProductId("p1");
+        var nonExistingProductId = new com.dochiri.tooltestlab.product.domain.model.ProductId("p2");
 
-            // when
+        // when
+        var containsExisting = lines.containsProduct(existingProductId);
+        var containsNonExisting = lines.containsProduct(nonExistingProductId);
 
-            // then
-        assertThat(lines.containsProduct(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"))).isTrue();
-        assertThat(lines.containsProduct(new com.dochiri.tooltestlab.product.domain.model.ProductId("p2"))).isFalse();
+        // then
+        assertThat(containsExisting).isTrue();
+        assertThat(containsNonExisting).isFalse();
     }
 
     @Test
     @DisplayName("OrderPlacedItems - null 목록이면 NullPointerException")
     void orderPlacedItemsNullValues() {
-            // given
+        // given
+        var expectedException = NullPointerException.class;
 
-            // when
-
-            // then
+        // when & then
         assertThatThrownBy(() -> new OrderPlacedItems(null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(expectedException);
     }
 
     @Test
     @DisplayName("OrderPlacedItems - null 요소가 포함되면 예외")
     void orderPlacedItemsNullElement() {
-            // given
-        var list = new java.util.ArrayList<com.dochiri.tooltestlab.order.domain.event.OrderPlacedEvent.ItemDetail>();
-        list.add(new com.dochiri.tooltestlab.order.domain.event.OrderPlacedEvent.ItemDetail(
+        // given
+        var list = new java.util.ArrayList<com.dochiri.tooltestlab.order.domain.event.OrderPlaced.ItemDetail>();
+        list.add(new com.dochiri.tooltestlab.order.domain.event.OrderPlaced.ItemDetail(
                 new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
                 new com.dochiri.tooltestlab.product.domain.model.ProductName("상품"),
                 new Quantity(1), Money.of(1000)));
         list.add(null);
 
-            // when
-
-            // then
+        // when & then
         assertThatThrownBy(() -> new OrderPlacedItems(list))
                 .isInstanceOf(RuntimeException.class);
     }
@@ -351,28 +333,25 @@ class OrderBranchTest {
     @Test
     @DisplayName("OrderCancelledItems - null 목록이면 NullPointerException")
     void orderCancelledItemsNullValues() {
-            // given
+        // given
+        var expectedException = NullPointerException.class;
 
-            // when
-
-            // then
+        // when & then
         assertThatThrownBy(() -> new OrderCancelledItems(null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(expectedException);
     }
 
     @Test
     @DisplayName("OrderCancelledItems - null 요소가 포함되면 예외")
     void orderCancelledItemsNullElement() {
-            // given
-        var list = new java.util.ArrayList<com.dochiri.tooltestlab.order.domain.event.OrderCancelledEvent.ItemDetail>();
-        list.add(new com.dochiri.tooltestlab.order.domain.event.OrderCancelledEvent.ItemDetail(
+        // given
+        var list = new java.util.ArrayList<com.dochiri.tooltestlab.order.domain.event.OrderCancelled.ItemDetail>();
+        list.add(new com.dochiri.tooltestlab.order.domain.event.OrderCancelled.ItemDetail(
                 new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
                 new Quantity(1)));
         list.add(null);
 
-            // when
-
-            // then
+        // when & then
         assertThatThrownBy(() -> new OrderCancelledItems(list))
                 .isInstanceOf(RuntimeException.class);
     }

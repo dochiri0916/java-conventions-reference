@@ -12,13 +12,16 @@ class ReviewBranchTest {
     @Test
     @DisplayName("create 성공")
     void create() {
-            // given
+        // given
+        var memberId = new MemberId("m1");
+        var productId = new ProductId("p1");
+        var rating = new Rating(5);
+        var content = new ReviewContent("좋아요");
 
-            // when
+        // when
+        var review = Review.create(memberId, productId, rating, content);
 
-            // then
-
-        var review = Review.create(new MemberId("m1"), new ProductId("p1"), new Rating(5), new ReviewContent("좋아요"));
+        // then
         assertThat(review.id()).isNotNull();
         assertThat(review.rating().value()).isEqualTo(5);
     }
@@ -26,67 +29,68 @@ class ReviewBranchTest {
     @Test
     @DisplayName("equals - 다른 타입 false")
     void equalsDifferentType() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var review = Review.create(new MemberId("m1"), new ProductId("p1"), new Rating(5), new ReviewContent("좋아요"));
-        assertThat(review.equals("string")).isFalse();
+        var other = new Object();
+
+        // when
+        var result = review.equals(other);
+
+        // then
+        assertThat(result).isFalse();
     }
 
     @Test
     @DisplayName("equals - 다른 인스턴스 같은 ID")
     void equalsDifferentInstanceSameId() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var r1 = Review.create(new MemberId("m1"), new ProductId("p1"), new Rating(5), new ReviewContent("좋아요"));
         var r2 = new Review(r1.id(), new MemberId("m2"), new ProductId("p2"), new Rating(1), new ReviewContent("별로"));
-        assertThat(r1.equals(r2)).isTrue();
+
+        // when
+        var result = r1.equals(r2);
+
+        // then
+        assertThat(result).isTrue();
     }
 
     @Test
     @DisplayName("equals - 자기 자신과 비교하면 true")
     void equalsSelf() {
-            // given
+        // given
         var review = Review.create(new MemberId("m1"), new ProductId("p1"), new Rating(5), new ReviewContent("좋아요"));
 
-            // when
+        // when
         var result = review.equals(review);
 
-            // then
+        // then
         assertThat(result).isTrue();
     }
 
     @Test
     @DisplayName("equals - 다른 ID를 가지면 false")
     void equalsDifferentId() {
-            // given
+        // given
         var r1 = Review.create(new MemberId("m1"), new ProductId("p1"), new Rating(5), new ReviewContent("좋아요"));
         var r2 = Review.create(new MemberId("m2"), new ProductId("p2"), new Rating(3), new ReviewContent("보통"));
 
-            // when
+        // when
         var result = r1.equals(r2);
 
-            // then
+        // then
         assertThat(result).isFalse();
     }
 
     @Test
     @DisplayName("hashCode는 id 기반")
     void hashCodeBasedOnId() {
-            // given
+        // given
         var review = Review.create(new MemberId("m1"), new ProductId("p1"), new Rating(5), new ReviewContent("좋아요"));
 
-            // when
+        // when
         var hash = review.hashCode();
 
-            // then
+        // then
         assertThat(hash).isEqualTo(review.id().hashCode());
     }
 }

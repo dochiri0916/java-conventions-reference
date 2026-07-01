@@ -1,7 +1,7 @@
-package com.dochiri.tooltestlab.global.config;
+package com.dochiri.tooltestlab.member.adapter.in.web.config;
 
-import com.dochiri.tooltestlab.global.web.LoginCheckInterceptor;
-import com.dochiri.tooltestlab.global.web.MemberSessionArgumentResolver;
+import com.dochiri.tooltestlab.member.adapter.in.web.LoginCheckInterceptor;
+import com.dochiri.tooltestlab.member.adapter.in.web.MemberSessionArgumentResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

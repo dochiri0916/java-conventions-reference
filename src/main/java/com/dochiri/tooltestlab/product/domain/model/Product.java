@@ -1,7 +1,5 @@
 package com.dochiri.tooltestlab.product.domain.model;
 
-import com.dochiri.tooltestlab.shared.model.Money;
-
 import static java.util.Objects.requireNonNull;
 
 public record Product(

@@ -2,6 +2,7 @@ package com.dochiri.tooltestlab.order.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
 import com.dochiri.tooltestlab.order.domain.model.Order;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
@@ -18,33 +19,30 @@ import static java.util.stream.Collectors.groupingBy;
  */
 @Repository
 @ConditionalOnProperty(name = "tool-test-lab.concurrency.safe", havingValue = "true")
+@RequiredArgsConstructor
 class SafeOrderPersistenceAdapter implements OrderRepositoryPort {
 
     private final OrderJpaRepository orderJpaRepository;
     private final OrderLineJpaRepository orderLineJpaRepository;
 
-    SafeOrderPersistenceAdapter(final OrderJpaRepository orderJpaRepository, final OrderLineJpaRepository orderLineJpaRepository) {
-        this.orderJpaRepository = orderJpaRepository;
-        this.orderLineJpaRepository = orderLineJpaRepository;
-    }
-
     @Override
     public Order save(final Order order) {
-        // PESSIMISTIC_WRITE로 락을 잡고 조회 → 동시 수정 방지
         final Optional<OrderEntity> existing = orderJpaRepository.findByOrderIdForUpdate(order.id().value());
-        final OrderEntity entity;
         if (existing.isPresent()) {
-            entity = existing.get();
+            final OrderEntity entity = existing.get();
             entity.apply(order);
-        } else {
-            entity = OrderMapper.toEntity(order);
+            final OrderEntity savedOrder = orderJpaRepository.save(entity);
+            orderLineJpaRepository.deleteByOrderId(savedOrder.getOrderId());
+            final List<OrderLineEntity> items = OrderMapper.toItemEntities(order, savedOrder.getOrderId());
+            orderLineJpaRepository.saveAll(items);
+            return OrderMapper.toDomain(savedOrder, items);
         }
-        final OrderEntity savedOrder = orderJpaRepository.save(entity);
 
+        final OrderEntity entity = OrderMapper.toEntity(order);
+        final OrderEntity savedOrder = orderJpaRepository.save(entity);
         orderLineJpaRepository.deleteByOrderId(savedOrder.getOrderId());
         final List<OrderLineEntity> items = OrderMapper.toItemEntities(order, savedOrder.getOrderId());
         orderLineJpaRepository.saveAll(items);
-
         return OrderMapper.toDomain(savedOrder, items);
     }
 

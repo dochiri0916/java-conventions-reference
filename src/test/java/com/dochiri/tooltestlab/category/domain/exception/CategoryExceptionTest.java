@@ -10,39 +10,37 @@ class CategoryExceptionTest {
     @Test
     @DisplayName("InvalidCategoryIdException 정상 생성")
     void invalidCatId() {
-            // given
+        // given
+        var expectedCode = CategoryDomainErrorCode.INVALID_CAT_ID;
 
-            // when
-
-            // then
-
+        // when
         var ex = InvalidCategoryIdException.invalidCatId();
-        assertThat(ex.code()).isEqualTo(CategoryDomainErrorCode.INVALID_CAT_ID);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("InvalidCategoryNameException 정상 생성")
     void invalidCatName() {
-            // given
+        // given
+        var expectedCode = CategoryDomainErrorCode.INVALID_CAT_NAME;
 
-            // when
-
-            // then
-
+        // when
         var ex = InvalidCategoryNameException.invalidCatName();
-        assertThat(ex.code()).isEqualTo(CategoryDomainErrorCode.INVALID_CAT_NAME);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("CategoryDomainErrorCode 모든 코드가 title을 가진다")
     void errorCodes() {
-            // given
+        // given
+        var codes = CategoryDomainErrorCode.values();
 
-            // when
-
-            // then
-
-        for (var code : CategoryDomainErrorCode.values()) {
+        // when & then
+        for (var code : codes) {
             assertThat(code.title()).isNotBlank();
         }
     }

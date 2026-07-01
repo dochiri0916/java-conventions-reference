@@ -27,39 +27,32 @@ class OrderServiceBranchTest {
 
     @Test
     @DisplayName("getOrder - 존재하지 않는 주문은 OrderNotFoundException")
-    void getOrderNotFound() {
-            // given
+    void retrieveOrderNotFound() {
+        // given
+        var memberId = "m1";
+        var nonExistentOrderId = "nonexistent";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> getOrderUseCase.getOrder("m1", "nonexistent"))
+        // when & then
+        assertThatThrownBy(() -> getOrderUseCase.getOrder(memberId, nonExistentOrderId))
                 .isInstanceOf(OrderNotFoundException.class);
     }
 
     @Test
     @DisplayName("cancelOrder - 존재하지 않는 주문은 OrderNotFoundException")
     void cancelOrderNotFound() {
-            // given
+        // given
+        var memberId = "m1";
+        var nonExistentOrderId = "nonexistent";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> cancelOrderUseCase.cancel("m1", "nonexistent"))
+        // when & then
+        assertThatThrownBy(() -> cancelOrderUseCase.cancel(memberId, nonExistentOrderId))
                 .isInstanceOf(OrderNotFoundException.class);
     }
 
     @Test
     @DisplayName("placeOrder - 빈 장바구니는 EmptyCartException")
     void placeOrderEmptyCart() {
-            // given
-
-            // when
-
-            // then
-
+        // given
         var cmd = new com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand(
                 new MemberId("unknown"),
                 new com.dochiri.tooltestlab.order.domain.model.ShippingAddress(
@@ -67,20 +60,21 @@ class OrderServiceBranchTest {
                         new com.dochiri.tooltestlab.order.domain.model.Phone("01012345678"),
                         new com.dochiri.tooltestlab.order.domain.model.StreetAddress("서울시"),
                         new com.dochiri.tooltestlab.order.domain.model.ZipCode("12345")));
+
+        // when & then
         assertThatThrownBy(() -> placeOrderUseCase.place(cmd))
                 .isInstanceOf(EmptyCartException.class);
     }
 
     @Test
     @DisplayName("getOrder - 다른 회원의 주문 조회 시 NotOrderOwnerException")
-    void getOrderNotOwner() {
-            // given
+    void retrieveOrderNotOwner() {
+        // given
+        var memberId = "m1";
+        var nonExistentOrderId = "nonexistent";
 
-            // when
-
-            // then
-
-        assertThatThrownBy(() -> getOrderUseCase.getOrder("m1", "nonexistent"))
+        // when & then
+        assertThatThrownBy(() -> getOrderUseCase.getOrder(memberId, nonExistentOrderId))
                 .isInstanceOf(RuntimeException.class);
     }
 }

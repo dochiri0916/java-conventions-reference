@@ -3,13 +3,14 @@ package com.dochiri.tooltestlab.cart.adapter.in.web;
 import com.dochiri.tooltestlab.cart.adapter.in.web.request.AddToCartRequest;
 import com.dochiri.tooltestlab.cart.adapter.in.web.response.CartResponse;
 import com.dochiri.tooltestlab.cart.application.port.in.*;
-import com.dochiri.tooltestlab.global.web.LoginMember;
+import com.dochiri.tooltestlab.member.adapter.in.web.LoginMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,18 +19,12 @@ import java.util.Map;
 @Tag(name = "장바구니", description = "장바구니 조회, 추가, 삭제 API")
 @RestController
 @RequestMapping("/api/cart")
+@RequiredArgsConstructor
 public class CartController {
 
     private final GetCartUseCase getCartUseCase;
     private final AddToCartUseCase addToCartUseCase;
     private final RemoveFromCartUseCase removeFromCartUseCase;
-
-    public CartController(final GetCartUseCase getCartUseCase, final AddToCartUseCase addToCartUseCase,
-                          RemoveFromCartUseCase removeFromCartUseCase) {
-        this.getCartUseCase = getCartUseCase;
-        this.addToCartUseCase = addToCartUseCase;
-        this.removeFromCartUseCase = removeFromCartUseCase;
-    }
 
     @Operation(summary = "장바구니 조회", description = "로그인된 회원의 장바구니를 조회합니다.")
     @ApiResponses({

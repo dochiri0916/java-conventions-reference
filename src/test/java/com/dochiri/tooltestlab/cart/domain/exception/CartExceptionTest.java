@@ -10,54 +10,54 @@ class CartExceptionTest {
     @Test
     @DisplayName("InvalidCartIdException 정상 생성")
     void invalidCartId() {
-            // given
+        // given
+        var expectedCode = CartDomainErrorCode.INVALID_CART_ID;
 
-            // when
-
-            // then
-
+        // when
         var ex = InvalidCartIdException.invalidCartId();
-        assertThat(ex.code()).isEqualTo(CartDomainErrorCode.INVALID_CART_ID);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("InvalidCartItemException 정상 생성")
     void invalidCartItem() {
-            // given
+        // given
+        var detail = "detail";
+        var expectedCode = CartDomainErrorCode.INVALID_CART_ITEM;
 
-            // when
+        // when
+        var ex = InvalidCartItemException.invalidCartItem(detail);
 
-            // then
-
-        var ex = InvalidCartItemException.invalidCartItem("detail");
-        assertThat(ex.code()).isEqualTo(CartDomainErrorCode.INVALID_CART_ITEM);
-        assertThat(ex.detail()).isEqualTo("detail");
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.detail()).isEqualTo(detail);
     }
 
     @Test
     @DisplayName("CartItemLimitExceededException 정상 생성")
     void tooManyItems() {
-            // given
+        // given
+        var actualSize = 150;
+        var expectedCode = CartDomainErrorCode.TOO_MANY_ITEMS;
 
-            // when
+        // when
+        var ex = CartItemLimitExceededException.tooManyItems(actualSize);
 
-            // then
-
-        var ex = CartItemLimitExceededException.tooManyItems(150);
-        assertThat(ex.code()).isEqualTo(CartDomainErrorCode.TOO_MANY_ITEMS);
-        assertThat(ex.actualSize()).isEqualTo(150);
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.actualSize()).isEqualTo(actualSize);
     }
 
     @Test
     @DisplayName("CartDomainErrorCode 모든 코드가 title을 가진다")
     void errorCodes() {
-            // given
+        // given
+        var codes = CartDomainErrorCode.values();
 
-            // when
-
-            // then
-
-        for (var code : CartDomainErrorCode.values()) {
+        // when & then
+        for (var code : codes) {
             assertThat(code.title()).isNotBlank();
         }
     }

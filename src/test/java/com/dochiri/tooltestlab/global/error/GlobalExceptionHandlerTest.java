@@ -1,4 +1,7 @@
+
 package com.dochiri.tooltestlab.global.error;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @Import(GlobalExceptionHandlerTest.ThrowController.class)
+@SuppressFBWarnings(value = "THROWS", justification = "Test controller intentionally throws exceptions")
 class GlobalExceptionHandlerTest {
 
     @Autowired

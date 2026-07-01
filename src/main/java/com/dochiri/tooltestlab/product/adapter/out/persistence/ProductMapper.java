@@ -5,7 +5,7 @@ import com.dochiri.tooltestlab.category.domain.model.Category;
 import com.dochiri.tooltestlab.category.domain.model.CategoryId;
 import com.dochiri.tooltestlab.category.domain.model.CategoryName;
 import com.dochiri.tooltestlab.product.domain.model.*;
-import com.dochiri.tooltestlab.shared.model.Money;
+import com.dochiri.tooltestlab.product.domain.model.Money;
 
 import java.util.List;
 

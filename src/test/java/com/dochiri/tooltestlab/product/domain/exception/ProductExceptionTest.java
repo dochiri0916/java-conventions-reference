@@ -10,81 +10,82 @@ class ProductExceptionTest {
     @Test
     @DisplayName("InvalidProductIdException 정상 생성")
     void badProductId() {
-            // given
+        // given
+        var expectedCode = ProductDomainErrorCode.BAD_PRODUCT_ID;
 
-            // when
-
-            // then
-
+        // when
         var ex = InvalidProductIdException.badProductId();
-        assertThat(ex.code()).isEqualTo(ProductDomainErrorCode.BAD_PRODUCT_ID);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("InvalidProductNameException 정상 생성")
     void badProductName() {
-            // given
+        // given
+        var expectedCode = ProductDomainErrorCode.BAD_PRODUCT_NAME;
 
-            // when
-
-            // then
-
+        // when
         var ex = InvalidProductNameException.badProductName();
-        assertThat(ex.code()).isEqualTo(ProductDomainErrorCode.BAD_PRODUCT_NAME);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("InvalidStockException 정상 생성")
     void invalidStock() {
-            // given
+        // given
+        var expectedCode = ProductDomainErrorCode.INVALID_STOCK;
+        var expectedDetail = "detail";
 
-            // when
+        // when
+        var ex = InvalidStockException.invalidStock(expectedDetail);
 
-            // then
-
-        var ex = InvalidStockException.invalidStock("detail");
-        assertThat(ex.code()).isEqualTo(ProductDomainErrorCode.INVALID_STOCK);
-        assertThat(ex.detail()).isEqualTo("detail");
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.detail()).isEqualTo(expectedDetail);
     }
 
     @Test
     @DisplayName("InsufficientStockException 정상 생성")
     void lowStock() {
-            // given
+        // given
+        var expectedCode = ProductDomainErrorCode.LOW_STOCK;
+        var currentStock = 5;
+        var requested = 10;
 
-            // when
+        // when
+        var ex = InsufficientStockException.lowStock(currentStock, requested);
 
-            // then
-
-        var ex = InsufficientStockException.lowStock(5, 10);
-        assertThat(ex.code()).isEqualTo(ProductDomainErrorCode.LOW_STOCK);
-        assertThat(ex.currentStock()).isEqualTo(5);
-        assertThat(ex.requested()).isEqualTo(10);
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.currentStock()).isEqualTo(currentStock);
+        assertThat(ex.requested()).isEqualTo(requested);
     }
 
     @Test
     @DisplayName("InvalidProductException 정상 생성")
     void invalidProduct() {
-            // given
+        // given
+        var expectedCode = ProductDomainErrorCode.INVALID_PRODUCT;
 
-            // when
-
-            // then
-
+        // when
         var ex = InvalidProductException.invalidProduct();
-        assertThat(ex.code()).isEqualTo(ProductDomainErrorCode.INVALID_PRODUCT);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("ProductDomainErrorCode 모든 코드가 title을 가진다")
     void errorCodes() {
-            // given
+        // given
+        var codes = ProductDomainErrorCode.values();
 
-            // when
-
-            // then
-
-        for (var code : ProductDomainErrorCode.values()) {
+        // when & then
+        for (var code : codes) {
             assertThat(code.title()).isNotBlank();
         }
     }

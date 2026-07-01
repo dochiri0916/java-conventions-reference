@@ -7,7 +7,7 @@ import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderResult;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
-import com.dochiri.tooltestlab.order.domain.event.OrderPlacedEvent;
+import com.dochiri.tooltestlab.order.domain.event.OrderPlaced;
 import com.dochiri.tooltestlab.order.domain.model.OrderPlacedItems;
 import com.dochiri.tooltestlab.order.domain.model.Order;
 import com.dochiri.tooltestlab.order.domain.model.OrderLine;
@@ -16,7 +16,8 @@ import com.dochiri.tooltestlab.product.application.exception.ProductNotFoundExce
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.product.domain.exception.InsufficientStockException;
 import com.dochiri.tooltestlab.product.domain.model.Product;
-import com.dochiri.tooltestlab.shared.model.Money;
+import com.dochiri.tooltestlab.product.domain.model.Money;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public final class PlaceOrderService implements PlaceOrderUseCase {
 
     private final OrderRepositoryPort orderRepositoryPort;
@@ -33,20 +34,11 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
     private final ProductRepositoryPort productRepositoryPort;
     private final ApplicationEventPublisher eventPublisher;
 
-    public PlaceOrderService(final OrderRepositoryPort orderRepositoryPort,
-                             CartRepositoryPort cartRepositoryPort,
-                             ProductRepositoryPort productRepositoryPort,
-                             ApplicationEventPublisher eventPublisher) {
-        this.orderRepositoryPort = orderRepositoryPort;
-        this.cartRepositoryPort = cartRepositoryPort;
-        this.productRepositoryPort = productRepositoryPort;
-        this.eventPublisher = eventPublisher;
-    }
-
     @Override
+    @Transactional
     public PlaceOrderResult place(final PlaceOrderCommand command) {
         final Cart cart = cartRepositoryPort.findByMemberId(command.memberId().value())
-                .orElseThrow(() -> EmptyCartException.emptyCart());
+                .orElseThrow(EmptyCartException::emptyCart);
 
         if (cart.isEmpty()) {
             throw EmptyCartException.emptyCart();
@@ -69,10 +61,10 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
         Order order = Order.create(command.memberId(), OrderLines.from(orderLines), command.shippingAddress());
         Order saved = orderRepositoryPort.save(order);
 
-        List<OrderPlacedEvent.ItemDetail> itemDetails = orderLines.stream()
-                .map(ol -> new OrderPlacedEvent.ItemDetail(ol.productId(), ol.productName(), ol.quantity(), ol.unitPrice()))
+        List<OrderPlaced.ItemDetail> itemDetails = orderLines.stream()
+                .map(ol -> new OrderPlaced.ItemDetail(ol.productId(), ol.productName(), ol.quantity(), ol.unitPrice()))
                 .toList();
-        eventPublisher.publishEvent(new OrderPlacedEvent(saved.id(), command.memberId(), new OrderPlacedItems(itemDetails)));
+        eventPublisher.publishEvent(new OrderPlaced(saved.id(), command.memberId(), new OrderPlacedItems(itemDetails)));
 
         final var resultItems = saved.items().values().stream()
                 .map(i -> new PlaceOrderResult.OrderItemResult(i.productId().value(), i.productName().value(), i.quantity().value(), i.unitPrice().amount()))

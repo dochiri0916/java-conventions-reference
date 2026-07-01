@@ -10,41 +10,43 @@ class MemberAppExceptionTest {
     @Test
     @DisplayName("DuplicateEmailException 정상 생성")
     void duplicateEmail() {
-            // given
+        // given
+        var expectedCode = MemberErrorCode.DUPLICATE_EMAIL;
+        var expectedEmail = "test@test.com";
 
-            // when
+        // when
+        var ex = DuplicateEmailException.duplicateEmail(expectedEmail);
 
-            // then
-
-        var ex = DuplicateEmailException.duplicateEmail("test@test.com");
-        assertThat(ex.code()).isEqualTo(MemberErrorCode.DUPLICATE_EMAIL);
-        assertThat(ex.email()).isEqualTo("test@test.com");
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.email()).isEqualTo(expectedEmail);
     }
 
     @Test
     @DisplayName("LoginFailedException 정상 생성")
     void loginFailed() {
-            // given
+        // given
+        var expectedCode = MemberErrorCode.LOGIN_FAILED;
 
-            // when
-
-            // then
-
+        // when
         var ex = LoginFailedException.loginFailed();
-        assertThat(ex.code()).isEqualTo(MemberErrorCode.LOGIN_FAILED);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test
     @DisplayName("MemberNotFoundException 정상 생성")
     void memberNotFound() {
-            // given
+        // given
+        var expectedCode = MemberErrorCode.MEMBER_NOT_FOUND;
+        var expectedId = "id123";
 
-            // when
+        // when
+        var ex = MemberNotFoundException.memberNotFound(expectedId);
 
-            // then
-
-        var ex = MemberNotFoundException.memberNotFound("id123");
-        assertThat(ex.code()).isEqualTo(MemberErrorCode.MEMBER_NOT_FOUND);
-        assertThat(ex.identifier()).isEqualTo("id123");
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.identifier()).isEqualTo(expectedId);
     }
 }
