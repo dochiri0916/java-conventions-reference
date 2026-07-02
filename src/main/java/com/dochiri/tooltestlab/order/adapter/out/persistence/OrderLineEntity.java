@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "order_lines")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SuppressWarnings("PMD.ImmutableField")
 public class OrderLineEntity {
 
     @Getter(AccessLevel.NONE)

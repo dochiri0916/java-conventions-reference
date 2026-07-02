@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "categories")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SuppressWarnings("PMD.ImmutableField")
 public class CategoryEntity {
 
     @Getter(AccessLevel.NONE)

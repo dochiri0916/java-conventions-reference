@@ -5,7 +5,7 @@ import com.dochiri.tooltestlab.member.domain.model.*;
 final class MemberMapper {
 
     private MemberMapper() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+        throw new UnsupportedOperationException("유틸리티 클래스는 인스턴스화할 수 없습니다");
     }
 
     static Member toDomain(final MemberEntity entity) {
@@ -18,7 +18,7 @@ final class MemberMapper {
     }
 
     static MemberEntity toEntity(final Member domain) {
-        return MemberEntity.register(
+        return MemberEntity.create(
                 domain.id().value(),
                 domain.email().value(),
                 domain.password().value(),

@@ -2,7 +2,7 @@ package com.dochiri.tooltestlab.review.adapter.in.web;
 
 import com.dochiri.tooltestlab.member.adapter.in.web.LoginMember;
 import com.dochiri.tooltestlab.review.adapter.in.web.request.WriteReviewRequest;
-import com.dochiri.tooltestlab.review.adapter.in.web.response.ReviewResponse;
+import com.dochiri.tooltestlab.review.adapter.in.web.response.GetProductReviewsResponse;
 import com.dochiri.tooltestlab.review.application.port.in.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -48,14 +48,14 @@ public class ReviewController {
             @ApiResponse(responseCode = "200", description = "리뷰 목록 조회 성공")
     })
     @GetMapping("/product/{productPublicId}")
-    public ResponseEntity<ReviewResponse> getByProduct(
+    public ResponseEntity<GetProductReviewsResponse> getByProduct(
             @Parameter(description = "상품 publicId", example = "p1r2o3d4u5c6")
             @PathVariable String productPublicId) {
         final GetProductReviewsResult result = getProductReviewsUseCase.getByProduct(productPublicId);
         final var data = result.reviews().stream()
-                .map(r -> new ReviewResponse.ReviewData(r.reviewPublicId(), r.memberPublicId(), r.rating(), r.content()))
+                .map(r -> new GetProductReviewsResponse.ReviewData(r.reviewPublicId(), r.memberPublicId(), r.rating(), r.content()))
                 .toList();
-        return ResponseEntity.ok(new ReviewResponse(result.productPublicId(), data, result.averageRating()));
+        return ResponseEntity.ok(new GetProductReviewsResponse(result.productPublicId(), data, result.averageRating()));
     }
 
     @Operation(summary = "리뷰 삭제", description = "작성한 리뷰를 삭제합니다.")

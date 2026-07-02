@@ -4,14 +4,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
-@Schema(description = "장바구니 응답")
-public record CartResponse(
+@Schema(description = "장바구니 조회 응답")
+public record GetCartResponse(
         @Schema(description = "장바구니 publicId", example = "c1a2r3t4i5d6") String publicId,
         @Schema(description = "회원 publicId", example = "u1v2w3x4y5z6") String memberPublicId,
         @Schema(description = "장바구니 상품 목록") List<Item> items,
         @Schema(description = "총 금액 (원 단위)", example = "7380000") long totalAmount) {
 
-    public CartResponse {
+    public GetCartResponse {
         items = List.copyOf(items);
     }
 

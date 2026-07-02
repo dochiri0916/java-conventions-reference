@@ -19,7 +19,7 @@ class ProductAppExceptionTest {
 
         // then
         assertThat(ex.code()).isEqualTo(expectedCode);
-        assertThat(ex.productPublicId()).isEqualTo(expectedPublicId);
+        assertThat(ex.productId()).isEqualTo(expectedPublicId);
     }
 
     @Test

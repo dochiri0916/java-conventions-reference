@@ -10,7 +10,7 @@ import com.dochiri.tooltestlab.review.domain.model.ReviewId;
 final class ReviewMapper {
 
     private ReviewMapper() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+        throw new UnsupportedOperationException("유틸리티 클래스는 인스턴스화할 수 없습니다");
     }
 
     static Review toDomain(final ReviewEntity entity) {

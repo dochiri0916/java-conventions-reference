@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SuppressWarnings("PMD.ImmutableField")
 public class ReviewEntity {
 
     @Getter(AccessLevel.NONE)

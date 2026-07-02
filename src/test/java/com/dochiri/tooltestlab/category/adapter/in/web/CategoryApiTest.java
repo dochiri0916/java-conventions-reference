@@ -114,7 +114,7 @@ class CategoryApiTest {
         var name = "전자기기";
 
         // when
-        var response = new com.dochiri.tooltestlab.category.adapter.in.web.response.CategoryResponse(
+        var response = new com.dochiri.tooltestlab.category.adapter.in.web.response.CategoryListResponse(
                 publicId, name);
 
         // then

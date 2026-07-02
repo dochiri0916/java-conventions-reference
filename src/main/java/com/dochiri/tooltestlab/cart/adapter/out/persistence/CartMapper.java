@@ -16,7 +16,7 @@ import java.util.UUID;
 final class CartMapper {
 
     private CartMapper() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+        throw new UnsupportedOperationException("유틸리티 클래스는 인스턴스화할 수 없습니다");
     }
 
     static Cart toDomain(final CartEntity entity, final List<CartItemEntity> itemEntities) {

@@ -12,7 +12,6 @@ import java.util.List;
 @Table(name = "products")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SuppressWarnings("PMD.ImmutableField")
 public class ProductEntity {
 
     @Getter(AccessLevel.NONE)

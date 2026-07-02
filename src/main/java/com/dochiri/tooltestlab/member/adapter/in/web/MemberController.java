@@ -2,7 +2,8 @@ package com.dochiri.tooltestlab.member.adapter.in.web;
 
 import com.dochiri.tooltestlab.member.adapter.in.web.request.LoginMemberRequest;
 import com.dochiri.tooltestlab.member.adapter.in.web.request.RegisterMemberRequest;
-import com.dochiri.tooltestlab.member.adapter.in.web.response.MemberResponse;
+import com.dochiri.tooltestlab.member.adapter.in.web.response.LoginMemberResponse;
+import com.dochiri.tooltestlab.member.adapter.in.web.response.RegisterMemberResponse;
 import com.dochiri.tooltestlab.member.application.port.in.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,10 +34,10 @@ public class MemberController {
             @ApiResponse(responseCode = "409", description = "이미 등록된 이메일")
     })
     @PostMapping("/register")
-    public ResponseEntity<MemberResponse> register(@Valid @RequestBody RegisterMemberRequest request) {
+    public ResponseEntity<RegisterMemberResponse> register(@Valid @RequestBody RegisterMemberRequest request) {
         final RegisterMemberCommand command = new RegisterMemberCommand(request.email(), request.password(), request.name());
         final RegisterMemberResult result = registerMemberUseCase.register(command);
-        return ResponseEntity.ok(new MemberResponse(result.publicId(), result.email(), result.name()));
+        return ResponseEntity.ok(new RegisterMemberResponse(result.publicId(), result.email(), result.name()));
     }
 
     @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다.")
@@ -46,12 +47,12 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호 불일치")
     })
     @PostMapping("/login")
-    public ResponseEntity<MemberResponse> login(
+    public ResponseEntity<LoginMemberResponse> login(
             @Valid @RequestBody LoginMemberRequest request, final HttpSession session) {
         final LoginMemberCommand command = new LoginMemberCommand(request.email(), request.password());
         final LoginMemberResult result = loginMemberUseCase.login(command);
         session.setAttribute(LoginCheckInterceptor.MEMBER_ID_KEY, result.publicId());
-        return ResponseEntity.ok(new MemberResponse(result.publicId(), result.email(), result.name()));
+        return ResponseEntity.ok(new LoginMemberResponse(result.publicId(), result.email(), result.name()));
     }
 
     @Operation(summary = "로그아웃", description = "현재 세션을 무효화하고 로그아웃합니다.")

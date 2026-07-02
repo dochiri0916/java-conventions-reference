@@ -12,7 +12,7 @@ import java.util.UUID;
 final class OrderMapper {
 
     private OrderMapper() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+        throw new UnsupportedOperationException("유틸리티 클래스는 인스턴스화할 수 없습니다");
     }
 
     static Order toDomain(final OrderEntity entity, final List<OrderLineEntity> itemEntities) {

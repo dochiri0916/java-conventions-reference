@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "orders")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SuppressWarnings("PMD.ImmutableField")
 public class OrderEntity {
 
     @Getter(AccessLevel.NONE)

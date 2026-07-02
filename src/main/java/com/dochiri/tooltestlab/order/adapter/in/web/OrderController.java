@@ -3,8 +3,9 @@ package com.dochiri.tooltestlab.order.adapter.in.web;
 import com.dochiri.tooltestlab.member.adapter.in.web.LoginMember;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.adapter.in.web.request.PlaceOrderRequest;
-import com.dochiri.tooltestlab.order.adapter.in.web.response.OrderResponse;
+import com.dochiri.tooltestlab.order.adapter.in.web.response.GetOrderResponse;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.OrderSummaryResponse;
+import com.dochiri.tooltestlab.order.adapter.in.web.response.PlaceOrderResponse;
 import com.dochiri.tooltestlab.order.application.port.in.*;
 import com.dochiri.tooltestlab.order.domain.model.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,17 +40,17 @@ public class OrderController {
             @ApiResponse(responseCode = "409", description = "재고 부족")
     })
     @PostMapping
-    public ResponseEntity<OrderResponse> place(@Parameter(hidden = true) @LoginMember String memberPublicId,
-                                                @Valid @RequestBody PlaceOrderRequest request) {
+    public ResponseEntity<PlaceOrderResponse> place(@Parameter(hidden = true) @LoginMember String memberPublicId,
+                                                      @Valid @RequestBody PlaceOrderRequest request) {
         final ShippingAddress shippingAddress = new ShippingAddress(
                 new RecipientName(request.recipientName()), new Phone(request.phone()),
                 new StreetAddress(request.address()), new ZipCode(request.zipCode()));
         final PlaceOrderResult result = placeOrderUseCase.place(new PlaceOrderCommand(new MemberId(memberPublicId), shippingAddress));
 
         final var items = result.items().stream()
-                .map(i -> new OrderResponse.Item(i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.quantity() * i.unitPrice()))
+                .map(i -> new PlaceOrderResponse.Item(i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.quantity() * i.unitPrice()))
                 .toList();
-        return ResponseEntity.ok(new OrderResponse(result.publicId(), null, result.status(), result.totalAmount(),
+        return ResponseEntity.ok(new PlaceOrderResponse(result.publicId(), result.status(), result.totalAmount(),
                 request.recipientName(), request.phone(), request.address(), request.zipCode(), items));
     }
 
@@ -76,15 +77,15 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "주문이 존재하지 않음")
     })
     @GetMapping("/{publicId}")
-    public ResponseEntity<OrderResponse> get(
+    public ResponseEntity<GetOrderResponse> get(
             @Parameter(hidden = true) @LoginMember String memberPublicId,
             @Parameter(description = "주문 publicId", example = "a1b2c3d4e5f6")
             @PathVariable String publicId) {
         final GetOrderResult result = getOrderUseCase.getOrder(memberPublicId, publicId);
         final var items = result.items().stream()
-                .map(i -> new OrderResponse.Item(i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.totalPrice()))
+                .map(i -> new GetOrderResponse.Item(i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.totalPrice()))
                 .toList();
-        return ResponseEntity.ok(new OrderResponse(result.publicId(), result.memberPublicId(), result.status(),
+        return ResponseEntity.ok(new GetOrderResponse(result.publicId(), result.memberPublicId(), result.status(),
                 result.totalAmount(), result.recipientName(), result.phone(), result.address(), result.zipCode(), items));
     }
 

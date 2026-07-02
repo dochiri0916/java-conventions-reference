@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.category.adapter.in.web;
 
-import com.dochiri.tooltestlab.category.adapter.in.web.response.CategoryResponse;
+import com.dochiri.tooltestlab.category.adapter.in.web.response.CategoryListResponse;
 import com.dochiri.tooltestlab.category.application.port.in.RegisterCategoryCommand;
 import com.dochiri.tooltestlab.category.application.port.in.RegisterCategoryResult;
 import com.dochiri.tooltestlab.category.application.port.in.RegisterCategoryUseCase;
@@ -49,7 +49,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "200", description = "카테고리 목록 조회 성공")
     })
     @GetMapping
-    public ResponseEntity<List<CategoryResponse>> list() {
+    public ResponseEntity<List<CategoryListResponse>> list() {
         return ResponseEntity.ok(List.of());
     }
 

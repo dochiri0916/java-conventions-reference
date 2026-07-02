@@ -19,7 +19,7 @@ class CartAppExceptionTest {
 
         // then
         assertThat(ex.code()).isEqualTo(expectedCode);
-        assertThat(ex.memberPublicId()).isEqualTo(memberPublicId);
+        assertThat(ex.memberId()).isEqualTo(memberPublicId);
     }
 
     @Test

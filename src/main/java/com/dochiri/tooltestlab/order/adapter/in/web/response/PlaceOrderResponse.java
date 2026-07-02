@@ -4,10 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
-@Schema(description = "주문 응답")
-public record OrderResponse(
+@Schema(description = "주문 접수 응답")
+public record PlaceOrderResponse(
         @Schema(description = "주문 publicId", example = "a1b2c3d4e5f6") String publicId,
-        @Schema(description = "회원 publicId", example = "u1v2w3x4y5z6") String memberPublicId,
         @Schema(description = "주문 상태", example = "PLACED") String status,
         @Schema(description = "총 주문 금액 (원 단위)", example = "7380000") long totalAmount,
         @Schema(description = "수령인 이름", example = "홍길동") String recipientName,
@@ -16,7 +15,7 @@ public record OrderResponse(
         @Schema(description = "우편번호", example = "06164") String zipCode,
         @Schema(description = "주문 상품 목록") List<Item> items) {
 
-    public OrderResponse {
+    public PlaceOrderResponse {
         items = List.copyOf(items);
     }
 

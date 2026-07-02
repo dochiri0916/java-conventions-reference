@@ -45,7 +45,7 @@ class OrderAppExceptionTest {
 
         // then
         assertThat(ex.code()).isEqualTo(expectedCode);
-        assertThat(ex.publicId()).isEqualTo(expectedPublicId);
+        assertThat(ex.orderId()).isEqualTo(expectedPublicId);
     }
 
     @Test

@@ -12,7 +12,7 @@ import java.util.List;
 final class ProductMapper {
 
     private ProductMapper() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+        throw new UnsupportedOperationException("유틸리티 클래스는 인스턴스화할 수 없습니다");
     }
 
     static Product toDomain(final ProductEntity entity) {

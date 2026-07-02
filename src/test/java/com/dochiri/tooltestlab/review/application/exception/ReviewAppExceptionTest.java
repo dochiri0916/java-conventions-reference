@@ -45,7 +45,7 @@ class ReviewAppExceptionTest {
 
         // then
         assertThat(ex.code()).isEqualTo(expectedCode);
-        assertThat(ex.reviewPublicId()).isEqualTo(reviewPublicId);
+        assertThat(ex.reviewId()).isEqualTo(reviewPublicId);
     }
 
     @Test

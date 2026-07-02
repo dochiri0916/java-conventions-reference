@@ -40,7 +40,7 @@ public class MemberEntity {
         this.status = status;
     }
 
-    public static MemberEntity register(final String memberId, final String email, final String password, final String name, final String status) {
+    public static MemberEntity create(final String memberId, final String email, final String password, final String name, final String status) {
         return new MemberEntity(null, memberId, email, password, name, status);
     }
 }

@@ -1,8 +1,9 @@
 package com.dochiri.tooltestlab.product.adapter.in.web;
 
 import com.dochiri.tooltestlab.product.adapter.in.web.request.RegisterProductRequest;
+import com.dochiri.tooltestlab.product.adapter.in.web.response.GetProductResponse;
 import com.dochiri.tooltestlab.product.adapter.in.web.response.ProductListResponse;
-import com.dochiri.tooltestlab.product.adapter.in.web.response.ProductResponse;
+import com.dochiri.tooltestlab.product.adapter.in.web.response.RegisterProductResponse;
 import com.dochiri.tooltestlab.product.application.port.in.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,11 +33,11 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "잘못된 상품명, 가격, 또는 재고")
     })
     @PostMapping
-    public ResponseEntity<ProductResponse> register(@Valid @RequestBody RegisterProductRequest request) {
+    public ResponseEntity<RegisterProductResponse> register(@Valid @RequestBody RegisterProductRequest request) {
         final RegisterProductResult result = registerProductUseCase.register(
                 new RegisterProductCommand(request.name(), request.description(), request.priceAmount(),
                         request.stock(), request.categoryIds() != null ? request.categoryIds() : List.of()));
-        return ResponseEntity.ok(new ProductResponse(
+        return ResponseEntity.ok(new RegisterProductResponse(
                 result.publicId(), result.name(), null, result.priceAmount(),
                 result.stock(), result.status(), result.categoryNames()));
     }
@@ -65,11 +66,11 @@ public class ProductController {
             @ApiResponse(responseCode = "404", description = "상품이 존재하지 않음")
     })
     @GetMapping("/{publicId}")
-    public ResponseEntity<ProductResponse> get(
+    public ResponseEntity<GetProductResponse> get(
             @Parameter(description = "상품 publicId", example = "a1b2c3d4e5f6")
             @PathVariable String publicId) {
         final GetProductResult result = getProductUseCase.getProduct(publicId);
-        return ResponseEntity.ok(new ProductResponse(
+        return ResponseEntity.ok(new GetProductResponse(
                 result.publicId(), result.name(), result.description(), result.priceAmount(),
                 result.stock(), result.status(), result.categoryNames()));
     }

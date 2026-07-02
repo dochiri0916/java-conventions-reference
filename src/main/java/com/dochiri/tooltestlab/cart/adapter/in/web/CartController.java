@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.cart.adapter.in.web;
 
 import com.dochiri.tooltestlab.cart.adapter.in.web.request.AddToCartRequest;
-import com.dochiri.tooltestlab.cart.adapter.in.web.response.CartResponse;
+import com.dochiri.tooltestlab.cart.adapter.in.web.response.GetCartResponse;
 import com.dochiri.tooltestlab.cart.application.port.in.*;
 import com.dochiri.tooltestlab.member.adapter.in.web.LoginMember;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,14 +33,14 @@ public class CartController {
             @ApiResponse(responseCode = "404", description = "장바구니가 존재하지 않음")
     })
     @GetMapping
-    public ResponseEntity<CartResponse> get(@Parameter(hidden = true) @LoginMember String memberPublicId) {
+    public ResponseEntity<GetCartResponse> get(@Parameter(hidden = true) @LoginMember String memberPublicId) {
         final GetCartResult result = getCartUseCase.getCart(memberPublicId);
         final var items = result.items().stream()
-                .map(i -> new CartResponse.Item(
+                .map(i -> new GetCartResponse.Item(
                         i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.totalPrice()))
                 .toList();
         return ResponseEntity.ok(
-                new CartResponse(result.publicId(), result.memberPublicId(), items, result.totalAmount()));
+                new GetCartResponse(result.publicId(), result.memberPublicId(), items, result.totalAmount()));
     }
 
     @Operation(summary = "장바구니 담기", description = "상품을 장바구니에 추가합니다.")

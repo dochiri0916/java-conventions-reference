@@ -4,13 +4,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
-@Schema(description = "리뷰 응답")
-public record ReviewResponse(
+@Schema(description = "상품 리뷰 목록 응답")
+public record GetProductReviewsResponse(
         @Schema(description = "상품 publicId", example = "p1r2o3d4u5c6") String productPublicId,
         @Schema(description = "리뷰 목록") List<ReviewData> reviews,
         @Schema(description = "평균 평점", example = "4.5") double averageRating) {
 
-    public ReviewResponse {
+    public GetProductReviewsResponse {
         reviews = List.copyOf(reviews);
     }
 
