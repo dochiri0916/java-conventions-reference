@@ -28,15 +28,15 @@ class PersistenceAdapterIntegrationTest {
     private ProductRepositoryPort productRepositoryPort;
 
     @Test
-    @DisplayName("회원을 publicId로 조회할 수 있다")
-    void findByPublicId() {
+    @DisplayName("회원을 memberId로 조회할 수 있다")
+    void findByMemberId() {
             // given
-        var member = Member.create(new Email("persist-test@example.com"),
+        var member = Member.register(new Email("persist-test@example.com"),
                 new Password("password123"), new MemberName("테스터"));
         var saved = memberRepositoryPort.save(member);
 
             // when
-        var found = memberRepositoryPort.findByPublicId(saved.id().value());
+        var found = memberRepositoryPort.findByMemberId(saved.id().value());
 
             // then
         assertThat(found).isPresent();

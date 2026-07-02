@@ -21,6 +21,19 @@ class CartExceptionTest {
     }
 
     @Test
+    @DisplayName("InvalidCartIdException required 정상 생성")
+    void cartIdRequired() {
+        // given
+        var expectedCode = CartDomainErrorCode.CART_ID_REQUIRED;
+
+        // when
+        var ex = InvalidCartIdException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
     @DisplayName("InvalidCartItemException 정상 생성")
     void invalidCartItem() {
         // given
@@ -36,6 +49,20 @@ class CartExceptionTest {
     }
 
     @Test
+    @DisplayName("InvalidCartItemException required 정상 생성")
+    void cartItemRequired() {
+        // given
+        var expectedCode = CartDomainErrorCode.CART_ITEM_REQUIRED;
+
+        // when
+        var ex = InvalidCartItemException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.detail()).isNull();
+    }
+
+    @Test
     @DisplayName("CartItemLimitExceededException 정상 생성")
     void tooManyItems() {
         // given
@@ -48,6 +75,32 @@ class CartExceptionTest {
         // then
         assertThat(ex.code()).isEqualTo(expectedCode);
         assertThat(ex.actualSize()).isEqualTo(actualSize);
+    }
+
+    @Test
+    @DisplayName("InvalidCartException 정상 생성")
+    void invalidCart() {
+        // given
+        var expectedCode = CartDomainErrorCode.INVALID_CART;
+
+        // when
+        var ex = InvalidCartException.invalidCart();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
+    @DisplayName("InvalidCartException required 정상 생성")
+    void cartRequired() {
+        // given
+        var expectedCode = CartDomainErrorCode.CART_REQUIRED;
+
+        // when
+        var ex = InvalidCartException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
     }
 
     @Test

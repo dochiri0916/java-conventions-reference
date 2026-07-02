@@ -21,6 +21,19 @@ class CategoryExceptionTest {
     }
 
     @Test
+    @DisplayName("InvalidCategoryIdException required 정상 생성")
+    void categoryIdRequired() {
+        // given
+        var expectedCode = CategoryDomainErrorCode.CATEGORY_ID_REQUIRED;
+
+        // when
+        var ex = InvalidCategoryIdException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
     @DisplayName("InvalidCategoryNameException 정상 생성")
     void invalidCatName() {
         // given
@@ -28,6 +41,19 @@ class CategoryExceptionTest {
 
         // when
         var ex = InvalidCategoryNameException.invalidCatName();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
+    @DisplayName("InvalidCategoryNameException required 정상 생성")
+    void categoryNameRequired() {
+        // given
+        var expectedCode = CategoryDomainErrorCode.CATEGORY_NAME_REQUIRED;
+
+        // when
+        var ex = InvalidCategoryNameException.required();
 
         // then
         assertThat(ex.code()).isEqualTo(expectedCode);

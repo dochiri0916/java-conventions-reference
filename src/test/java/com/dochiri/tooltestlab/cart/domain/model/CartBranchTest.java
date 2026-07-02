@@ -169,7 +169,7 @@ class CartBranchTest {
     }
 
     @Test
-    @DisplayName("CartItems - null 목록이면 NullPointerException")
+    @DisplayName("CartItems - null 목록이면 InvalidCartItemException")
     @SuppressFBWarnings(value = "NP", justification = "의도적인 null 입력 검증 테스트")
     void cartItemsNullValues() {
         // given
@@ -177,7 +177,7 @@ class CartBranchTest {
 
         // when & then
         assertThatThrownBy(() -> new CartItems(nullList))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(InvalidCartItemException.class);
     }
 
     @Test
@@ -195,13 +195,13 @@ class CartBranchTest {
     }
 
     @Test
-    @DisplayName("CartItems - null 아이템 추가 시 NullPointerException")
+    @DisplayName("CartItems - null 아이템 추가 시 InvalidCartItemException")
     void cartItemsAddNull() {
         // given
         var items = CartItems.empty();
 
         // when & then
         assertThatThrownBy(() -> items.add(null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(InvalidCartItemException.class);
     }
 }

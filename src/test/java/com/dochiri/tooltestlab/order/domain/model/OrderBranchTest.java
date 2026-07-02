@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.order.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderLinesException;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
 import com.dochiri.tooltestlab.product.domain.model.Money;
 import org.junit.jupiter.api.BeforeEach;
@@ -214,7 +215,7 @@ class OrderBranchTest {
     @DisplayName("OrderLines - fromArray null 예외")
     void orderLinesFromArrayNull() {
         // given
-        var expectedException = NullPointerException.class;
+        var expectedException = InvalidOrderLinesException.class;
 
         // when & then
         assertThatThrownBy(() -> OrderLines.fromArray((OrderLine[]) null))
@@ -242,10 +243,10 @@ class OrderBranchTest {
     }
 
     @Test
-    @DisplayName("OrderLines - null 목록이면 NullPointerException")
+    @DisplayName("OrderLines - null 목록이면 InvalidOrderLinesException")
     void orderLinesNullValues() {
         // given
-        var expectedException = NullPointerException.class;
+        var expectedException = InvalidOrderLinesException.class;
 
         // when & then
         assertThatThrownBy(() -> new OrderLines(null))
@@ -304,10 +305,10 @@ class OrderBranchTest {
     }
 
     @Test
-    @DisplayName("OrderPlacedItems - null 목록이면 NullPointerException")
+    @DisplayName("OrderPlacedItems - null 목록이면 InvalidOrderLinesException")
     void orderPlacedItemsNullValues() {
         // given
-        var expectedException = NullPointerException.class;
+        var expectedException = InvalidOrderLinesException.class;
 
         // when & then
         assertThatThrownBy(() -> new OrderPlacedItems(null))
@@ -331,10 +332,10 @@ class OrderBranchTest {
     }
 
     @Test
-    @DisplayName("OrderCancelledItems - null 목록이면 NullPointerException")
+    @DisplayName("OrderCancelledItems - null 목록이면 InvalidOrderLinesException")
     void orderCancelledItemsNullValues() {
         // given
-        var expectedException = NullPointerException.class;
+        var expectedException = InvalidOrderLinesException.class;
 
         // when & then
         assertThatThrownBy(() -> new OrderCancelledItems(null))

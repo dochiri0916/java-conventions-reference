@@ -49,4 +49,43 @@ class MemberAppExceptionTest {
         assertThat(ex.code()).isEqualTo(expectedCode);
         assertThat(ex.identifier()).isEqualTo(expectedId);
     }
+
+    @Test
+    @DisplayName("InvalidCommandException emailRequired 정상 생성")
+    void emailRequired() {
+        // given
+        var expectedCode = MemberErrorCode.EMAIL_REQUIRED;
+
+        // when
+        var ex = InvalidCommandException.emailRequired();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
+    @DisplayName("InvalidCommandException passwordRequired 정상 생성")
+    void passwordRequired() {
+        // given
+        var expectedCode = MemberErrorCode.PASSWORD_REQUIRED;
+
+        // when
+        var ex = InvalidCommandException.passwordRequired();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
+    @DisplayName("InvalidCommandException nameRequired 정상 생성")
+    void nameRequired() {
+        // given
+        var expectedCode = MemberErrorCode.NAME_REQUIRED;
+
+        // when
+        var ex = InvalidCommandException.nameRequired();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
 }

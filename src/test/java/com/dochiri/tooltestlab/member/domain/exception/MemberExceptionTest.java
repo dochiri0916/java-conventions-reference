@@ -21,6 +21,19 @@ class MemberExceptionTest {
     }
 
     @Test
+    @DisplayName("InvalidEmailException required 정상 생성")
+    void emailRequired() {
+        // given
+        var expectedCode = MemberDomainErrorCode.EMAIL_REQUIRED;
+
+        // when
+        var ex = InvalidEmailException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
     @DisplayName("InvalidMemberIdException 정상 생성")
     void invalidMemberId() {
         // given
@@ -28,6 +41,19 @@ class MemberExceptionTest {
 
         // when
         var ex = InvalidMemberIdException.invalidMemberId();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
+    @DisplayName("InvalidMemberIdException required 정상 생성")
+    void memberIdRequired() {
+        // given
+        var expectedCode = MemberDomainErrorCode.MEMBER_ID_REQUIRED;
+
+        // when
+        var ex = InvalidMemberIdException.required();
 
         // then
         assertThat(ex.code()).isEqualTo(expectedCode);
@@ -47,6 +73,19 @@ class MemberExceptionTest {
     }
 
     @Test
+    @DisplayName("InvalidMemberNameException required 정상 생성")
+    void memberNameRequired() {
+        // given
+        var expectedCode = MemberDomainErrorCode.MEMBER_NAME_REQUIRED;
+
+        // when
+        var ex = InvalidMemberNameException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
     @DisplayName("InvalidPasswordException 정상 생성")
     void invalidPassword() {
         // given
@@ -54,6 +93,45 @@ class MemberExceptionTest {
 
         // when
         var ex = InvalidPasswordException.invalidPassword();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
+    @DisplayName("InvalidPasswordException required 정상 생성")
+    void passwordRequired() {
+        // given
+        var expectedCode = MemberDomainErrorCode.PASSWORD_REQUIRED;
+
+        // when
+        var ex = InvalidPasswordException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
+    @DisplayName("InvalidMemberException 정상 생성")
+    void invalidMember() {
+        // given
+        var expectedCode = MemberDomainErrorCode.INVALID_MEMBER;
+
+        // when
+        var ex = InvalidMemberException.invalidMember();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
+    @DisplayName("InvalidMemberException required 정상 생성")
+    void memberRequired() {
+        // given
+        var expectedCode = MemberDomainErrorCode.MEMBER_REQUIRED;
+
+        // when
+        var ex = InvalidMemberException.required();
 
         // then
         assertThat(ex.code()).isEqualTo(expectedCode);

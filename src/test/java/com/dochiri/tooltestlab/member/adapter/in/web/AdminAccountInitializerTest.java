@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.member.adapter.in.web;
 
+import com.dochiri.tooltestlab.member.adapter.in.bootstrap.AdminAccountInitializer;
 import com.dochiri.tooltestlab.member.application.exception.DuplicateEmailException;
 import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberCommand;
 import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberUseCase;

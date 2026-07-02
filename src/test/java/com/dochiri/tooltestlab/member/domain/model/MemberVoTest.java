@@ -1,6 +1,8 @@
 package com.dochiri.tooltestlab.member.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.exception.InvalidEmailException;
+import com.dochiri.tooltestlab.member.domain.exception.InvalidMemberException;
+import com.dochiri.tooltestlab.member.domain.exception.InvalidMemberIdException;
 import com.dochiri.tooltestlab.member.domain.exception.InvalidMemberNameException;
 import com.dochiri.tooltestlab.member.domain.exception.InvalidPasswordException;
 import org.junit.jupiter.api.DisplayName;
@@ -25,10 +27,10 @@ class MemberVoTest {
     }
 
     @Test
-    @DisplayName("Email 생성 - null이면 NullPointerException")
+    @DisplayName("Email 생성 - null이면 InvalidEmailException")
     void emailNull() {
         // given
-        var expectedException = NullPointerException.class;
+        var expectedException = InvalidEmailException.class;
 
         // when & then
         assertThatThrownBy(() -> new Email(null))
@@ -60,10 +62,10 @@ class MemberVoTest {
     }
 
     @Test
-    @DisplayName("MemberId 생성 - null이면 NullPointerException")
+    @DisplayName("MemberId 생성 - null이면 InvalidMemberIdException")
     void memberIdNull() {
         // given
-        var expectedException = NullPointerException.class;
+        var expectedException = InvalidMemberIdException.class;
 
         // when & then
         assertThatThrownBy(() -> new MemberId(null))
@@ -98,10 +100,10 @@ class MemberVoTest {
     }
 
     @Test
-    @DisplayName("MemberName 생성 - null이면 NullPointerException")
+    @DisplayName("MemberName 생성 - null이면 InvalidMemberNameException")
     void memberNameNull() {
         // given
-        var expectedException = NullPointerException.class;
+        var expectedException = InvalidMemberNameException.class;
 
         // when & then
         assertThatThrownBy(() -> new MemberName(null))
@@ -133,10 +135,10 @@ class MemberVoTest {
     }
 
     @Test
-    @DisplayName("Password 생성 - null이면 NullPointerException")
+    @DisplayName("Password 생성 - null이면 InvalidPasswordException")
     void passwordNull() {
         // given
-        var expectedException = NullPointerException.class;
+        var expectedException = InvalidPasswordException.class;
 
         // when & then
         assertThatThrownBy(() -> new Password(null))
@@ -156,14 +158,14 @@ class MemberVoTest {
 
     @Test
     @DisplayName("Member 생성 - 정상")
-    void memberCreate() {
+    void memberRegister() {
         // given
         var email = new Email("test@test.com");
         var name = new MemberName("홍길동");
         var password = new Password("enc");
 
         // when
-        var member = Member.create(email, password, name);
+        var member = Member.register(email, password, name);
 
         // then
         assertThat(member.id()).isNotNull();
@@ -183,14 +185,14 @@ class MemberVoTest {
 
         // when & then
         assertThatThrownBy(() -> new Member(null, email, password, name, status))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(InvalidMemberIdException.class);
         assertThatThrownBy(() -> new Member(id, null, password, name, status))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(InvalidEmailException.class);
         assertThatThrownBy(() -> new Member(id, email, null, name, status))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(InvalidPasswordException.class);
         assertThatThrownBy(() -> new Member(id, email, password, null, status))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(InvalidMemberNameException.class);
         assertThatThrownBy(() -> new Member(id, email, password, name, null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(InvalidMemberException.class);
     }
 }

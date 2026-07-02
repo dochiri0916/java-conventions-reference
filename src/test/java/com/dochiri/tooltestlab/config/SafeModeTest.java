@@ -44,11 +44,11 @@ class SafeModeTest {
     @DisplayName("safe 모드에서 멤버 저장 및 조회")
     void safeMemberSave() {
         // given
-        var member = Member.create(new Email("safe@test.com"), new Password("pw"), new MemberName("안전모드"));
+        var member = Member.register(new Email("safe@test.com"), new Password("pw"), new MemberName("안전모드"));
 
         // when
         var saved = memberRepositoryPort.save(member);
-        var found = memberRepositoryPort.findByPublicId(saved.id().value());
+        var found = memberRepositoryPort.findByMemberId(saved.id().value());
 
         // then
         assertThat(found).isPresent();

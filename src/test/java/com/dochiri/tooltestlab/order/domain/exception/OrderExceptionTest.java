@@ -22,6 +22,19 @@ class OrderExceptionTest {
     }
 
     @Test
+    @DisplayName("InvalidOrderIdException required 정상 생성")
+    void orderIdRequired() {
+        // given
+        var expectedCode = OrderDomainErrorCode.ORDER_ID_REQUIRED;
+
+        // when
+        var ex = InvalidOrderIdException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
     @DisplayName("InvalidOrderLinesException 정상 생성")
     void badOrderLines() {
         // given
@@ -34,6 +47,20 @@ class OrderExceptionTest {
         // then
         assertThat(ex.code()).isEqualTo(expectedCode);
         assertThat(ex.detail()).isEqualTo(expectedDetail);
+    }
+
+    @Test
+    @DisplayName("InvalidOrderLinesException required 정상 생성")
+    void orderLinesRequired() {
+        // given
+        var expectedCode = OrderDomainErrorCode.ORDER_LINES_REQUIRED;
+
+        // when
+        var ex = InvalidOrderLinesException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.detail()).isNull();
     }
 
     @Test
@@ -52,6 +79,20 @@ class OrderExceptionTest {
     }
 
     @Test
+    @DisplayName("InvalidQuantityException required 정상 생성")
+    void quantityRequired() {
+        // given
+        var expectedCode = OrderDomainErrorCode.QUANTITY_REQUIRED;
+
+        // when
+        var ex = InvalidQuantityException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.value()).isEqualTo(0);
+    }
+
+    @Test
     @DisplayName("InvalidShippingAddressException 정상 생성")
     void badShippingAddr() {
         // given
@@ -64,6 +105,20 @@ class OrderExceptionTest {
         // then
         assertThat(ex.code()).isEqualTo(expectedCode);
         assertThat(ex.detail()).isEqualTo(expectedDetail);
+    }
+
+    @Test
+    @DisplayName("InvalidShippingAddressException required 정상 생성")
+    void shippingAddrRequired() {
+        // given
+        var expectedCode = OrderDomainErrorCode.SHIPPING_ADDRESS_REQUIRED;
+
+        // when
+        var ex = InvalidShippingAddressException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.detail()).isNull();
     }
 
     @Test
@@ -81,6 +136,22 @@ class OrderExceptionTest {
         assertThat(ex.orderId()).isEqualTo(orderId);
         assertThat(ex.expected()).isEqualTo("CANCELLED");
         assertThat(ex.actual()).isEqualTo("DELIVERED");
+    }
+
+    @Test
+    @DisplayName("InvalidOrderStatusException required 정상 생성")
+    void orderStatusRequired() {
+        // given
+        var expectedCode = OrderDomainErrorCode.ORDER_STATUS_REQUIRED;
+
+        // when
+        var ex = InvalidOrderStatusException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.orderId()).isNull();
+        assertThat(ex.expected()).isNull();
+        assertThat(ex.actual()).isNull();
     }
 
     @Test

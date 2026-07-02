@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.dochiri.tooltestlab.cart.application.port.in.AddToCartCommand;
 import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartCommand;
+import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartIdException;
 import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException;
 import com.dochiri.tooltestlab.cart.domain.model.CartId;
 import com.dochiri.tooltestlab.cart.domain.model.CartItem;
@@ -413,6 +414,6 @@ class RemainingBranchTest {
 
         // when & then
         assertThatThrownBy(() -> new CartId(nullValue))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(InvalidCartIdException.class);
     }
 }

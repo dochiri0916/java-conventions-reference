@@ -33,4 +33,19 @@ class ProductAppExceptionTest {
             assertThat(code.title()).isNotBlank();
         }
     }
+
+    @Test
+    @DisplayName("InvalidCommandException 정상 생성")
+    void invalidCommand() {
+        // given
+        var expectedCode = ProductErrorCode.INVALID_INPUT;
+        var expectedDetail = "detail";
+
+        // when
+        var ex = InvalidCommandException.invalidInput(expectedDetail);
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.detail()).isEqualTo(expectedDetail);
+    }
 }

@@ -21,6 +21,19 @@ class ProductExceptionTest {
     }
 
     @Test
+    @DisplayName("InvalidProductIdException required 정상 생성")
+    void productIdRequired() {
+        // given
+        var expectedCode = ProductDomainErrorCode.PRODUCT_ID_REQUIRED;
+
+        // when
+        var ex = InvalidProductIdException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
     @DisplayName("InvalidProductNameException 정상 생성")
     void badProductName() {
         // given
@@ -28,6 +41,19 @@ class ProductExceptionTest {
 
         // when
         var ex = InvalidProductNameException.badProductName();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
+    @DisplayName("InvalidProductNameException required 정상 생성")
+    void productNameRequired() {
+        // given
+        var expectedCode = ProductDomainErrorCode.PRODUCT_NAME_REQUIRED;
+
+        // when
+        var ex = InvalidProductNameException.required();
 
         // then
         assertThat(ex.code()).isEqualTo(expectedCode);
@@ -46,6 +72,20 @@ class ProductExceptionTest {
         // then
         assertThat(ex.code()).isEqualTo(expectedCode);
         assertThat(ex.detail()).isEqualTo(expectedDetail);
+    }
+
+    @Test
+    @DisplayName("InvalidStockException required 정상 생성")
+    void stockRequired() {
+        // given
+        var expectedCode = ProductDomainErrorCode.STOCK_REQUIRED;
+
+        // when
+        var ex = InvalidStockException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.detail()).isNull();
     }
 
     @Test
@@ -73,6 +113,45 @@ class ProductExceptionTest {
 
         // when
         var ex = InvalidProductException.invalidProduct();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
+    @DisplayName("InvalidProductException required 정상 생성")
+    void productRequired() {
+        // given
+        var expectedCode = ProductDomainErrorCode.PRODUCT_REQUIRED;
+
+        // when
+        var ex = InvalidProductException.required();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
+    @DisplayName("InvalidMoneyException 정상 생성")
+    void moneyAddNull() {
+        // given
+        var expectedCode = ProductDomainErrorCode.MONEY_ADD_NULL;
+
+        // when
+        var ex = InvalidMoneyException.addNull();
+
+        // then
+        assertThat(ex.code()).isEqualTo(expectedCode);
+    }
+
+    @Test
+    @DisplayName("InvalidMoneyException required 정상 생성")
+    void moneyRequired() {
+        // given
+        var expectedCode = ProductDomainErrorCode.MONEY_REQUIRED;
+
+        // when
+        var ex = InvalidMoneyException.required();
 
         // then
         assertThat(ex.code()).isEqualTo(expectedCode);
