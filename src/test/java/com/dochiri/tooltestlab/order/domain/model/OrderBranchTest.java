@@ -305,6 +305,20 @@ class OrderBranchTest {
     }
 
     @Test
+    @DisplayName("OrderLines - containsProduct에 null 전달 시 예외")
+    void orderLinesContainsProductNull() {
+        // given
+        var line = new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
+                new com.dochiri.tooltestlab.product.domain.model.ProductName("A"),
+                new Quantity(1), Money.of(1000));
+        var lines = OrderLines.from(List.of(line));
+
+        // when & then
+        assertThatThrownBy(() -> lines.containsProduct(null))
+                .isInstanceOf(com.dochiri.tooltestlab.product.domain.exception.InvalidProductIdException.class);
+    }
+
+    @Test
     @DisplayName("OrderPlacedItems - null 목록이면 InvalidOrderLinesException")
     void orderPlacedItemsNullValues() {
         // given
