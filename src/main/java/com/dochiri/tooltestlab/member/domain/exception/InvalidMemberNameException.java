@@ -17,6 +17,10 @@ public final class InvalidMemberNameException extends RuntimeException {
         return new InvalidMemberNameException(MemberDomainErrorCode.INVALID_MBR_NAME);
     }
 
+    public static InvalidMemberNameException required() {
+        return new InvalidMemberNameException(MemberDomainErrorCode.MEMBER_NAME_REQUIRED);
+    }
+
     public MemberDomainErrorCode code() {
         return errorCode;
     }

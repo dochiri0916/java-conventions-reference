@@ -9,6 +9,12 @@ public final class InvalidOrderLinesException extends RuntimeException {
     private final OrderDomainErrorCode errorCode;
     private final String detailField;
 
+    private InvalidOrderLinesException(final OrderDomainErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+        this.detailField = null;
+    }
+
     private InvalidOrderLinesException(final OrderDomainErrorCode errorCode, final String detail) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
@@ -17,6 +23,10 @@ public final class InvalidOrderLinesException extends RuntimeException {
 
     public static InvalidOrderLinesException badOrderLines(final String detail) {
         return new InvalidOrderLinesException(OrderDomainErrorCode.BAD_ORDER_LINES, detail);
+    }
+
+    public static InvalidOrderLinesException required() {
+        return new InvalidOrderLinesException(OrderDomainErrorCode.ORDER_LINES_REQUIRED);
     }
 
     public OrderDomainErrorCode code() {

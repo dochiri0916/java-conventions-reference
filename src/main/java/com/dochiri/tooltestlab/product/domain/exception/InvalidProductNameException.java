@@ -17,6 +17,10 @@ public final class InvalidProductNameException extends RuntimeException {
         return new InvalidProductNameException(ProductDomainErrorCode.BAD_PRODUCT_NAME);
     }
 
+    public static InvalidProductNameException required() {
+        return new InvalidProductNameException(ProductDomainErrorCode.PRODUCT_NAME_REQUIRED);
+    }
+
     public ProductDomainErrorCode code() {
         return errorCode;
     }

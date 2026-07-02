@@ -4,12 +4,12 @@ import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartIdException;
 
 import java.util.UUID;
 
-import static java.util.Objects.requireNonNull;
-
 public record CartId(String value) {
 
     public CartId {
-        requireNonNull(value, "장바구니 ID는 null일 수 없습니다.");
+        if (value == null) {
+            throw InvalidCartIdException.required();
+        }
         final String stripped = value.strip();
         if (stripped.isBlank()) {
             throw InvalidCartIdException.invalidCartId();

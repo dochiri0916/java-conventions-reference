@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.category.domain.model;
 
-import static java.util.Objects.requireNonNull;
+import com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryIdException;
+import com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryNameException;
 
 public record Category(
         CategoryId id,
@@ -8,8 +9,12 @@ public record Category(
 ) {
 
     public Category {
-        requireNonNull(id, "카테고리 ID는 null일 수 없습니다.");
-        requireNonNull(name, "카테고리명은 null일 수 없습니다.");
+        if (id == null) {
+            throw InvalidCategoryIdException.required();
+        }
+        if (name == null) {
+            throw InvalidCategoryNameException.required();
+        }
     }
 
     public static Category create(final CategoryName name) {

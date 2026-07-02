@@ -17,6 +17,10 @@ public final class InvalidCartIdException extends RuntimeException {
         return new InvalidCartIdException(CartDomainErrorCode.INVALID_CART_ID);
     }
 
+    public static InvalidCartIdException required() {
+        return new InvalidCartIdException(CartDomainErrorCode.CART_ID_REQUIRED);
+    }
+
     public CartDomainErrorCode code() {
         return errorCode;
     }

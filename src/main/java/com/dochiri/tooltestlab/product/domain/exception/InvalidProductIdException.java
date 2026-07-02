@@ -17,6 +17,10 @@ public final class InvalidProductIdException extends RuntimeException {
         return new InvalidProductIdException(ProductDomainErrorCode.BAD_PRODUCT_ID);
     }
 
+    public static InvalidProductIdException required() {
+        return new InvalidProductIdException(ProductDomainErrorCode.PRODUCT_ID_REQUIRED);
+    }
+
     public ProductDomainErrorCode code() {
         return errorCode;
     }

@@ -17,6 +17,10 @@ public final class InvalidEmailException extends RuntimeException {
         return new InvalidEmailException(MemberDomainErrorCode.INVALID_EMAIL);
     }
 
+    public static InvalidEmailException required() {
+        return new InvalidEmailException(MemberDomainErrorCode.EMAIL_REQUIRED);
+    }
+
     public MemberDomainErrorCode code() {
         return errorCode;
     }

@@ -17,6 +17,10 @@ public final class InvalidCategoryNameException extends RuntimeException {
         return new InvalidCategoryNameException(CategoryDomainErrorCode.INVALID_CAT_NAME);
     }
 
+    public static InvalidCategoryNameException required() {
+        return new InvalidCategoryNameException(CategoryDomainErrorCode.CATEGORY_NAME_REQUIRED);
+    }
+
     public CategoryDomainErrorCode code() {
         return errorCode;
     }

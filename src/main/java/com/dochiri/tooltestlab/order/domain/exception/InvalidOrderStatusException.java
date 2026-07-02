@@ -13,6 +13,14 @@ public final class InvalidOrderStatusException extends RuntimeException {
     private final String expectedField;
     private final String actualField;
 
+    private InvalidOrderStatusException(final OrderDomainErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+        this.orderIdField = null;
+        this.expectedField = null;
+        this.actualField = null;
+    }
+
     private InvalidOrderStatusException(final OrderDomainErrorCode errorCode,
                                         final OrderId orderId,
                                         final String expected,
@@ -28,6 +36,10 @@ public final class InvalidOrderStatusException extends RuntimeException {
                                                               final String expected,
                                                               final String actual) {
         return new InvalidOrderStatusException(OrderDomainErrorCode.BAD_ORDER_STATUS, orderId, expected, actual);
+    }
+
+    public static InvalidOrderStatusException required() {
+        return new InvalidOrderStatusException(OrderDomainErrorCode.ORDER_STATUS_REQUIRED);
     }
 
     public OrderDomainErrorCode code() {

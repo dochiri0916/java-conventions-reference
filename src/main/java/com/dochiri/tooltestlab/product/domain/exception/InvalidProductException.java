@@ -17,6 +17,10 @@ public final class InvalidProductException extends RuntimeException {
         return new InvalidProductException(ProductDomainErrorCode.INVALID_PRODUCT);
     }
 
+    public static InvalidProductException required() {
+        return new InvalidProductException(ProductDomainErrorCode.PRODUCT_REQUIRED);
+    }
+
     public ProductDomainErrorCode code() {
         return errorCode;
     }

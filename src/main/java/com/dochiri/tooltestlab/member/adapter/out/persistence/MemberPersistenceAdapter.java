@@ -3,14 +3,12 @@ package com.dochiri.tooltestlab.member.adapter.out.persistence;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
 import com.dochiri.tooltestlab.member.domain.model.Member;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "tool-test-lab.concurrency.safe", havingValue = "false", matchIfMissing = true)
 class MemberPersistenceAdapter implements MemberRepositoryPort {
 
     private final MemberJpaRepository jpaRepository;
@@ -23,8 +21,8 @@ class MemberPersistenceAdapter implements MemberRepositoryPort {
     }
 
     @Override
-    public Optional<Member> findByPublicId(final String publicId) {
-        return jpaRepository.findByMemberId(publicId).map(MemberMapper::toDomain);
+    public Optional<Member> findByMemberId(final String memberId) {
+        return jpaRepository.findByMemberId(memberId).map(MemberMapper::toDomain);
     }
 
     @Override

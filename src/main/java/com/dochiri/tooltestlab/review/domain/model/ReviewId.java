@@ -4,12 +4,13 @@ import com.dochiri.tooltestlab.review.domain.exception.InvalidReviewIdException;
 
 import java.util.UUID;
 
-import static java.util.Objects.requireNonNull;
-
 public record ReviewId(String value) {
 
     public ReviewId {
-        value = requireNonNull(value).strip();
+        if (value == null) {
+            throw InvalidReviewIdException.required();
+        }
+        value = value.strip();
         if (value.isBlank()) {
             throw InvalidReviewIdException.invalidReviewId();
         }

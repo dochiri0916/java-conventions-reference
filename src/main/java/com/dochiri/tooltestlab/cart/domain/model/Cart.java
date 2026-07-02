@@ -1,12 +1,17 @@
 package com.dochiri.tooltestlab.cart.domain.model;
 
+import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartException;
+import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartIdException;
+import com.dochiri.tooltestlab.member.domain.exception.InvalidMemberIdException;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.order.domain.exception.InvalidQuantityException;
 import com.dochiri.tooltestlab.order.domain.model.Quantity;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidMoneyException;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidProductIdException;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidProductNameException;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.product.domain.model.ProductName;
 import com.dochiri.tooltestlab.product.domain.model.Money;
-
-import static java.util.Objects.requireNonNull;
 
 public record Cart(
         CartId id,
@@ -15,9 +20,15 @@ public record Cart(
 ) {
 
     public Cart {
-        requireNonNull(id, "장바구니 ID는 null일 수 없습니다.");
-        requireNonNull(memberId, "회원 ID는 null일 수 없습니다.");
-        requireNonNull(items, "장바구니 아이템 목록은 null일 수 없습니다.");
+        if (id == null) {
+            throw InvalidCartIdException.required();
+        }
+        if (memberId == null) {
+            throw InvalidMemberIdException.required();
+        }
+        if (items == null) {
+            throw InvalidCartException.required();
+        }
     }
 
     public static Cart create(final MemberId memberId) {
@@ -26,10 +37,18 @@ public record Cart(
 
     public Cart addItem(
             final ProductId productId, final ProductName productName, final Quantity quantity, final Money unitPrice) {
-        requireNonNull(productId, "상품 ID는 null일 수 없습니다.");
-        requireNonNull(productName, "상품명은 null일 수 없습니다.");
-        requireNonNull(quantity, "수량은 null일 수 없습니다.");
-        requireNonNull(unitPrice, "단가는 null일 수 없습니다.");
+        if (productId == null) {
+            throw InvalidProductIdException.required();
+        }
+        if (productName == null) {
+            throw InvalidProductNameException.required();
+        }
+        if (quantity == null) {
+            throw InvalidQuantityException.required();
+        }
+        if (unitPrice == null) {
+            throw InvalidMoneyException.required();
+        }
 
         return items.findByProductId(productId)
                 .map(existing -> {

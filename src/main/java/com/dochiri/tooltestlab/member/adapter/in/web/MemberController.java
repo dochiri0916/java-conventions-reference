@@ -34,8 +34,8 @@ public class MemberController {
     })
     @PostMapping("/register")
     public ResponseEntity<MemberResponse> register(@Valid @RequestBody RegisterMemberRequest request) {
-        final RegisterMemberResult result = registerMemberUseCase.register(
-                new RegisterMemberCommand(request.email(), request.password(), request.name()));
+        final RegisterMemberCommand command = new RegisterMemberCommand(request.email(), request.password(), request.name());
+        final RegisterMemberResult result = registerMemberUseCase.register(command);
         return ResponseEntity.ok(new MemberResponse(result.publicId(), result.email(), result.name()));
     }
 
@@ -48,8 +48,8 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<MemberResponse> login(
             @Valid @RequestBody LoginMemberRequest request, final HttpSession session) {
-        final LoginMemberResult result = loginMemberUseCase.login(
-                new LoginMemberCommand(request.email(), request.password()));
+        final LoginMemberCommand command = new LoginMemberCommand(request.email(), request.password());
+        final LoginMemberResult result = loginMemberUseCase.login(command);
         session.setAttribute(LoginCheckInterceptor.MEMBER_ID_KEY, result.publicId());
         return ResponseEntity.ok(new MemberResponse(result.publicId(), result.email(), result.name()));
     }

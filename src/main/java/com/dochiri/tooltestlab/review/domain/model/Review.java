@@ -1,9 +1,12 @@
 package com.dochiri.tooltestlab.review.domain.model;
 
+import com.dochiri.tooltestlab.member.domain.exception.InvalidMemberIdException;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidProductIdException;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
-
-import static java.util.Objects.requireNonNull;
+import com.dochiri.tooltestlab.review.domain.exception.InvalidRatingException;
+import com.dochiri.tooltestlab.review.domain.exception.InvalidReviewContentException;
+import com.dochiri.tooltestlab.review.domain.exception.InvalidReviewIdException;
 
 public record Review(
         ReviewId id,
@@ -14,11 +17,21 @@ public record Review(
 ) {
 
     public Review {
-        requireNonNull(id, "리뷰 ID는 null일 수 없습니다.");
-        requireNonNull(memberId, "회원 ID는 null일 수 없습니다.");
-        requireNonNull(productId, "상품 ID는 null일 수 없습니다.");
-        requireNonNull(rating, "평점은 null일 수 없습니다.");
-        requireNonNull(content, "리뷰 내용은 null일 수 없습니다.");
+        if (id == null) {
+            throw InvalidReviewIdException.required();
+        }
+        if (memberId == null) {
+            throw InvalidMemberIdException.required();
+        }
+        if (productId == null) {
+            throw InvalidProductIdException.required();
+        }
+        if (rating == null) {
+            throw InvalidRatingException.required();
+        }
+        if (content == null) {
+            throw InvalidReviewContentException.required();
+        }
     }
 
     public static Review create(

@@ -17,6 +17,10 @@ public final class InvalidReviewContentException extends RuntimeException {
         return new InvalidReviewContentException(ReviewDomainErrorCode.BAD_RVW_CONTENT);
     }
 
+    public static InvalidReviewContentException required() {
+        return new InvalidReviewContentException(ReviewDomainErrorCode.REVIEW_CONTENT_REQUIRED);
+    }
+
     public ReviewDomainErrorCode code() {
         return errorCode;
     }

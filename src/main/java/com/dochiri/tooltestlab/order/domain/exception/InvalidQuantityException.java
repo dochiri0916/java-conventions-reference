@@ -9,6 +9,12 @@ public final class InvalidQuantityException extends RuntimeException {
     private final OrderDomainErrorCode errorCode;
     private final int valueField;
 
+    private InvalidQuantityException(final OrderDomainErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+        this.valueField = 0;
+    }
+
     private InvalidQuantityException(final OrderDomainErrorCode errorCode, final int value) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
@@ -17,6 +23,10 @@ public final class InvalidQuantityException extends RuntimeException {
 
     public static InvalidQuantityException invalidQuantity(final int value) {
         return new InvalidQuantityException(OrderDomainErrorCode.INVALID_QUANTITY, value);
+    }
+
+    public static InvalidQuantityException required() {
+        return new InvalidQuantityException(OrderDomainErrorCode.QUANTITY_REQUIRED);
     }
 
     public OrderDomainErrorCode code() {

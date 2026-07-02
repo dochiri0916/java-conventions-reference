@@ -17,6 +17,10 @@ public final class InvalidPasswordException extends RuntimeException {
         return new InvalidPasswordException(MemberDomainErrorCode.INVALID_PASSWORD);
     }
 
+    public static InvalidPasswordException required() {
+        return new InvalidPasswordException(MemberDomainErrorCode.PASSWORD_REQUIRED);
+    }
+
     public MemberDomainErrorCode code() {
         return errorCode;
     }

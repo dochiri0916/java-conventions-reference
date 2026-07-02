@@ -4,12 +4,12 @@ import com.dochiri.tooltestlab.member.domain.exception.InvalidMemberIdException;
 
 import java.util.UUID;
 
-import static java.util.Objects.requireNonNull;
-
 public record MemberId(String value) {
 
     public MemberId {
-        requireNonNull(value, "회원 ID는 null일 수 없습니다.");
+        if (value == null) {
+            throw InvalidMemberIdException.required();
+        }
         final String stripped = value.strip();
         if (stripped.isBlank()) {
             throw InvalidMemberIdException.invalidMemberId();

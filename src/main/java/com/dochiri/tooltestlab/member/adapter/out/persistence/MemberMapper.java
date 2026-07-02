@@ -9,7 +9,7 @@ final class MemberMapper {
     }
 
     static Member toDomain(final MemberEntity entity) {
-        return new Member(
+        return Member.reconstitute(
                 new MemberId(entity.getMemberId()),
                 new Email(entity.getEmail()),
                 new Password(entity.getPassword()),
@@ -18,7 +18,7 @@ final class MemberMapper {
     }
 
     static MemberEntity toEntity(final Member domain) {
-        return MemberEntity.create(
+        return MemberEntity.register(
                 domain.id().value(),
                 domain.email().value(),
                 domain.password().value(),

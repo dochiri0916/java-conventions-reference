@@ -2,18 +2,17 @@ package com.dochiri.tooltestlab.member.application.exception;
 
 import static java.util.Objects.requireNonNull;
 
-@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public final class MemberNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
     private final MemberErrorCode errorCode;
-    private final String identifier;
+    private final String identifierValue;
 
     private MemberNotFoundException(final MemberErrorCode errorCode, final String identifier) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.identifier = requireNonNull(identifier);
+        this.identifierValue = requireNonNull(identifier);
     }
 
     public static MemberNotFoundException memberNotFound(final String identifier) {
@@ -25,6 +24,6 @@ public final class MemberNotFoundException extends RuntimeException {
     }
 
     public String identifier() {
-        return identifier;
+        return identifierValue;
     }
 }

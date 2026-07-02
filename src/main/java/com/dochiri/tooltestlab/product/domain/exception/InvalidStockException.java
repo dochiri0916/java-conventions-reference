@@ -9,6 +9,12 @@ public final class InvalidStockException extends RuntimeException {
     private final ProductDomainErrorCode errorCode;
     private final String detailField;
 
+    private InvalidStockException(final ProductDomainErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+        this.detailField = null;
+    }
+
     private InvalidStockException(final ProductDomainErrorCode errorCode, final String detail) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
@@ -17,6 +23,10 @@ public final class InvalidStockException extends RuntimeException {
 
     public static InvalidStockException invalidStock(final String detail) {
         return new InvalidStockException(ProductDomainErrorCode.INVALID_STOCK, detail);
+    }
+
+    public static InvalidStockException required() {
+        return new InvalidStockException(ProductDomainErrorCode.STOCK_REQUIRED);
     }
 
     public ProductDomainErrorCode code() {

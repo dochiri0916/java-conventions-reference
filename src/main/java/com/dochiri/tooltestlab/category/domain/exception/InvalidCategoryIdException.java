@@ -17,6 +17,10 @@ public final class InvalidCategoryIdException extends RuntimeException {
         return new InvalidCategoryIdException(CategoryDomainErrorCode.INVALID_CAT_ID);
     }
 
+    public static InvalidCategoryIdException required() {
+        return new InvalidCategoryIdException(CategoryDomainErrorCode.CATEGORY_ID_REQUIRED);
+    }
+
     public CategoryDomainErrorCode code() {
         return errorCode;
     }

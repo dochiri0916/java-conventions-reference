@@ -5,9 +5,9 @@ import com.dochiri.tooltestlab.member.application.port.in.LoginMemberCommand;
 import com.dochiri.tooltestlab.member.application.port.in.LoginMemberResult;
 import com.dochiri.tooltestlab.member.application.port.in.LoginMemberUseCase;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
+import com.dochiri.tooltestlab.member.application.port.out.PasswordEncoderPort;
 import com.dochiri.tooltestlab.member.domain.model.Member;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public final class LoginMemberService implements LoginMemberUseCase {
 
     private final MemberRepositoryPort memberRepositoryPort;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoderPort passwordEncoderPort;
 
     @Override
     @Transactional(readOnly = true)
@@ -24,7 +24,7 @@ public final class LoginMemberService implements LoginMemberUseCase {
         final Member member = memberRepositoryPort.findByEmail(command.email())
                 .orElseThrow(LoginFailedException::loginFailed);
 
-        if (!passwordEncoder.matches(command.password(), member.password().value())) {
+        if (!passwordEncoderPort.matches(command.password(), member.password().value())) {
             throw LoginFailedException.loginFailed();
         }
 

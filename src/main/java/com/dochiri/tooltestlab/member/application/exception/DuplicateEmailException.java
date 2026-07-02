@@ -2,18 +2,17 @@ package com.dochiri.tooltestlab.member.application.exception;
 
 import static java.util.Objects.requireNonNull;
 
-@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public final class DuplicateEmailException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
     private final MemberErrorCode errorCode;
-    private final String email;
+    private final String emailValue;
 
     private DuplicateEmailException(final MemberErrorCode errorCode, final String email) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.email = requireNonNull(email);
+        this.emailValue = requireNonNull(email);
     }
 
     public static DuplicateEmailException duplicateEmail(final String email) {
@@ -25,6 +24,6 @@ public final class DuplicateEmailException extends RuntimeException {
     }
 
     public String email() {
-        return email;
+        return emailValue;
     }
 }

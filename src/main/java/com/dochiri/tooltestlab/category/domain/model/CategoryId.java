@@ -4,12 +4,13 @@ import com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryIdExcept
 
 import java.util.UUID;
 
-import static java.util.Objects.requireNonNull;
-
 public record CategoryId(String value) {
 
     public CategoryId {
-        value = requireNonNull(value).strip();
+        if (value == null) {
+            throw InvalidCategoryIdException.required();
+        }
+        value = value.strip();
         if (value.isBlank()) {
             throw InvalidCategoryIdException.invalidCatId();
         }

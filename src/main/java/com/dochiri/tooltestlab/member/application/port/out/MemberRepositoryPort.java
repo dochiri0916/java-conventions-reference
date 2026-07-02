@@ -8,7 +8,7 @@ public interface MemberRepositoryPort {
 
     Member save(Member member);
 
-    Optional<Member> findByPublicId(String publicId);
+    Optional<Member> findByMemberId(String memberId);
 
     Optional<Member> findByEmail(String email);
 

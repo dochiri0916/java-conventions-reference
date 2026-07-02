@@ -1,6 +1,8 @@
 package com.dochiri.tooltestlab.product.domain.model;
 
-import static java.util.Objects.requireNonNull;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidProductException;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidProductIdException;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidProductNameException;
 
 public record Product(
         ProductId id,
@@ -12,12 +14,24 @@ public record Product(
 ) {
 
     public Product {
-        requireNonNull(id, "상품 ID는 null일 수 없습니다.");
-        requireNonNull(name, "상품명은 null일 수 없습니다.");
-        requireNonNull(description, "상품 설명은 null일 수 없습니다.");
-        requireNonNull(price, "가격은 null일 수 없습니다.");
-        requireNonNull(stock, "재고는 null일 수 없습니다.");
-        requireNonNull(status, "상품 상태는 null일 수 없습니다.");
+        if (id == null) {
+            throw InvalidProductIdException.required();
+        }
+        if (name == null) {
+            throw InvalidProductNameException.required();
+        }
+        if (description == null) {
+            throw InvalidProductException.required();
+        }
+        if (price == null) {
+            throw com.dochiri.tooltestlab.product.domain.exception.InvalidMoneyException.required();
+        }
+        if (stock == null) {
+            throw com.dochiri.tooltestlab.product.domain.exception.InvalidStockException.required();
+        }
+        if (status == null) {
+            throw InvalidProductException.required();
+        }
     }
 
     public static Product create(final String name, final String description, final Money price, final int stock) {

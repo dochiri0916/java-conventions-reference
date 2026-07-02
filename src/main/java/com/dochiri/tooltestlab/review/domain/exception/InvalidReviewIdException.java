@@ -17,6 +17,10 @@ public final class InvalidReviewIdException extends RuntimeException {
         return new InvalidReviewIdException(ReviewDomainErrorCode.INVALID_REVIEW_ID);
     }
 
+    public static InvalidReviewIdException required() {
+        return new InvalidReviewIdException(ReviewDomainErrorCode.REVIEW_ID_REQUIRED);
+    }
+
     public ReviewDomainErrorCode code() {
         return errorCode;
     }

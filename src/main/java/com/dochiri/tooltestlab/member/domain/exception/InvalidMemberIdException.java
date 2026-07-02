@@ -17,6 +17,10 @@ public final class InvalidMemberIdException extends RuntimeException {
         return new InvalidMemberIdException(MemberDomainErrorCode.INVALID_MEMBER_ID);
     }
 
+    public static InvalidMemberIdException required() {
+        return new InvalidMemberIdException(MemberDomainErrorCode.MEMBER_ID_REQUIRED);
+    }
+
     public MemberDomainErrorCode code() {
         return errorCode;
     }

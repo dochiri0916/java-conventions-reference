@@ -25,6 +25,10 @@ public final class InvalidMoneyException extends RuntimeException {
         return new InvalidMoneyException(ProductDomainErrorCode.MONEY_MULTIPLY_NEGATIVE);
     }
 
+    public static InvalidMoneyException required() {
+        return new InvalidMoneyException(ProductDomainErrorCode.MONEY_REQUIRED);
+    }
+
     public ProductDomainErrorCode code() {
         return errorCode;
     }

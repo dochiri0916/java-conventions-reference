@@ -9,16 +9,12 @@ import lombok.NoArgsConstructor;
 @Table(name = "members")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SuppressWarnings("PMD.ImmutableField")
 public class MemberEntity {
 
     @Getter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Version
-    private Long version;
 
     @Column(nullable = false, unique = true, length = 32)
     private String memberId;
@@ -44,7 +40,7 @@ public class MemberEntity {
         this.status = status;
     }
 
-    static MemberEntity create(final String memberId, final String email, final String password, final String name, final String status) {
+    public static MemberEntity register(final String memberId, final String email, final String password, final String name, final String status) {
         return new MemberEntity(null, memberId, email, password, name, status);
     }
 }

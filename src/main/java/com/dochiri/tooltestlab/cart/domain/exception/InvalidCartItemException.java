@@ -9,6 +9,12 @@ public final class InvalidCartItemException extends RuntimeException {
     private final CartDomainErrorCode errorCode;
     private final String detailField;
 
+    private InvalidCartItemException(final CartDomainErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+        this.detailField = null;
+    }
+
     private InvalidCartItemException(final CartDomainErrorCode errorCode, final String detail) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
@@ -17,6 +23,10 @@ public final class InvalidCartItemException extends RuntimeException {
 
     public static InvalidCartItemException invalidCartItem(final String detail) {
         return new InvalidCartItemException(CartDomainErrorCode.INVALID_CART_ITEM, detail);
+    }
+
+    public static InvalidCartItemException required() {
+        return new InvalidCartItemException(CartDomainErrorCode.CART_ITEM_REQUIRED);
     }
 
     public CartDomainErrorCode code() {

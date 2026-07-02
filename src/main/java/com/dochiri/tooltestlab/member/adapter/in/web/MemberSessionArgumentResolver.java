@@ -3,14 +3,13 @@ package com.dochiri.tooltestlab.member.adapter.in.web;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-/**
- * @LoginMember 어노테이션이 붙은 파라미터에 세션의 MEMBER_ID를 주입.
- */
+@Component
 public class MemberSessionArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override

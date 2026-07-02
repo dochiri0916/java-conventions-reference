@@ -1,6 +1,10 @@
 package com.dochiri.tooltestlab.member.domain.model;
 
-import static java.util.Objects.requireNonNull;
+import com.dochiri.tooltestlab.member.domain.exception.InvalidEmailException;
+import com.dochiri.tooltestlab.member.domain.exception.InvalidMemberException;
+import com.dochiri.tooltestlab.member.domain.exception.InvalidMemberIdException;
+import com.dochiri.tooltestlab.member.domain.exception.InvalidMemberNameException;
+import com.dochiri.tooltestlab.member.domain.exception.InvalidPasswordException;
 
 public record Member(
         MemberId id,
@@ -10,20 +14,43 @@ public record Member(
         MemberStatus status) {
 
     public Member {
-        requireNonNull(id, "id는 null일 수 없습니다.");
-        requireNonNull(email, "이메일은 null일 수 없습니다.");
-        requireNonNull(password, "비밀번호는 null일 수 없습니다.");
-        requireNonNull(name, "이름은 null일 수 없습니다.");
-        requireNonNull(status, "회원 상태는 null일 수 없습니다.");
+        if (id == null) {
+            throw InvalidMemberIdException.required();
+        }
+        if (email == null) {
+            throw InvalidEmailException.required();
+        }
+        if (password == null) {
+            throw InvalidPasswordException.required();
+        }
+        if (name == null) {
+            throw InvalidMemberNameException.required();
+        }
+        if (status == null) {
+            throw InvalidMemberException.required();
+        }
     }
 
-    public static Member create(final Email email, final Password encodedPassword, final MemberName name) {
+    public static Member register(final Email email, final Password encodedPassword, final MemberName name) {
         return new Member(
                 MemberId.generate(),
                 email,
                 encodedPassword,
                 name,
-                MemberStatus.ACTIVE);
+                MemberStatus.ACTIVE
+        );
+    }
+
+    public static Member reconstitute(
+            final MemberId id, final Email email, final Password encodedPassword,
+            final MemberName name, final MemberStatus status) {
+        return new Member(
+                id,
+                email,
+                encodedPassword,
+                name,
+                status
+        );
     }
 
     public Member withdraw() {
@@ -40,4 +67,5 @@ public record Member(
     public int hashCode() {
         return id.hashCode();
     }
+
 }

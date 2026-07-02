@@ -9,6 +9,12 @@ public final class InvalidRatingException extends RuntimeException {
     private final ReviewDomainErrorCode errorCode;
     private final int ratingField;
 
+    private InvalidRatingException(final ReviewDomainErrorCode errorCode) {
+        super(errorCode.name());
+        this.errorCode = requireNonNull(errorCode);
+        this.ratingField = 0;
+    }
+
     private InvalidRatingException(final ReviewDomainErrorCode errorCode, final int rating) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
@@ -17,6 +23,10 @@ public final class InvalidRatingException extends RuntimeException {
 
     public static InvalidRatingException invalidRating(final int rating) {
         return new InvalidRatingException(ReviewDomainErrorCode.INVALID_RATING, rating);
+    }
+
+    public static InvalidRatingException required() {
+        return new InvalidRatingException(ReviewDomainErrorCode.RATING_REQUIRED);
     }
 
     public ReviewDomainErrorCode code() {

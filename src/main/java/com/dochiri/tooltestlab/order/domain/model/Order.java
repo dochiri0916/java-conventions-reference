@@ -1,10 +1,12 @@
 package com.dochiri.tooltestlab.order.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderIdException;
+import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderLinesException;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
+import com.dochiri.tooltestlab.order.domain.exception.InvalidShippingAddressException;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidMoneyException;
 import com.dochiri.tooltestlab.product.domain.model.Money;
-
-import static java.util.Objects.requireNonNull;
 
 public record Order(
         OrderId id,
@@ -16,12 +18,24 @@ public record Order(
 ) {
 
     public Order {
-        requireNonNull(id, "주문 ID는 null일 수 없습니다.");
-        requireNonNull(memberId, "회원 ID는 null일 수 없습니다.");
-        requireNonNull(items, "주문 상품 목록은 null일 수 없습니다.");
-        requireNonNull(status, "주문 상태는 null일 수 없습니다.");
-        requireNonNull(shippingAddress, "배송지는 null일 수 없습니다.");
-        requireNonNull(totalAmount, "총 금액은 null일 수 없습니다.");
+        if (id == null) {
+            throw InvalidOrderIdException.required();
+        }
+        if (memberId == null) {
+            throw com.dochiri.tooltestlab.member.domain.exception.InvalidMemberIdException.required();
+        }
+        if (items == null) {
+            throw InvalidOrderLinesException.required();
+        }
+        if (status == null) {
+            throw InvalidOrderStatusException.required();
+        }
+        if (shippingAddress == null) {
+            throw InvalidShippingAddressException.required();
+        }
+        if (totalAmount == null) {
+            throw InvalidMoneyException.required();
+        }
     }
 
     public static Order create(final MemberId memberId, final OrderLines items, final ShippingAddress shippingAddress) {

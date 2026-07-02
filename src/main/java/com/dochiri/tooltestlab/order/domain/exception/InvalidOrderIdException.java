@@ -17,6 +17,10 @@ public final class InvalidOrderIdException extends RuntimeException {
         return new InvalidOrderIdException(OrderDomainErrorCode.INVALID_ORDER_ID);
     }
 
+    public static InvalidOrderIdException required() {
+        return new InvalidOrderIdException(OrderDomainErrorCode.ORDER_ID_REQUIRED);
+    }
+
     public OrderDomainErrorCode code() {
         return errorCode;
     }

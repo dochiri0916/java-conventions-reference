@@ -2,6 +2,7 @@ package com.dochiri.tooltestlab.cart.domain.model;
 
 import com.dochiri.tooltestlab.cart.domain.exception.CartItemLimitExceededException;
 import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidProductIdException;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.product.domain.model.MaxCount;
 import com.dochiri.tooltestlab.product.domain.model.Money;
@@ -10,14 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Objects.requireNonNull;
-
 public record CartItems(List<CartItem> values) {
 
     public static final MaxCount MAX_ITEM_COUNT = MaxCount.of(100);
 
     public CartItems {
-        requireNonNull(values, "장바구니 상품 목록은 null일 수 없습니다.");
+        if (values == null) {
+            throw InvalidCartItemException.required();
+        }
 
         if (values.size() > MAX_ITEM_COUNT.value()) {
             throw CartItemLimitExceededException.tooManyItems(values.size());
@@ -53,27 +54,34 @@ public record CartItems(List<CartItem> values) {
     }
 
     public boolean containsProduct(final ProductId productId) {
-        requireNonNull(productId, "상품 ID는 null일 수 없습니다.");
+        if (productId == null) {
+            throw InvalidProductIdException.required();
+        }
         return values.stream().anyMatch(item -> item.productId().equals(productId));
     }
 
     public Optional<CartItem> findByProductId(final ProductId productId) {
-        requireNonNull(productId, "상품 ID는 null일 수 없습니다.");
+        if (productId == null) {
+            throw InvalidProductIdException.required();
+        }
         return values.stream()
                 .filter(item -> item.productId().equals(productId))
                 .findFirst();
     }
 
     public CartItems add(final CartItem item) {
-        requireNonNull(item, "추가할 상품은 null일 수 없습니다.");
+        if (item == null) {
+            throw InvalidCartItemException.required();
+        }
         final List<CartItem> changed = new ArrayList<>(values);
         changed.add(item);
         return new CartItems(changed);
     }
 
     public CartItems replace(final CartItem oldItem, final CartItem newItem) {
-        requireNonNull(oldItem, "교체 대상 상품은 null일 수 없습니다.");
-        requireNonNull(newItem, "새 상품은 null일 수 없습니다.");
+        if (oldItem == null || newItem == null) {
+            throw InvalidCartItemException.required();
+        }
         final List<CartItem> changed = new ArrayList<>(values);
         final int idx = changed.indexOf(oldItem);
         if (idx < 0) {
@@ -84,7 +92,9 @@ public record CartItems(List<CartItem> values) {
     }
 
     public CartItems remove(final ProductId productId) {
-        requireNonNull(productId, "상품 ID는 null일 수 없습니다.");
+        if (productId == null) {
+            throw InvalidProductIdException.required();
+        }
 
         final boolean exists = values.stream()
                 .anyMatch(item -> item.productId().equals(productId));
