@@ -8,7 +8,6 @@ import com.dochiri.tooltestlab.product.domain.model.Product;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +21,6 @@ public final class HandleOrderCancelledService implements HandleOrderCancelledUs
 
     private final ProductRepositoryPort productRepositoryPort;
 
-    @EventListener
     @Override
     @Transactional
     public void handleOrderCancelled(final OrderCancelled event) {

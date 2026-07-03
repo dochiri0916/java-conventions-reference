@@ -9,6 +9,7 @@ import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
 import com.dochiri.tooltestlab.order.application.exception.NotOrderOwnerException;
 import com.dochiri.tooltestlab.order.application.exception.OrderNotFoundException;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
+import com.dochiri.tooltestlab.order.application.port.out.OrderEventPort;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
 import com.dochiri.tooltestlab.order.domain.model.Order;
 import com.dochiri.tooltestlab.order.domain.model.OrderLine;
@@ -34,7 +35,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +55,7 @@ class OrderServiceMockTest {
     private ProductRepositoryPort productRepositoryPort;
 
     @Mock
-    private ApplicationEventPublisher eventPublisher;
+    private OrderEventPort orderEventPort;
 
     private CancelOrderService cancelOrderService;
     private GetOrderService getOrderService;
@@ -63,13 +63,13 @@ class OrderServiceMockTest {
 
     @BeforeEach
     void setUp() {
-        cancelOrderService = new CancelOrderService(orderRepositoryPort, eventPublisher);
+        cancelOrderService = new CancelOrderService(orderRepositoryPort, orderEventPort);
         getOrderService = new GetOrderService(orderRepositoryPort);
         placeOrderService = new PlaceOrderService(
                 orderRepositoryPort,
                 cartRepositoryPort,
                 productRepositoryPort,
-                eventPublisher);
+                orderEventPort);
     }
 
     private Order createTestOrder(String memberId) {

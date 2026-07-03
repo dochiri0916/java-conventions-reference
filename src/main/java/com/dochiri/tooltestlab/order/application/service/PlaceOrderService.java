@@ -6,6 +6,7 @@ import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderResult;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderUseCase;
+import com.dochiri.tooltestlab.order.application.port.out.OrderEventPort;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
 import com.dochiri.tooltestlab.order.domain.event.OrderPlaced;
 import com.dochiri.tooltestlab.order.domain.model.OrderPlacedItems;
@@ -18,7 +19,6 @@ import com.dochiri.tooltestlab.product.domain.exception.InsufficientStockExcepti
 import com.dochiri.tooltestlab.product.domain.model.Product;
 import com.dochiri.tooltestlab.product.domain.model.Money;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +32,7 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
     private final OrderRepositoryPort orderRepositoryPort;
     private final CartRepositoryPort cartRepositoryPort;
     private final ProductRepositoryPort productRepositoryPort;
-    private final ApplicationEventPublisher eventPublisher;
+    private final OrderEventPort orderEventPort;
 
     @Override
     @Transactional
@@ -64,7 +64,10 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
         List<OrderPlaced.ItemDetail> itemDetails = orderLines.stream()
                 .map(ol -> new OrderPlaced.ItemDetail(ol.productId(), ol.productName(), ol.quantity(), ol.unitPrice()))
                 .toList();
-        eventPublisher.publishEvent(new OrderPlaced(saved.id(), command.memberId(), new OrderPlacedItems(itemDetails)));
+        orderEventPort.publishAfterCommit(new OrderPlaced(
+                saved.id(),
+                command.memberId(),
+                new OrderPlacedItems(itemDetails)));
 
         final var resultItems = saved.items().values().stream()
                 .map(i -> new PlaceOrderResult.OrderItemResult(
