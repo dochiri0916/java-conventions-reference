@@ -1,8 +1,10 @@
 package com.dochiri.tooltestlab.member.application.port.out;
 
+import com.dochiri.tooltestlab.member.domain.model.EncodedPassword;
+
 public interface PasswordEncoderPort {
 
-    String encode(String rawPassword);
+    EncodedPassword encode(String rawPassword);
 
-    boolean matches(String rawPassword, String encodedPassword);
+    boolean matches(String rawPassword, EncodedPassword encodedPassword);
 }

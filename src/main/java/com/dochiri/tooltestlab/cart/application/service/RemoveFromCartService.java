@@ -5,6 +5,7 @@ import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartCommand;
 import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartUseCase;
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
+import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.product.domain.model.ProductId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,13 @@ public final class RemoveFromCartService implements RemoveFromCartUseCase {
     @Override
     @Transactional
     public void remove(final RemoveFromCartCommand command) {
-        Cart cart = cartRepositoryPort.findByMemberId(command.memberPublicId())
-                .orElseThrow(() -> CartNotFoundException.cartNotFound(command.memberPublicId()));
+        final MemberId memberId = new MemberId(command.memberPublicId());
+        final ProductId productId = new ProductId(command.productPublicId());
 
-        cart = cart.removeItem(new ProductId(command.productPublicId()));
+        Cart cart = cartRepositoryPort.findByMemberId(memberId.value())
+                .orElseThrow(() -> CartNotFoundException.cartNotFound(memberId.value()));
+
+        cart = cart.removeItem(productId);
         cartRepositoryPort.save(cart);
     }
 }

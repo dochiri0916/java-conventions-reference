@@ -1,13 +1,25 @@
 package com.dochiri.tooltestlab.order.adapter.in.web;
 
-import com.dochiri.tooltestlab.member.adapter.in.web.LoginMember;
+import com.dochiri.tooltestlab.global.web.AuthenticatedMember;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.adapter.in.web.request.PlaceOrderRequest;
+import com.dochiri.tooltestlab.order.adapter.in.web.response.CancelOrderResponse;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.GetOrderResponse;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.OrderSummaryResponse;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.PlaceOrderResponse;
-import com.dochiri.tooltestlab.order.application.port.in.*;
-import com.dochiri.tooltestlab.order.domain.model.*;
+import com.dochiri.tooltestlab.order.application.port.in.CancelOrderUseCase;
+import com.dochiri.tooltestlab.order.application.port.in.GetOrderResult;
+import com.dochiri.tooltestlab.order.application.port.in.GetOrderUseCase;
+import com.dochiri.tooltestlab.order.application.port.in.ListOrdersResult;
+import com.dochiri.tooltestlab.order.application.port.in.ListOrdersUseCase;
+import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
+import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderResult;
+import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderUseCase;
+import com.dochiri.tooltestlab.order.domain.model.Phone;
+import com.dochiri.tooltestlab.order.domain.model.RecipientName;
+import com.dochiri.tooltestlab.order.domain.model.ShippingAddress;
+import com.dochiri.tooltestlab.order.domain.model.StreetAddress;
+import com.dochiri.tooltestlab.order.domain.model.ZipCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,10 +28,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 @Tag(name = "주문", description = "주문 생성, 조회, 취소 API")
 @RestController
@@ -40,15 +56,19 @@ public class OrderController {
             @ApiResponse(responseCode = "409", description = "재고 부족")
     })
     @PostMapping
-    public ResponseEntity<PlaceOrderResponse> place(@Parameter(hidden = true) @LoginMember String memberPublicId,
-                                                      @Valid @RequestBody PlaceOrderRequest request) {
+    public ResponseEntity<PlaceOrderResponse> place(
+            @Parameter(hidden = true) @AuthenticatedMember String memberPublicId,
+            @Valid @RequestBody PlaceOrderRequest request) {
         final ShippingAddress shippingAddress = new ShippingAddress(
                 new RecipientName(request.recipientName()), new Phone(request.phone()),
                 new StreetAddress(request.address()), new ZipCode(request.zipCode()));
-        final PlaceOrderResult result = placeOrderUseCase.place(new PlaceOrderCommand(new MemberId(memberPublicId), shippingAddress));
+        final PlaceOrderResult result = placeOrderUseCase.place(
+                new PlaceOrderCommand(new MemberId(memberPublicId), shippingAddress));
 
         final var items = result.items().stream()
-                .map(i -> new PlaceOrderResponse.Item(i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.quantity() * i.unitPrice()))
+                .map(i -> new PlaceOrderResponse.Item(
+                        i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(),
+                        i.quantity() * i.unitPrice()))
                 .toList();
         return ResponseEntity.ok(new PlaceOrderResponse(result.publicId(), result.status(), result.totalAmount(),
                 request.recipientName(), request.phone(), request.address(), request.zipCode(), items));
@@ -61,7 +81,7 @@ public class OrderController {
     })
     @GetMapping
     public ResponseEntity<List<OrderSummaryResponse>> list(
-            @Parameter(hidden = true) @LoginMember String memberPublicId) {
+            @Parameter(hidden = true) @AuthenticatedMember String memberPublicId) {
         final ListOrdersResult result = listOrdersUseCase.listByMember(memberPublicId);
         final var body = result.orders().stream()
                 .map(o -> new OrderSummaryResponse(o.publicId(), o.status(), o.totalAmount(), o.itemCount()))
@@ -78,12 +98,13 @@ public class OrderController {
     })
     @GetMapping("/{publicId}")
     public ResponseEntity<GetOrderResponse> get(
-            @Parameter(hidden = true) @LoginMember String memberPublicId,
+            @Parameter(hidden = true) @AuthenticatedMember String memberPublicId,
             @Parameter(description = "주문 publicId", example = "a1b2c3d4e5f6")
             @PathVariable String publicId) {
         final GetOrderResult result = getOrderUseCase.getOrder(memberPublicId, publicId);
         final var items = result.items().stream()
-                .map(i -> new GetOrderResponse.Item(i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.totalPrice()))
+                .map(i -> new GetOrderResponse.Item(
+                        i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.totalPrice()))
                 .toList();
         return ResponseEntity.ok(new GetOrderResponse(result.publicId(), result.memberPublicId(), result.status(),
                 result.totalAmount(), result.recipientName(), result.phone(), result.address(), result.zipCode(), items));
@@ -98,11 +119,11 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "주문이 존재하지 않음")
     })
     @PostMapping("/{publicId}/cancel")
-    public ResponseEntity<Map<String, String>> cancel(
-            @Parameter(hidden = true) @LoginMember String memberPublicId,
+    public ResponseEntity<CancelOrderResponse> cancel(
+            @Parameter(hidden = true) @AuthenticatedMember String memberPublicId,
             @Parameter(description = "주문 publicId", example = "a1b2c3d4e5f6")
             @PathVariable String publicId) {
         cancelOrderUseCase.cancel(memberPublicId, publicId);
-        return ResponseEntity.ok(Map.of("message", "주문이 취소되었습니다."));
+        return ResponseEntity.ok(new CancelOrderResponse("주문이 취소되었습니다."));
     }
 }

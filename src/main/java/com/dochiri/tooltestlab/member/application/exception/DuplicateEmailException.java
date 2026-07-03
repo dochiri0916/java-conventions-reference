@@ -7,12 +7,12 @@ public final class DuplicateEmailException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private final MemberErrorCode errorCode;
-    private final String emailValue;
+    private final String duplicatedEmail;
 
     private DuplicateEmailException(final MemberErrorCode errorCode, final String email) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.emailValue = requireNonNull(email);
+        this.duplicatedEmail = requireNonNull(email);
     }
 
     public static DuplicateEmailException duplicateEmail(final String email) {
@@ -24,6 +24,6 @@ public final class DuplicateEmailException extends RuntimeException {
     }
 
     public String email() {
-        return emailValue;
+        return duplicatedEmail;
     }
 }

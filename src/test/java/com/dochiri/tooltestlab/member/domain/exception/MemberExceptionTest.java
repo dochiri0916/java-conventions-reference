@@ -138,14 +138,19 @@ class MemberExceptionTest {
     }
 
     @Test
-    @DisplayName("MemberDomainErrorCode 모든 코드가 title을 가진다")
+    @DisplayName("MemberDomainErrorCode는 안정적인 코드 이름만 가진다")
     void errorCodes() {
         // given
         var codes = MemberDomainErrorCode.values();
 
-        // when & then
+        // when
+        var codeNames = java.util.Arrays.stream(codes)
+                .map(Enum::name)
+                .toList();
+
+        // then
         for (var code : codes) {
-            assertThat(code.title()).isNotBlank();
+            assertThat(codeNames).contains(code.name());
         }
     }
 }

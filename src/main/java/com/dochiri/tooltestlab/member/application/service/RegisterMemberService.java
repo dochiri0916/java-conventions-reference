@@ -9,7 +9,6 @@ import com.dochiri.tooltestlab.member.application.port.out.PasswordEncoderPort;
 import com.dochiri.tooltestlab.member.domain.model.Email;
 import com.dochiri.tooltestlab.member.domain.model.Member;
 import com.dochiri.tooltestlab.member.domain.model.MemberName;
-import com.dochiri.tooltestlab.member.domain.model.Password;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,13 +23,14 @@ public final class RegisterMemberService implements RegisterMemberUseCase {
     @Override
     @Transactional
     public RegisterMemberResult register(final RegisterMemberCommand command) {
-        if (memberRepositoryPort.existsByEmail(command.email())) {
-            throw DuplicateEmailException.duplicateEmail(command.email());
+        final Email email = new Email(command.email());
+        if (memberRepositoryPort.existsByEmail(email.value())) {
+            throw DuplicateEmailException.duplicateEmail(email.value());
         }
 
         final Member member = Member.register(
-                new Email(command.email()),
-                new Password(passwordEncoderPort.encode(command.password())),
+                email,
+                passwordEncoderPort.encode(command.password()),
                 new MemberName(command.name()));
 
         final Member saved = memberRepositoryPort.save(member);

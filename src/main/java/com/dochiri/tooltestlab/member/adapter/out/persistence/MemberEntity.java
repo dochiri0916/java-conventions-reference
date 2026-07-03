@@ -1,6 +1,11 @@
 package com.dochiri.tooltestlab.member.adapter.out.persistence;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,8 +27,8 @@ public class MemberEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String password;
+    @Column(name = "password", nullable = false)
+    private String encodedPassword;
 
     @Column(nullable = false)
     private String name;
@@ -31,16 +36,27 @@ public class MemberEntity {
     @Column(nullable = false, length = 20)
     private String status;
 
-    private MemberEntity(final Long id, final String memberId, final String email, final String password, final String name, final String status) {
+    private MemberEntity(
+            final Long id,
+            final String memberId,
+            final String email,
+            final String encodedPassword,
+            final String name,
+            final String status) {
         this.id = id;
         this.memberId = memberId;
         this.email = email;
-        this.password = password;
+        this.encodedPassword = encodedPassword;
         this.name = name;
         this.status = status;
     }
 
-    public static MemberEntity create(final String memberId, final String email, final String password, final String name, final String status) {
-        return new MemberEntity(null, memberId, email, password, name, status);
+    public static MemberEntity create(
+            final String memberId,
+            final String email,
+            final String encodedPassword,
+            final String name,
+            final String status) {
+        return new MemberEntity(null, memberId, email, encodedPassword, name, status);
     }
 }

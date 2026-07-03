@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.member.adapter.out.security;
 
 import com.dochiri.tooltestlab.member.application.port.out.PasswordEncoderPort;
+import com.dochiri.tooltestlab.member.domain.model.EncodedPassword;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -8,12 +9,12 @@ import org.springframework.stereotype.Component;
 class BCryptPasswordEncoderAdapter implements PasswordEncoderPort {
 
     @Override
-    public String encode(final String rawPassword) {
-        return new BCryptPasswordEncoder().encode(rawPassword);
+    public EncodedPassword encode(final String rawPassword) {
+        return new EncodedPassword(new BCryptPasswordEncoder().encode(rawPassword));
     }
 
     @Override
-    public boolean matches(final String rawPassword, final String encodedPassword) {
-        return new BCryptPasswordEncoder().matches(rawPassword, encodedPassword);
+    public boolean matches(final String rawPassword, final EncodedPassword encodedPassword) {
+        return new BCryptPasswordEncoder().matches(rawPassword, encodedPassword.value());
     }
 }

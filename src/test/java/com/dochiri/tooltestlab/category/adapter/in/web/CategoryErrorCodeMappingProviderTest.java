@@ -1,7 +1,9 @@
 package com.dochiri.tooltestlab.category.adapter.in.web;
 
 import com.dochiri.tooltestlab.global.error.ApiExceptionMapper;
+import com.dochiri.tooltestlab.global.error.ApiErrorCode;
 import com.dochiri.tooltestlab.global.error.ProblemType;
+import com.dochiri.tooltestlab.category.domain.exception.CategoryDomainErrorCode;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,10 @@ import org.springframework.http.HttpStatus;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import com.dochiri.tooltestlab.category.application.exception.CategoryErrorCode;
+import com.dochiri.tooltestlab.category.application.exception.InvalidCommandException;
+import com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryIdException;
+import com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryNameException;
 
 class CategoryErrorCodeMappingProviderTest {
 
@@ -47,7 +53,8 @@ class CategoryErrorCodeMappingProviderTest {
         var provider = new CategoryErrorCodeMappingProvider();
 
         // when
-        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings().get("CATEGORY_ID_REQUIRED");
+        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings()
+                .get(ApiErrorCode.from(CategoryDomainErrorCode.CATEGORY_ID_REQUIRED));
 
         // then
         assertThat(mapping).isNotNull();
@@ -62,11 +69,64 @@ class CategoryErrorCodeMappingProviderTest {
         var provider = new CategoryErrorCodeMappingProvider();
 
         // when
-        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings().get("CATEGORY_NAME_REQUIRED");
+        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings()
+                .get(ApiErrorCode.from(CategoryDomainErrorCode.CATEGORY_NAME_REQUIRED));
 
         // then
         assertThat(mapping).isNotNull();
         assertThat(mapping.status()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(mapping.problemType()).isEqualTo(ProblemType.VALIDATION_FAILED);
+    }
+
+    @Test
+    @DisplayName("InvalidCategoryIdException을 타입 기반으로 매핑한다")
+    void resolveInvalidCategoryIdException() {
+        // given
+        var provider = new CategoryErrorCodeMappingProvider();
+        var exception = InvalidCategoryIdException.required();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(CategoryDomainErrorCode.CATEGORY_ID_REQUIRED));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(mappedError.orElseThrow().mapping().problemType()).isEqualTo(ProblemType.VALIDATION_FAILED);
+    }
+
+    @Test
+    @DisplayName("InvalidCategoryNameException을 타입 기반으로 매핑한다")
+    void resolveInvalidCategoryNameException() {
+        // given
+        var provider = new CategoryErrorCodeMappingProvider();
+        var exception = InvalidCategoryNameException.required();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(CategoryDomainErrorCode.CATEGORY_NAME_REQUIRED));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(mappedError.orElseThrow().mapping().problemType()).isEqualTo(ProblemType.VALIDATION_FAILED);
+    }
+
+    @Test
+    @DisplayName("InvalidCommandException을 타입 기반으로 매핑한다")
+    void resolveInvalidCommandException() {
+        // given
+        var provider = new CategoryErrorCodeMappingProvider();
+        var exception = InvalidCommandException.invalidInput("잘못된 입력");
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(
+                CategoryErrorCode.INVALID_INPUT));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(mappedError.orElseThrow().mapping().problemType()).isEqualTo(ProblemType.VALIDATION_FAILED);
     }
 }

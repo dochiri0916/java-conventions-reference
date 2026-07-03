@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.global.error;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -12,31 +12,24 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class ApiProblemDetailFactory {
 
+    public static final String CODE_PROPERTY = "code";
+    public static final String TIMESTAMP_PROPERTY = "timestamp";
+
     private final URI baseUri;
 
-    public ProblemDetail create(final ApiErrorCode errorCode, final String detail) {
-        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(errorCode.status(), detail);
-        problemDetail.setTitle(errorCode.title());
-        problemDetail.setType(typeUri(errorCode.type()));
-        problemDetail.setProperty("code", errorCode.code());
-        problemDetail.setProperty("timestamp", Instant.now());
-        return problemDetail;
-    }
-
-    public ProblemDetail create(final String code, final String title, final String detail, final HttpStatus status, final ProblemType type) {
+    public ProblemDetail create(
+            final String code,
+            final String title,
+            final String detail,
+            final HttpStatusCode status,
+            final ProblemType type
+    ) {
         final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
         problemDetail.setTitle(title);
         problemDetail.setType(typeUri(type));
-        problemDetail.setProperty("code", code);
-        problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty(CODE_PROPERTY, code);
+        problemDetail.setProperty(TIMESTAMP_PROPERTY, Instant.now());
         return problemDetail;
-    }
-
-    private URI typeUri(final String type) {
-        return UriComponentsBuilder.fromUri(baseUri)
-                .pathSegment("problems", type)
-                .build()
-                .toUri();
     }
 
     private URI typeUri(final ProblemType type) {

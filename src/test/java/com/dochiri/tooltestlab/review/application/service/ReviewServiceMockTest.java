@@ -7,7 +7,9 @@ import com.dochiri.tooltestlab.review.application.exception.NotReviewOwnerExcept
 import com.dochiri.tooltestlab.review.application.exception.ReviewNotFoundException;
 import com.dochiri.tooltestlab.review.application.port.in.WriteReviewCommand;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
-import com.dochiri.tooltestlab.review.domain.model.*;
+import com.dochiri.tooltestlab.review.domain.model.Rating;
+import com.dochiri.tooltestlab.review.domain.model.Review;
+import com.dochiri.tooltestlab.review.domain.model.ReviewContent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

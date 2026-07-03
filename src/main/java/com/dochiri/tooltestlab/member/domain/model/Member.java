@@ -9,7 +9,7 @@ import com.dochiri.tooltestlab.member.domain.exception.InvalidPasswordException;
 public record Member(
         MemberId id,
         Email email,
-        Password password,
+        EncodedPassword encodedPassword,
         MemberName name,
         MemberStatus status) {
 
@@ -20,7 +20,7 @@ public record Member(
         if (email == null) {
             throw InvalidEmailException.required();
         }
-        if (password == null) {
+        if (encodedPassword == null) {
             throw InvalidPasswordException.required();
         }
         if (name == null) {
@@ -31,7 +31,7 @@ public record Member(
         }
     }
 
-    public static Member register(final Email email, final Password encodedPassword, final MemberName name) {
+    public static Member register(final Email email, final EncodedPassword encodedPassword, final MemberName name) {
         return new Member(
                 MemberId.generate(),
                 email,
@@ -42,7 +42,7 @@ public record Member(
     }
 
     public static Member reconstitute(
-            final MemberId id, final Email email, final Password encodedPassword,
+            final MemberId id, final Email email, final EncodedPassword encodedPassword,
             final MemberName name, final MemberStatus status) {
         return new Member(
                 id,
@@ -54,7 +54,7 @@ public record Member(
     }
 
     public Member withdraw() {
-        return new Member(id, email, password, name, MemberStatus.WITHDRAWN);
+        return new Member(id, email, encodedPassword, name, MemberStatus.WITHDRAWN);
     }
 
     @Override

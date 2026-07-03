@@ -1,4 +1,4 @@
-package com.dochiri.tooltestlab.member.adapter.in.web.config;
+package com.dochiri.tooltestlab.global.web;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;

@@ -1,8 +1,6 @@
 package com.dochiri.tooltestlab.global.error;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -14,9 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -24,45 +20,34 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    private static final String INTERNAL_SERVER_ERROR_CODE = ApiErrorCode.from(GlobalErrorCode.INTERNAL_SERVER_ERROR);
+    private static final String VALIDATION_ERROR_CODE = ApiErrorCode.from(GlobalErrorCode.VALIDATION_ERROR);
+    private static final String ERRORS_PROPERTY = "errors";
+    private static final String FIELD_PROPERTY = "field";
+    private static final String MESSAGE_PROPERTY = "message";
+
     private final ApiProblemDetailFactory problemDetailFactory;
     private final ApiExceptionMapper exceptionMapper;
-    private final MessageSource messageSource;
-
-    // ── Domain / Application 예외 (code() 메서드로 error code 추출) ─────
+    private final ApiErrorMessageCatalog messageCatalog;
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ProblemDetail> handleRuntime(RuntimeException ex) {
-        try {
-            final Method codeMethod = ex.getClass().getMethod("code");
-            final Object errorCode = codeMethod.invoke(ex);
-            if (errorCode instanceof Enum<?> ec) {
-                String codeName = ec.name();
-                String title = codeName;
-                try {
-                    final Method titleMethod = ec.getClass().getMethod("title");
-                    title = (String) titleMethod.invoke(ec);
-                } catch (NoSuchMethodException ignored) {
-                }
-                return mapToResponse(codeName, title, ex.getMessage());
-            }
-        } catch (ReflectiveOperationException ignored) { /* fallthrough */ }
-        return handleUnexpected(ex);
+    public ResponseEntity<ProblemDetail> handleRuntime(final RuntimeException exception) {
+        return exceptionMapper.map(exception)
+                .map(this::mapToResponse)
+                .orElseGet(this::handleUnexpected);
     }
 
-    // ── Fallback ───────────────────────────────────────────────────────
-
-    private ResponseEntity<ProblemDetail> handleUnexpected(Exception ex) {
-        final Locale locale = LocaleContextHolder.getLocale();
-        final String title = messageSource.getMessage("error.internal.title", null, "Internal Server Error", locale);
-        final String detail = messageSource.getMessage("error.internal.detail", null,
-                "An unexpected error occurred.", locale);
+    private ResponseEntity<ProblemDetail> handleUnexpected() {
+        final ApiErrorMessage message = messageCatalog.internalError();
         final ProblemDetail body = problemDetailFactory.create(
-                "INTERNAL_SERVER_ERROR", title,
-                detail, HttpStatus.INTERNAL_SERVER_ERROR, ProblemType.INTERNAL_ERROR);
+                INTERNAL_SERVER_ERROR_CODE,
+                message.title(),
+                message.detail(),
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ProblemType.INTERNAL_ERROR
+        );
         return ResponseEntity.internalServerError().body(body);
     }
-
-    // ── Bean Validation ────────────────────────────────────────────────
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -70,31 +55,38 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpHeaders headers,
             HttpStatusCode status,
             WebRequest request) {
-        final Locale locale = LocaleContextHolder.getLocale();
-        final String detail = messageSource.getMessage("error.validation.detail", null,
-                "Request validation failed.", locale);
-        final String title = messageSource.getMessage("error.validation.title", null,
-                "Validation failed", locale);
-        final ProblemDetail body = ProblemDetail.forStatusAndDetail(status, detail);
-        body.setTitle(title);
-        body.setProperty("code", "VALIDATION_ERROR");
+        final ApiErrorMessage message = messageCatalog.validationError();
+        final String defaultFieldMessage = messageCatalog.defaultFieldErrorMessage();
+        final ProblemDetail body = problemDetailFactory.create(
+                VALIDATION_ERROR_CODE,
+                message.title(),
+                message.detail(),
+                status,
+                ProblemType.VALIDATION_FAILED
+        );
 
         List<Map<String, String>> errors = exception.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(error -> Map.of(
-                        "field", error.getField(),
-                        "message", Objects.requireNonNullElse(error.getDefaultMessage(), "Invalid value")))
+                        FIELD_PROPERTY, error.getField(),
+                        MESSAGE_PROPERTY, Objects.requireNonNullElse(error.getDefaultMessage(), defaultFieldMessage)))
                 .toList();
-        body.setProperty("errors", errors);
+        body.setProperty(ERRORS_PROPERTY, errors);
 
         return handleExceptionInternal(exception, body, headers, status, request);
     }
 
-    private ResponseEntity<ProblemDetail> mapToResponse(final String errorCode, final String title, final String detail) {
-        final ApiExceptionMapper.Mapping mapping = exceptionMapper.map(errorCode);
+    private ResponseEntity<ProblemDetail> mapToResponse(final ApiExceptionMapper.MappedError mappedError) {
+        final ApiExceptionMapper.Mapping mapping = mappedError.mapping();
+        final ApiErrorMessage message = messageCatalog.findByCode(mappedError.code());
         final ProblemDetail body = problemDetailFactory.create(
-                errorCode, title, detail, mapping.status(), mapping.problemType());
+                mappedError.code(),
+                message.title(),
+                message.detail(),
+                mapping.status(),
+                mapping.problemType()
+        );
         return ResponseEntity.status(mapping.status()).body(body);
     }
 }

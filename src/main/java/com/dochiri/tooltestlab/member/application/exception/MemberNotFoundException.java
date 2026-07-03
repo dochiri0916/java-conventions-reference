@@ -7,12 +7,12 @@ public final class MemberNotFoundException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private final MemberErrorCode errorCode;
-    private final String identifierValue;
+    private final String missingMemberIdentifier;
 
     private MemberNotFoundException(final MemberErrorCode errorCode, final String identifier) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.identifierValue = requireNonNull(identifier);
+        this.missingMemberIdentifier = requireNonNull(identifier);
     }
 
     public static MemberNotFoundException memberNotFound(final String identifier) {
@@ -24,6 +24,6 @@ public final class MemberNotFoundException extends RuntimeException {
     }
 
     public String identifier() {
-        return identifierValue;
+        return missingMemberIdentifier;
     }
 }

@@ -4,16 +4,28 @@ import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
 import com.dochiri.tooltestlab.category.domain.model.Category;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
-import com.dochiri.tooltestlab.member.domain.model.*;
+import com.dochiri.tooltestlab.member.domain.model.Email;
+import com.dochiri.tooltestlab.member.domain.model.EncodedPassword;
+import com.dochiri.tooltestlab.member.domain.model.Member;
+import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.member.domain.model.MemberName;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
-import com.dochiri.tooltestlab.order.domain.model.*;
+import com.dochiri.tooltestlab.order.domain.model.Order;
+import com.dochiri.tooltestlab.order.domain.model.OrderLine;
+import com.dochiri.tooltestlab.order.domain.model.OrderLines;
+import com.dochiri.tooltestlab.order.domain.model.Phone;
+import com.dochiri.tooltestlab.order.domain.model.Quantity;
+import com.dochiri.tooltestlab.order.domain.model.RecipientName;
+import com.dochiri.tooltestlab.order.domain.model.ShippingAddress;
+import com.dochiri.tooltestlab.order.domain.model.StreetAddress;
+import com.dochiri.tooltestlab.order.domain.model.ZipCode;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.product.domain.model.Money;
 import com.dochiri.tooltestlab.product.domain.model.Product;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
 import com.dochiri.tooltestlab.review.domain.model.Rating;
 import com.dochiri.tooltestlab.review.domain.model.Review;
 import com.dochiri.tooltestlab.review.domain.model.ReviewContent;
-import com.dochiri.tooltestlab.product.domain.model.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +56,7 @@ class SafeModeTest {
     @DisplayName("safe 모드에서 멤버 저장 및 조회")
     void safeMemberSave() {
         // given
-        var member = Member.register(new Email("safe@test.com"), new Password("pw"), new MemberName("안전모드"));
+        var member = Member.register(new Email("safe@test.com"), new EncodedPassword("pw"), new MemberName("안전모드"));
 
         // when
         var saved = memberRepositoryPort.save(member);

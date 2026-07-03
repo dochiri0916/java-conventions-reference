@@ -1,13 +1,20 @@
 package com.dochiri.tooltestlab.category.adapter.in.web;
 
 import com.dochiri.tooltestlab.global.error.ApiExceptionMapper;
+import com.dochiri.tooltestlab.global.error.ApiErrorCode;
 import com.dochiri.tooltestlab.global.error.ErrorCodeMappingProvider;
 import com.dochiri.tooltestlab.global.error.ProblemType;
+import com.dochiri.tooltestlab.category.application.exception.CategoryErrorCode;
+import com.dochiri.tooltestlab.category.application.exception.InvalidCommandException;
+import com.dochiri.tooltestlab.category.domain.exception.CategoryDomainErrorCode;
+import com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryIdException;
+import com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryNameException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class CategoryErrorCodeMappingProvider implements ErrorCodeMappingProvider {
@@ -15,11 +22,32 @@ public class CategoryErrorCodeMappingProvider implements ErrorCodeMappingProvide
     @Override
     public Map<String, ApiExceptionMapper.Mapping> errorCodeMappings() {
         return Map.ofEntries(
-                Map.entry("INVALID_CAT_ID", new ApiExceptionMapper.Mapping(HttpStatus.BAD_REQUEST, ProblemType.VALIDATION_FAILED)),
-                Map.entry("CATEGORY_ID_REQUIRED", new ApiExceptionMapper.Mapping(HttpStatus.BAD_REQUEST, ProblemType.VALIDATION_FAILED)),
-                Map.entry("INVALID_CAT_NAME", new ApiExceptionMapper.Mapping(HttpStatus.BAD_REQUEST, ProblemType.VALIDATION_FAILED)),
-                Map.entry("CATEGORY_NAME_REQUIRED", new ApiExceptionMapper.Mapping(HttpStatus.BAD_REQUEST, ProblemType.VALIDATION_FAILED)),
-                Map.entry("INVALID_INPUT", new ApiExceptionMapper.Mapping(HttpStatus.BAD_REQUEST, ProblemType.VALIDATION_FAILED))
+                validation(CategoryDomainErrorCode.INVALID_CAT_ID),
+                validation(CategoryDomainErrorCode.CATEGORY_ID_REQUIRED),
+                validation(CategoryDomainErrorCode.INVALID_CAT_NAME),
+                validation(CategoryDomainErrorCode.CATEGORY_NAME_REQUIRED),
+                validation(CategoryErrorCode.INVALID_INPUT)
+        );
+    }
+
+    @Override
+    public Optional<ApiExceptionMapper.MappedError> resolve(final RuntimeException exception) {
+        if (exception instanceof InvalidCategoryIdException invalidCategoryIdException) {
+            return resolve(invalidCategoryIdException.code());
+        }
+        if (exception instanceof InvalidCategoryNameException invalidCategoryNameException) {
+            return resolve(invalidCategoryNameException.code());
+        }
+        if (exception instanceof InvalidCommandException invalidCommandException) {
+            return resolve(invalidCommandException.code());
+        }
+        return Optional.empty();
+    }
+
+    private static Map.Entry<String, ApiExceptionMapper.Mapping> validation(final Enum<?> errorCode) {
+        return Map.entry(
+                ApiErrorCode.from(errorCode),
+                new ApiExceptionMapper.Mapping(HttpStatus.BAD_REQUEST, ProblemType.VALIDATION_FAILED)
         );
     }
 }

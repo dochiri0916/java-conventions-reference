@@ -10,7 +10,7 @@ import com.dochiri.tooltestlab.category.domain.model.CategoryName;
 import com.dochiri.tooltestlab.member.domain.model.Email;
 import com.dochiri.tooltestlab.member.domain.model.Member;
 import com.dochiri.tooltestlab.member.domain.model.MemberName;
-import com.dochiri.tooltestlab.member.domain.model.Password;
+import com.dochiri.tooltestlab.member.domain.model.EncodedPassword;
 import com.dochiri.tooltestlab.order.domain.event.OrderCancelled;
 import com.dochiri.tooltestlab.order.domain.event.OrderPlaced;
 import com.dochiri.tooltestlab.order.domain.model.OrderLine;
@@ -49,7 +49,7 @@ class AggregateNullValidationTest {
         // given
         var id = com.dochiri.tooltestlab.member.domain.model.MemberId.generate();
         var email = new Email("test@test.com");
-        var password = new Password("enc");
+        var password = new EncodedPassword("enc");
         var name = new MemberName("홍길동");
         var status = com.dochiri.tooltestlab.member.domain.model.MemberStatus.ACTIVE;
         // when & then

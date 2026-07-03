@@ -1,7 +1,19 @@
 package com.dochiri.tooltestlab.product.adapter.in.web;
 
 import com.dochiri.tooltestlab.global.error.ApiExceptionMapper;
+import com.dochiri.tooltestlab.global.error.ApiErrorCode;
 import com.dochiri.tooltestlab.global.error.ProblemType;
+import com.dochiri.tooltestlab.product.application.exception.InvalidCommandException;
+import com.dochiri.tooltestlab.product.application.exception.ProductErrorCode;
+import com.dochiri.tooltestlab.product.application.exception.ProductNotFoundException;
+import com.dochiri.tooltestlab.product.domain.exception.InsufficientStockException;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidMaxCountException;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidMoneyException;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidProductException;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidProductIdException;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidProductNameException;
+import com.dochiri.tooltestlab.product.domain.exception.InvalidStockException;
+import com.dochiri.tooltestlab.product.domain.exception.ProductDomainErrorCode;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +59,8 @@ class ProductErrorCodeMappingProviderTest {
         var provider = new ProductErrorCodeMappingProvider();
 
         // when
-        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings().get("LOW_STOCK");
+        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings()
+                .get(ApiErrorCode.from(ProductDomainErrorCode.LOW_STOCK));
 
         // then
         assertThat(mapping).isNotNull();
@@ -62,7 +75,8 @@ class ProductErrorCodeMappingProviderTest {
         var provider = new ProductErrorCodeMappingProvider();
 
         // when
-        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings().get("PRODUCT_NOT_FOUND");
+        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings()
+                .get(ApiErrorCode.from(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         // then
         assertThat(mapping).isNotNull();
@@ -77,7 +91,8 @@ class ProductErrorCodeMappingProviderTest {
         var provider = new ProductErrorCodeMappingProvider();
 
         // when
-        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings().get("PRODUCT_ID_REQUIRED");
+        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings()
+                .get(ApiErrorCode.from(ProductDomainErrorCode.PRODUCT_ID_REQUIRED));
 
         // then
         assertThat(mapping).isNotNull();
@@ -92,11 +107,155 @@ class ProductErrorCodeMappingProviderTest {
         var provider = new ProductErrorCodeMappingProvider();
 
         // when
-        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings().get("MONEY_NEGATIVE");
+        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings()
+                .get(ApiErrorCode.from(ProductDomainErrorCode.MONEY_NEGATIVE));
 
         // then
         assertThat(mapping).isNotNull();
         assertThat(mapping.status()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(mapping.problemType()).isEqualTo(ProblemType.VALIDATION_FAILED);
+    }
+
+    @Test
+    @DisplayName("InvalidProductIdException을 타입 기반으로 매핑한다")
+    void resolveInvalidProductIdException() {
+        // given
+        var provider = new ProductErrorCodeMappingProvider();
+        var exception = InvalidProductIdException.required();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.PRODUCT_ID_REQUIRED));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("InvalidProductNameException을 타입 기반으로 매핑한다")
+    void resolveInvalidProductNameException() {
+        // given
+        var provider = new ProductErrorCodeMappingProvider();
+        var exception = InvalidProductNameException.required();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.PRODUCT_NAME_REQUIRED));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("InvalidStockException을 타입 기반으로 매핑한다")
+    void resolveInvalidStockException() {
+        // given
+        var provider = new ProductErrorCodeMappingProvider();
+        var exception = InvalidStockException.required();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.STOCK_REQUIRED));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("InvalidProductException을 타입 기반으로 매핑한다")
+    void resolveInvalidProductException() {
+        // given
+        var provider = new ProductErrorCodeMappingProvider();
+        var exception = InvalidProductException.required();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.PRODUCT_REQUIRED));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("InvalidMoneyException을 타입 기반으로 매핑한다")
+    void resolveInvalidMoneyException() {
+        // given
+        var provider = new ProductErrorCodeMappingProvider();
+        var exception = InvalidMoneyException.required();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.MONEY_REQUIRED));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("InvalidMaxCountException을 타입 기반으로 매핑한다")
+    void resolveInvalidMaxCountException() {
+        // given
+        var provider = new ProductErrorCodeMappingProvider();
+        var exception = InvalidMaxCountException.notPositive(0);
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.MAX_COUNT_NOT_POSITIVE));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("InsufficientStockException을 타입 기반으로 매핑한다")
+    void resolveInsufficientStockException() {
+        // given
+        var provider = new ProductErrorCodeMappingProvider();
+        var exception = InsufficientStockException.lowStock(3, 5);
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.LOW_STOCK));
+    }
+
+    @Test
+    @DisplayName("ProductNotFoundException을 타입 기반으로 매핑한다")
+    void resolveProductNotFoundException() {
+        // given
+        var provider = new ProductErrorCodeMappingProvider();
+        var exception = ProductNotFoundException.productNotFound("product1");
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductErrorCode.PRODUCT_NOT_FOUND));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("상품 InvalidCommandException을 타입 기반으로 매핑한다")
+    void resolveInvalidCommandException() {
+        // given
+        var provider = new ProductErrorCodeMappingProvider();
+        var exception = InvalidCommandException.invalidInput("잘못된 입력");
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductErrorCode.INVALID_INPUT));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }

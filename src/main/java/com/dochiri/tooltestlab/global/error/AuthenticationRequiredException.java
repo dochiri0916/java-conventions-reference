@@ -1,4 +1,4 @@
-package com.dochiri.tooltestlab.member.application.exception;
+package com.dochiri.tooltestlab.global.error;
 
 import static java.util.Objects.requireNonNull;
 
@@ -6,18 +6,18 @@ public final class AuthenticationRequiredException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    private final MemberErrorCode errorCode;
+    private final GlobalErrorCode errorCode;
 
-    private AuthenticationRequiredException(final MemberErrorCode errorCode) {
+    private AuthenticationRequiredException(final GlobalErrorCode errorCode) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
     }
 
     public static AuthenticationRequiredException authenticationRequired() {
-        return new AuthenticationRequiredException(MemberErrorCode.AUTHENTICATION_REQUIRED);
+        return new AuthenticationRequiredException(GlobalErrorCode.AUTHENTICATION_REQUIRED);
     }
 
-    public MemberErrorCode code() {
+    public GlobalErrorCode code() {
         return errorCode;
     }
 }

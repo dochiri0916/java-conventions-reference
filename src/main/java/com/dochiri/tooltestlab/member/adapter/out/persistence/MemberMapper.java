@@ -1,6 +1,11 @@
 package com.dochiri.tooltestlab.member.adapter.out.persistence;
 
-import com.dochiri.tooltestlab.member.domain.model.*;
+import com.dochiri.tooltestlab.member.domain.model.Email;
+import com.dochiri.tooltestlab.member.domain.model.EncodedPassword;
+import com.dochiri.tooltestlab.member.domain.model.Member;
+import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.member.domain.model.MemberName;
+import com.dochiri.tooltestlab.member.domain.model.MemberStatus;
 
 final class MemberMapper {
 
@@ -12,7 +17,7 @@ final class MemberMapper {
         return Member.reconstitute(
                 new MemberId(entity.getMemberId()),
                 new Email(entity.getEmail()),
-                new Password(entity.getPassword()),
+                new EncodedPassword(entity.getEncodedPassword()),
                 new MemberName(entity.getName()),
                 MemberStatus.valueOf(entity.getStatus()));
     }
@@ -21,7 +26,7 @@ final class MemberMapper {
         return MemberEntity.create(
                 domain.id().value(),
                 domain.email().value(),
-                domain.password().value(),
+                domain.encodedPassword().value(),
                 domain.name().value(),
                 domain.status().name());
     }

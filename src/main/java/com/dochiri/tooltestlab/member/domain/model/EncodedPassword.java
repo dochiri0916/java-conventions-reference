@@ -2,9 +2,9 @@ package com.dochiri.tooltestlab.member.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.exception.InvalidPasswordException;
 
-public record Password(String value) {
+public record EncodedPassword(String value) {
 
-    public Password {
+    public EncodedPassword {
         if (value == null) {
             throw InvalidPasswordException.required();
         }

@@ -3,7 +3,10 @@ package com.dochiri.tooltestlab.adapter;
 import com.dochiri.tooltestlab.category.domain.model.Category;
 import com.dochiri.tooltestlab.category.domain.model.CategoryName;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
-import com.dochiri.tooltestlab.member.domain.model.*;
+import com.dochiri.tooltestlab.member.domain.model.Email;
+import com.dochiri.tooltestlab.member.domain.model.EncodedPassword;
+import com.dochiri.tooltestlab.member.domain.model.Member;
+import com.dochiri.tooltestlab.member.domain.model.MemberName;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.product.domain.model.Money;
 import com.dochiri.tooltestlab.product.domain.model.Product;
@@ -30,9 +33,9 @@ class PersistenceAdapterIntegrationTest {
     @Test
     @DisplayName("회원을 memberId로 조회할 수 있다")
     void findByMemberId() {
-            // given
+        // given
         var member = Member.register(new Email("persist-test@example.com"),
-                new Password("password123"), new MemberName("테스터"));
+                new EncodedPassword("password123"), new MemberName("테스터"));
         var saved = memberRepositoryPort.save(member);
 
             // when

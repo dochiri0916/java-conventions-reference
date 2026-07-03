@@ -1,15 +1,11 @@
-package com.dochiri.tooltestlab.member.adapter.in.web;
+package com.dochiri.tooltestlab.global.web;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * 로그인된 회원의 publicId를 주입하는 어노테이션.
- * MemberSessionArgumentResolver가 처리.
- */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LoginMember {
+public @interface AuthenticatedMember {
 }

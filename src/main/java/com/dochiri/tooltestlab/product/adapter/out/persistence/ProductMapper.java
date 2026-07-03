@@ -4,8 +4,13 @@ import com.dochiri.tooltestlab.category.adapter.out.persistence.CategoryEntity;
 import com.dochiri.tooltestlab.category.domain.model.Category;
 import com.dochiri.tooltestlab.category.domain.model.CategoryId;
 import com.dochiri.tooltestlab.category.domain.model.CategoryName;
-import com.dochiri.tooltestlab.product.domain.model.*;
 import com.dochiri.tooltestlab.product.domain.model.Money;
+import com.dochiri.tooltestlab.product.domain.model.Product;
+import com.dochiri.tooltestlab.product.domain.model.ProductDescription;
+import com.dochiri.tooltestlab.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.product.domain.model.ProductName;
+import com.dochiri.tooltestlab.product.domain.model.ProductStatus;
+import com.dochiri.tooltestlab.product.domain.model.Stock;
 
 import java.util.List;
 

@@ -49,6 +49,17 @@ class MemberVoTest {
     }
 
     @Test
+    @DisplayName("Email 생성 - 형식이 올바르지 않으면 예외")
+    void emailInvalidFormat() {
+        // given
+        var invalidEmail = "invalid-email";
+
+        // when & then
+        assertThatThrownBy(() -> new Email(invalidEmail))
+                .isInstanceOf(InvalidEmailException.class);
+    }
+
+    @Test
     @DisplayName("MemberId 생성 - 정상")
     void memberIdValid() {
         // given
@@ -122,37 +133,37 @@ class MemberVoTest {
     }
 
     @Test
-    @DisplayName("Password 생성 - 정상")
-    void passwordValid() {
+    @DisplayName("암호화 비밀번호 생성 - 정상")
+    void encodedPasswordValid() {
         // given
         var expectedValue = "encrypted123";
 
         // when
-        var pw = new Password(expectedValue);
+        var encodedPassword = new EncodedPassword(expectedValue);
 
         // then
-        assertThat(pw.value()).isEqualTo(expectedValue);
+        assertThat(encodedPassword.value()).isEqualTo(expectedValue);
     }
 
     @Test
-    @DisplayName("Password 생성 - null이면 InvalidPasswordException")
-    void passwordNull() {
+    @DisplayName("암호화 비밀번호 생성 - null이면 InvalidPasswordException")
+    void encodedPasswordNull() {
         // given
         var expectedException = InvalidPasswordException.class;
 
         // when & then
-        assertThatThrownBy(() -> new Password(null))
+        assertThatThrownBy(() -> new EncodedPassword(null))
                 .isInstanceOf(expectedException);
     }
 
     @Test
-    @DisplayName("Password 생성 - blank면 예외")
-    void passwordBlank() {
+    @DisplayName("암호화 비밀번호 생성 - blank면 예외")
+    void encodedPasswordBlank() {
         // given
         var blankPassword = "  ";
 
         // when & then
-        assertThatThrownBy(() -> new Password(blankPassword))
+        assertThatThrownBy(() -> new EncodedPassword(blankPassword))
                 .isInstanceOf(InvalidPasswordException.class);
     }
 
@@ -162,15 +173,16 @@ class MemberVoTest {
         // given
         var email = new Email("test@test.com");
         var name = new MemberName("홍길동");
-        var password = new Password("enc");
+        var encodedPassword = new EncodedPassword("enc");
 
         // when
-        var member = Member.register(email, password, name);
+        var member = Member.register(email, encodedPassword, name);
 
         // then
         assertThat(member.id()).isNotNull();
         assertThat(member.email()).isEqualTo(email);
         assertThat(member.name()).isEqualTo(name);
+        assertThat(member.encodedPassword()).isEqualTo(encodedPassword);
     }
 
     @Test
@@ -180,19 +192,19 @@ class MemberVoTest {
         var id = MemberId.generate();
         var email = new Email("test@test.com");
         var name = new MemberName("홍길동");
-        var password = new Password("enc");
+        var encodedPassword = new EncodedPassword("enc");
         var status = MemberStatus.ACTIVE;
 
         // when & then
-        assertThatThrownBy(() -> new Member(null, email, password, name, status))
+        assertThatThrownBy(() -> new Member(null, email, encodedPassword, name, status))
                 .isInstanceOf(InvalidMemberIdException.class);
-        assertThatThrownBy(() -> new Member(id, null, password, name, status))
+        assertThatThrownBy(() -> new Member(id, null, encodedPassword, name, status))
                 .isInstanceOf(InvalidEmailException.class);
         assertThatThrownBy(() -> new Member(id, email, null, name, status))
                 .isInstanceOf(InvalidPasswordException.class);
-        assertThatThrownBy(() -> new Member(id, email, password, null, status))
+        assertThatThrownBy(() -> new Member(id, email, encodedPassword, null, status))
                 .isInstanceOf(InvalidMemberNameException.class);
-        assertThatThrownBy(() -> new Member(id, email, password, name, null))
+        assertThatThrownBy(() -> new Member(id, email, encodedPassword, name, null))
                 .isInstanceOf(InvalidMemberException.class);
     }
 }

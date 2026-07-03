@@ -6,10 +6,6 @@ spring:
   aop:
     proxy-target-class: false
 
-  # MessageSource
-  messages:
-    basename: messages/messages
-
   # H2 In-Memory Database (MySQL 호환 모드)
   datasource:
     url: jdbc:h2:mem:tooltestlab;MODE=MySQL
@@ -34,11 +30,6 @@ spring:
       hibernate:
         format_sql: true
         highlight_sql: true
-
-# Application
-app:
-  error:
-    type-uri-prefix: https://api.example.com/problems/
 
 api:
   problem:

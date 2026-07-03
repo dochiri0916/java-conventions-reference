@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -14,6 +15,19 @@ public class ApiExceptionMapper {
     private final List<ErrorCodeMappingProvider> providers;
 
     public record Mapping(HttpStatus status, ProblemType problemType) {
+    }
+
+    public record MappedError(String code, Mapping mapping) {
+    }
+
+    public Optional<MappedError> map(final RuntimeException exception) {
+        for (final var provider : providers) {
+            final Optional<MappedError> mappedError = provider.resolve(exception);
+            if (mappedError.isPresent()) {
+                return mappedError;
+            }
+        }
+        return Optional.empty();
     }
 
     public Mapping map(final String errorCode) {

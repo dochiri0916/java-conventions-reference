@@ -4,7 +4,13 @@ import com.dochiri.tooltestlab.product.adapter.in.web.request.RegisterProductReq
 import com.dochiri.tooltestlab.product.adapter.in.web.response.GetProductResponse;
 import com.dochiri.tooltestlab.product.adapter.in.web.response.ProductListResponse;
 import com.dochiri.tooltestlab.product.adapter.in.web.response.RegisterProductResponse;
-import com.dochiri.tooltestlab.product.application.port.in.*;
+import com.dochiri.tooltestlab.product.application.port.in.GetProductResult;
+import com.dochiri.tooltestlab.product.application.port.in.GetProductUseCase;
+import com.dochiri.tooltestlab.product.application.port.in.ListProductsResult;
+import com.dochiri.tooltestlab.product.application.port.in.ListProductsUseCase;
+import com.dochiri.tooltestlab.product.application.port.in.RegisterProductCommand;
+import com.dochiri.tooltestlab.product.application.port.in.RegisterProductResult;
+import com.dochiri.tooltestlab.product.application.port.in.RegisterProductUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,9 +19,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "상품", description = "상품 등록, 조회, 목록 API")
 @RestController
@@ -36,7 +46,7 @@ public class ProductController {
     public ResponseEntity<RegisterProductResponse> register(@Valid @RequestBody RegisterProductRequest request) {
         final RegisterProductResult result = registerProductUseCase.register(
                 new RegisterProductCommand(request.name(), request.description(), request.priceAmount(),
-                        request.stock(), request.categoryIds() != null ? request.categoryIds() : List.of()));
+                        request.stock(), request.categoryIds()));
         return ResponseEntity.ok(new RegisterProductResponse(
                 result.publicId(), result.name(), null, result.priceAmount(),
                 result.stock(), result.status(), result.categoryNames()));

@@ -6,6 +6,7 @@ import com.dochiri.tooltestlab.member.application.port.in.LoginMemberResult;
 import com.dochiri.tooltestlab.member.application.port.in.LoginMemberUseCase;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
 import com.dochiri.tooltestlab.member.application.port.out.PasswordEncoderPort;
+import com.dochiri.tooltestlab.member.domain.model.Email;
 import com.dochiri.tooltestlab.member.domain.model.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,10 +22,11 @@ public final class LoginMemberService implements LoginMemberUseCase {
     @Override
     @Transactional(readOnly = true)
     public LoginMemberResult login(final LoginMemberCommand command) {
-        final Member member = memberRepositoryPort.findByEmail(command.email())
+        final Email email = new Email(command.email());
+        final Member member = memberRepositoryPort.findByEmail(email.value())
                 .orElseThrow(LoginFailedException::loginFailed);
 
-        if (!passwordEncoderPort.matches(command.password(), member.password().value())) {
+        if (!passwordEncoderPort.matches(command.password(), member.encodedPassword())) {
             throw LoginFailedException.loginFailed();
         }
 

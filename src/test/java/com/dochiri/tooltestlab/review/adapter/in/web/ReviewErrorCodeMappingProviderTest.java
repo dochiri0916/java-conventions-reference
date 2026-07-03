@@ -1,7 +1,18 @@
 package com.dochiri.tooltestlab.review.adapter.in.web;
 
 import com.dochiri.tooltestlab.global.error.ApiExceptionMapper;
+import com.dochiri.tooltestlab.global.error.ApiErrorCode;
 import com.dochiri.tooltestlab.global.error.ProblemType;
+import com.dochiri.tooltestlab.review.application.exception.DuplicateReviewException;
+import com.dochiri.tooltestlab.review.application.exception.InvalidCommandException;
+import com.dochiri.tooltestlab.review.application.exception.NotReviewOwnerException;
+import com.dochiri.tooltestlab.review.application.exception.ReviewApplicationErrorCode;
+import com.dochiri.tooltestlab.review.application.exception.ReviewNotFoundException;
+import com.dochiri.tooltestlab.review.domain.exception.InvalidRatingException;
+import com.dochiri.tooltestlab.review.domain.exception.InvalidReviewContentException;
+import com.dochiri.tooltestlab.review.domain.exception.InvalidReviewException;
+import com.dochiri.tooltestlab.review.domain.exception.InvalidReviewIdException;
+import com.dochiri.tooltestlab.review.domain.exception.ReviewDomainErrorCode;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +58,8 @@ class ReviewErrorCodeMappingProviderTest {
         var provider = new ReviewErrorCodeMappingProvider();
 
         // when
-        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings().get("REVIEW_NOT_FOUND");
+        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings()
+                .get(ApiErrorCode.from(ReviewApplicationErrorCode.REVIEW_NOT_FOUND));
 
         // then
         assertThat(mapping).isNotNull();
@@ -62,7 +74,8 @@ class ReviewErrorCodeMappingProviderTest {
         var provider = new ReviewErrorCodeMappingProvider();
 
         // when
-        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings().get("NOT_REVIEW_OWNER");
+        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings()
+                .get(ApiErrorCode.from(ReviewApplicationErrorCode.NOT_REVIEW_OWNER));
 
         // then
         assertThat(mapping).isNotNull();
@@ -77,7 +90,8 @@ class ReviewErrorCodeMappingProviderTest {
         var provider = new ReviewErrorCodeMappingProvider();
 
         // when
-        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings().get("DUPLICATE_REVIEW");
+        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings()
+                .get(ApiErrorCode.from(ReviewApplicationErrorCode.DUPLICATE_REVIEW));
 
         // then
         assertThat(mapping).isNotNull();
@@ -92,11 +106,140 @@ class ReviewErrorCodeMappingProviderTest {
         var provider = new ReviewErrorCodeMappingProvider();
 
         // when
-        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings().get("REVIEW_ID_REQUIRED");
+        ApiExceptionMapper.Mapping mapping = provider.errorCodeMappings()
+                .get(ApiErrorCode.from(ReviewDomainErrorCode.REVIEW_ID_REQUIRED));
 
         // then
         assertThat(mapping).isNotNull();
         assertThat(mapping.status()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(mapping.problemType()).isEqualTo(ProblemType.VALIDATION_FAILED);
+    }
+
+    @Test
+    @DisplayName("InvalidReviewIdException을 타입 기반으로 매핑한다")
+    void resolveInvalidReviewIdException() {
+        // given
+        var provider = new ReviewErrorCodeMappingProvider();
+        var exception = InvalidReviewIdException.required();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewDomainErrorCode.REVIEW_ID_REQUIRED));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("InvalidRatingException을 타입 기반으로 매핑한다")
+    void resolveInvalidRatingException() {
+        // given
+        var provider = new ReviewErrorCodeMappingProvider();
+        var exception = InvalidRatingException.required();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewDomainErrorCode.RATING_REQUIRED));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("InvalidReviewContentException을 타입 기반으로 매핑한다")
+    void resolveInvalidReviewContentException() {
+        // given
+        var provider = new ReviewErrorCodeMappingProvider();
+        var exception = InvalidReviewContentException.required();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewDomainErrorCode.REVIEW_CONTENT_REQUIRED));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("InvalidReviewException을 타입 기반으로 매핑한다")
+    void resolveInvalidReviewException() {
+        // given
+        var provider = new ReviewErrorCodeMappingProvider();
+        var exception = InvalidReviewException.required();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewDomainErrorCode.REVIEW_REQUIRED));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("ReviewNotFoundException을 타입 기반으로 매핑한다")
+    void resolveReviewNotFoundException() {
+        // given
+        var provider = new ReviewErrorCodeMappingProvider();
+        var exception = ReviewNotFoundException.reviewNotFound("review1");
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewApplicationErrorCode.REVIEW_NOT_FOUND));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("DuplicateReviewException을 타입 기반으로 매핑한다")
+    void resolveDuplicateReviewException() {
+        // given
+        var provider = new ReviewErrorCodeMappingProvider();
+        var exception = DuplicateReviewException.duplicateReview();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewApplicationErrorCode.DUPLICATE_REVIEW));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    @Test
+    @DisplayName("NotReviewOwnerException을 타입 기반으로 매핑한다")
+    void resolveNotReviewOwnerException() {
+        // given
+        var provider = new ReviewErrorCodeMappingProvider();
+        var exception = NotReviewOwnerException.notReviewOwner();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewApplicationErrorCode.NOT_REVIEW_OWNER));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    @DisplayName("리뷰 InvalidCommandException을 타입 기반으로 매핑한다")
+    void resolveInvalidCommandException() {
+        // given
+        var provider = new ReviewErrorCodeMappingProvider();
+        var exception = InvalidCommandException.invalidInput("잘못된 입력");
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewApplicationErrorCode.INVALID_INPUT));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }
