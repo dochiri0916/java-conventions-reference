@@ -27,7 +27,12 @@ public final class GetOrderService implements GetOrderUseCase {
         }
 
         final var items = order.items().values().stream()
-                .map(i -> new GetOrderResult.Item(i.productId().value(), i.productName().value(), i.quantity().value(), i.unitPrice().amount(), i.totalPrice().amount()))
+                .map(i -> new GetOrderResult.Item(
+                        i.productId().value(),
+                        i.productName().value(),
+                        i.quantity().value(),
+                        i.unitPrice().amount(),
+                        i.totalPrice().amount()))
                 .toList();
 
         return new GetOrderResult(

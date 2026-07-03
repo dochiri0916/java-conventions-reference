@@ -20,7 +20,8 @@ class GlobalErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(GlobalErrorCode.AUTHENTICATION_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(GlobalErrorCode.AUTHENTICATION_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(mappedError.orElseThrow().mapping().problemType()).isEqualTo(ProblemType.UNAUTHORIZED);
     }

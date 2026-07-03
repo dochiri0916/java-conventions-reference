@@ -36,7 +36,8 @@ public class CategoryController {
     })
     @PostMapping
     public ResponseEntity<CreateCategoryResponse> create(@Valid @RequestBody CreateCategoryRequest request) {
-        final RegisterCategoryResult result = registerCategoryUseCase.register(new RegisterCategoryCommand(request.name()));
+        final RegisterCategoryResult result =
+                registerCategoryUseCase.register(new RegisterCategoryCommand(request.name()));
         return ResponseEntity.ok(new CreateCategoryResponse(result.publicId(), result.name()));
     }
 

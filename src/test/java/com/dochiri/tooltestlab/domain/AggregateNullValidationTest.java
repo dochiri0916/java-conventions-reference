@@ -277,9 +277,12 @@ class AggregateNullValidationTest {
     @DisplayName("CartItems.replace null 검증")
     void cartItemsReplaceNull() {
         // given
-        var items = CartItems.from(List.of(new CartItem(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
+        var item = new CartItem(
+                new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
                 new com.dochiri.tooltestlab.product.domain.model.ProductName("상품"),
-                new Quantity(1), com.dochiri.tooltestlab.product.domain.model.Money.of(1000))));
+                new Quantity(1),
+                com.dochiri.tooltestlab.product.domain.model.Money.of(1000));
+        var items = CartItems.from(List.of(item));
         var oldItem = items.values().get(0);
         var newItem = new CartItem(new com.dochiri.tooltestlab.product.domain.model.ProductId("p2"),
                 new com.dochiri.tooltestlab.product.domain.model.ProductName("상품2"),

@@ -128,7 +128,8 @@ class ProductErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.PRODUCT_ID_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.PRODUCT_ID_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -144,7 +145,8 @@ class ProductErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.PRODUCT_NAME_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.PRODUCT_NAME_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -160,7 +162,8 @@ class ProductErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.STOCK_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.STOCK_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -176,7 +179,8 @@ class ProductErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.PRODUCT_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.PRODUCT_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -192,7 +196,8 @@ class ProductErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.MONEY_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.MONEY_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -208,7 +213,8 @@ class ProductErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.MAX_COUNT_NOT_POSITIVE));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(ProductDomainErrorCode.MAX_COUNT_NOT_POSITIVE));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 

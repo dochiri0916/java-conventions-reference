@@ -160,7 +160,8 @@ class MemberErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(MemberDomainErrorCode.MEMBER_ID_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(MemberDomainErrorCode.MEMBER_ID_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -192,7 +193,8 @@ class MemberErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(MemberDomainErrorCode.PASSWORD_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(MemberDomainErrorCode.PASSWORD_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -208,7 +210,8 @@ class MemberErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(MemberDomainErrorCode.MEMBER_NAME_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(MemberDomainErrorCode.MEMBER_NAME_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -224,7 +227,8 @@ class MemberErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(MemberDomainErrorCode.MEMBER_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(MemberDomainErrorCode.MEMBER_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 

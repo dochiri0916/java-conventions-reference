@@ -21,7 +21,11 @@ class OrderTest {
         // given
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
                 new Quantity(2), Money.of(1_000_000L));
-        final ShippingAddress address = new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"), new StreetAddress("서울시"), new ZipCode("12345"));
+        final ShippingAddress address = new ShippingAddress(
+                new RecipientName("홍길동"),
+                new Phone("01012345678"),
+                new StreetAddress("서울시"),
+                new ZipCode("12345"));
 
         // when
         final Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)), address);
@@ -40,8 +44,12 @@ class OrderTest {
         // given
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
                 new Quantity(2), Money.of(1_000_000L));
-        final Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)),
-                new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"), new StreetAddress("서울시"), new ZipCode("12345")));
+        final ShippingAddress address = new ShippingAddress(
+                new RecipientName("홍길동"),
+                new Phone("01012345678"),
+                new StreetAddress("서울시"),
+                new ZipCode("12345"));
+        final Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)), address);
 
         // when
         final Order cancelled = order.cancel();
@@ -56,8 +64,12 @@ class OrderTest {
         // given
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
                 new Quantity(2), Money.of(1_000_000L));
-        final Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)),
-                new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"), new StreetAddress("서울시"), new ZipCode("12345")));
+        final ShippingAddress address = new ShippingAddress(
+                new RecipientName("홍길동"),
+                new Phone("01012345678"),
+                new StreetAddress("서울시"),
+                new ZipCode("12345"));
+        final Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)), address);
         final Order cancelled = order.cancel();
 
         // when & then
@@ -71,7 +83,11 @@ class OrderTest {
         // given
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
                 new Quantity(2), Money.of(1_000_000L));
-        final ShippingAddress address = new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"), new StreetAddress("서울시"), new ZipCode("12345"));
+        final ShippingAddress address = new ShippingAddress(
+                new RecipientName("홍길동"),
+                new Phone("01012345678"),
+                new StreetAddress("서울시"),
+                new ZipCode("12345"));
         final Order order = Order.create(new MemberId("member1"), OrderLines.from(List.of(line)), address);
         final Order paid = order.pay();
         final Order shipped = paid.startShipping();

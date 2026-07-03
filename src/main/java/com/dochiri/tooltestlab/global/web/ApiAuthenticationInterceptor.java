@@ -14,7 +14,11 @@ public class ApiAuthenticationInterceptor implements HandlerInterceptor {
     public static final String MEMBER_ID_KEY = "MEMBER_ID";
 
     @Override
-    public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) {
+    public boolean preHandle(
+            final HttpServletRequest request,
+            final HttpServletResponse response,
+            final Object handler
+    ) {
         if (isPublicApi(handler)) {
             return true;
         }

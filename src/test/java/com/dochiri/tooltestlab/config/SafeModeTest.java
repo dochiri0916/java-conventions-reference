@@ -3,6 +3,7 @@ package com.dochiri.tooltestlab.config;
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
 import com.dochiri.tooltestlab.category.domain.model.Category;
+import com.dochiri.tooltestlab.category.domain.model.CategoryName;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
 import com.dochiri.tooltestlab.member.domain.model.Email;
 import com.dochiri.tooltestlab.member.domain.model.EncodedPassword;
@@ -199,8 +200,8 @@ class SafeModeTest {
     @DisplayName("safe 모드에서 여러 publicId로 카테고리를 조회할 수 있다")
     void safeProductFindCategoriesByPublicIds() {
         // given
-        var category1 = productRepositoryPort.saveCategory(Category.create(new com.dochiri.tooltestlab.category.domain.model.CategoryName("safe-카테고리3")));
-        var category2 = productRepositoryPort.saveCategory(Category.create(new com.dochiri.tooltestlab.category.domain.model.CategoryName("safe-카테고리4")));
+        var category1 = productRepositoryPort.saveCategory(Category.create(new CategoryName("safe-카테고리3")));
+        var category2 = productRepositoryPort.saveCategory(Category.create(new CategoryName("safe-카테고리4")));
         var ids = Set.of(category1.id().value(), category2.id().value());
 
         // when
@@ -214,8 +215,8 @@ class SafeModeTest {
     @DisplayName("safe 모드에서 상품을 카테고리와 함께 저장할 수 있다")
     void safeProductSaveWithCategories() {
         // given
-        var category1 = productRepositoryPort.saveCategory(Category.create(new com.dochiri.tooltestlab.category.domain.model.CategoryName("safe-카테고리5")));
-        var category2 = productRepositoryPort.saveCategory(Category.create(new com.dochiri.tooltestlab.category.domain.model.CategoryName("safe-카테고리6")));
+        var category1 = productRepositoryPort.saveCategory(Category.create(new CategoryName("safe-카테고리5")));
+        var category2 = productRepositoryPort.saveCategory(Category.create(new CategoryName("safe-카테고리6")));
 
         // when
         var product = Product.create("카테고리상품", "설명", Money.of(5000), 50);
@@ -306,7 +307,7 @@ class SafeModeTest {
     @DisplayName("safe 모드에서 전체 카테고리 목록을 조회할 수 있다")
     void safeProductFindAllCategories() {
         // given
-        productRepositoryPort.saveCategory(Category.create(new com.dochiri.tooltestlab.category.domain.model.CategoryName("safe-전체조회")));
+        productRepositoryPort.saveCategory(Category.create(new CategoryName("safe-전체조회")));
 
         // when
         var categories = productRepositoryPort.findAllCategories();

@@ -67,8 +67,16 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
         eventPublisher.publishEvent(new OrderPlaced(saved.id(), command.memberId(), new OrderPlacedItems(itemDetails)));
 
         final var resultItems = saved.items().values().stream()
-                .map(i -> new PlaceOrderResult.OrderItemResult(i.productId().value(), i.productName().value(), i.quantity().value(), i.unitPrice().amount()))
+                .map(i -> new PlaceOrderResult.OrderItemResult(
+                        i.productId().value(),
+                        i.productName().value(),
+                        i.quantity().value(),
+                        i.unitPrice().amount()))
                 .toList();
-        return new PlaceOrderResult(saved.id().value(), saved.status().name(), saved.totalAmount().amount(), resultItems);
+        return new PlaceOrderResult(
+                saved.id().value(),
+                saved.status().name(),
+                saved.totalAmount().amount(),
+                resultItems);
     }
 }

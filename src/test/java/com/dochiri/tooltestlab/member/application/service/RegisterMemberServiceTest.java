@@ -41,7 +41,8 @@ class RegisterMemberServiceTest {
         var command = new RegisterMemberCommand(" user@example.com ", "password123", "홍길동");
         when(memberRepositoryPort.existsByEmail("user@example.com")).thenReturn(false);
         when(passwordEncoderPort.encode("password123")).thenReturn(new EncodedPassword("encoded"));
-        when(memberRepositoryPort.save(org.mockito.ArgumentMatchers.any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(memberRepositoryPort.save(org.mockito.ArgumentMatchers.any()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
         var result = service.register(command);

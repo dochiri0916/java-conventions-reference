@@ -65,7 +65,11 @@ class OrderServiceMockTest {
     void setUp() {
         cancelOrderService = new CancelOrderService(orderRepositoryPort, eventPublisher);
         getOrderService = new GetOrderService(orderRepositoryPort);
-        placeOrderService = new PlaceOrderService(orderRepositoryPort, cartRepositoryPort, productRepositoryPort, eventPublisher);
+        placeOrderService = new PlaceOrderService(
+                orderRepositoryPort,
+                cartRepositoryPort,
+                productRepositoryPort,
+                eventPublisher);
     }
 
     private Order createTestOrder(String memberId) {

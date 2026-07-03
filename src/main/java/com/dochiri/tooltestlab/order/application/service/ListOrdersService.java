@@ -21,7 +21,11 @@ public final class ListOrdersService implements ListOrdersUseCase {
     public ListOrdersResult listByMember(final String memberPublicId) {
         final List<Order> orders = orderRepositoryPort.findByMemberId(memberPublicId);
         final var summaries = orders.stream()
-                .map(o -> new ListOrdersResult.OrderSummary(o.id().value(), o.status().name(), o.totalAmount().amount(), o.items().size()))
+                .map(o -> new ListOrdersResult.OrderSummary(
+                        o.id().value(),
+                        o.status().name(),
+                        o.totalAmount().amount(),
+                        o.items().size()))
                 .toList();
         return new ListOrdersResult(summaries);
     }

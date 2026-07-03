@@ -127,7 +127,8 @@ class ReviewErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewDomainErrorCode.REVIEW_ID_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(ReviewDomainErrorCode.REVIEW_ID_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -143,7 +144,8 @@ class ReviewErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewDomainErrorCode.RATING_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(ReviewDomainErrorCode.RATING_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -159,7 +161,8 @@ class ReviewErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewDomainErrorCode.REVIEW_CONTENT_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(ReviewDomainErrorCode.REVIEW_CONTENT_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -175,7 +178,8 @@ class ReviewErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewDomainErrorCode.REVIEW_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(ReviewDomainErrorCode.REVIEW_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -191,7 +195,8 @@ class ReviewErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewApplicationErrorCode.REVIEW_NOT_FOUND));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(ReviewApplicationErrorCode.REVIEW_NOT_FOUND));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
@@ -207,7 +212,8 @@ class ReviewErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewApplicationErrorCode.DUPLICATE_REVIEW));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(ReviewApplicationErrorCode.DUPLICATE_REVIEW));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.CONFLICT);
     }
 
@@ -223,7 +229,8 @@ class ReviewErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewApplicationErrorCode.NOT_REVIEW_OWNER));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(ReviewApplicationErrorCode.NOT_REVIEW_OWNER));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
@@ -239,7 +246,8 @@ class ReviewErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(ReviewApplicationErrorCode.INVALID_INPUT));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(ReviewApplicationErrorCode.INVALID_INPUT));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }

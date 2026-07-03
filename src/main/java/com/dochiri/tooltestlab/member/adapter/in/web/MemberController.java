@@ -48,7 +48,8 @@ public class MemberController {
     @PostMapping("/register")
     @PublicApi
     public ResponseEntity<RegisterMemberResponse> register(@Valid @RequestBody RegisterMemberRequest request) {
-        final RegisterMemberCommand command = new RegisterMemberCommand(request.email(), request.password(), request.name());
+        final RegisterMemberCommand command =
+                new RegisterMemberCommand(request.email(), request.password(), request.name());
         final RegisterMemberResult result = registerMemberUseCase.register(command);
         return ResponseEntity.ok(new RegisterMemberResponse(result.publicId(), result.email(), result.name()));
     }

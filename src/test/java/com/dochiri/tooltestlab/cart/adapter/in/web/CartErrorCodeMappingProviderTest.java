@@ -174,7 +174,8 @@ class CartErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(CartDomainErrorCode.CART_ITEM_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(CartDomainErrorCode.CART_ITEM_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(mappedError.orElseThrow().mapping().problemType()).isEqualTo(ProblemType.VALIDATION_FAILED);
     }

@@ -50,8 +50,17 @@ public class OrderEntity {
     @Column(nullable = false, length = 10)
     private String zipCode;
 
-    private OrderEntity(final Long id, final String orderId, final String memberId, final String status, final long totalAmount,
-                        String recipientName, final String phone, final String address, final String zipCode) {
+    private OrderEntity(
+            final Long id,
+            final String orderId,
+            final String memberId,
+            final String status,
+            final long totalAmount,
+            String recipientName,
+            final String phone,
+            final String address,
+            final String zipCode
+    ) {
         this.id = id;
         this.orderId = orderId;
         this.memberId = memberId;

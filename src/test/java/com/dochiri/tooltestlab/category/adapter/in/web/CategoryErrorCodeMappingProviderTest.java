@@ -90,7 +90,8 @@ class CategoryErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(CategoryDomainErrorCode.CATEGORY_ID_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(CategoryDomainErrorCode.CATEGORY_ID_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(mappedError.orElseThrow().mapping().problemType()).isEqualTo(ProblemType.VALIDATION_FAILED);
     }
@@ -107,7 +108,8 @@ class CategoryErrorCodeMappingProviderTest {
 
         // then
         assertThat(mappedError).isPresent();
-        assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(CategoryDomainErrorCode.CATEGORY_NAME_REQUIRED));
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(CategoryDomainErrorCode.CATEGORY_NAME_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(mappedError.orElseThrow().mapping().problemType()).isEqualTo(ProblemType.VALIDATION_FAILED);
     }

@@ -106,8 +106,16 @@ public class OrderController {
                 .map(i -> new GetOrderResponse.Item(
                         i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.totalPrice()))
                 .toList();
-        return ResponseEntity.ok(new GetOrderResponse(result.publicId(), result.memberPublicId(), result.status(),
-                result.totalAmount(), result.recipientName(), result.phone(), result.address(), result.zipCode(), items));
+          return ResponseEntity.ok(new GetOrderResponse(
+                  result.publicId(),
+                  result.memberPublicId(),
+                  result.status(),
+                  result.totalAmount(),
+                  result.recipientName(),
+                  result.phone(),
+                  result.address(),
+                  result.zipCode(),
+                  items));
     }
 
     @Operation(summary = "주문 취소", description = "주문을 취소합니다.")

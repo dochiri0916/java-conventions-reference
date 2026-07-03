@@ -26,7 +26,10 @@ public final class HandleOrderCancelledService implements HandleOrderCancelledUs
     @Override
     @Transactional
     public void handleOrderCancelled(final OrderCancelled event) {
-        LOG.info("[HandleOrderCancelledService] 주문 취소 이벤트 수신. orderId={}, items={}", event.orderId().value(), event.items().values().size());
+        LOG.info(
+                "[HandleOrderCancelledService] 주문 취소 이벤트 수신. orderId={}, items={}",
+                event.orderId().value(),
+                event.items().values().size());
 
         for (var item : event.items().values()) {
             final Product product = productRepositoryPort.findByPublicId(item.productId().value())
