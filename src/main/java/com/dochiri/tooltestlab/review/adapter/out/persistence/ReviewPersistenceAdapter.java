@@ -1,9 +1,11 @@
 package com.dochiri.tooltestlab.review.adapter.out.persistence;
 
+import com.dochiri.tooltestlab.review.application.exception.DuplicateReviewException;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
 import com.dochiri.tooltestlab.review.domain.model.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,9 +20,13 @@ class ReviewPersistenceAdapter implements ReviewRepositoryPort {
 
     @Override
     public Review save(final Review review) {
-        final ReviewEntity entity = ReviewMapper.toEntity(review);
-        final ReviewEntity saved = reviewJpaRepository.save(entity);
-        return ReviewMapper.toDomain(saved);
+        try {
+            final ReviewEntity entity = ReviewMapper.toEntity(review);
+            final ReviewEntity saved = reviewJpaRepository.saveAndFlush(entity);
+            return ReviewMapper.toDomain(saved);
+        } catch (DataIntegrityViolationException exception) {
+            throw DuplicateReviewException.duplicateReview();
+        }
     }
 
     @Override

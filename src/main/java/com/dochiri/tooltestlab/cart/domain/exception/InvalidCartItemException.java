@@ -7,18 +7,18 @@ public final class InvalidCartItemException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private final CartDomainErrorCode errorCode;
-    private final String detailField;
+    private final String invalidCartItemReason;
 
     private InvalidCartItemException(final CartDomainErrorCode errorCode) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.detailField = null;
+        this.invalidCartItemReason = null;
     }
 
     private InvalidCartItemException(final CartDomainErrorCode errorCode, final String detail) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.detailField = requireNonNull(detail);
+        this.invalidCartItemReason = requireNonNull(detail);
     }
 
     public static InvalidCartItemException invalidCartItem(final String detail) {
@@ -34,6 +34,6 @@ public final class InvalidCartItemException extends RuntimeException {
     }
 
     public String detail() {
-        return detailField;
+        return invalidCartItemReason;
     }
 }

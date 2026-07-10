@@ -1,0 +1,55 @@
+package com.dochiri.tooltestlab.product.adapter.out.persistence;
+
+import com.dochiri.tooltestlab.category.adapter.out.persistence.CategoryJpaRepository;
+import com.dochiri.tooltestlab.category.application.exception.CategoryErrorCode;
+import com.dochiri.tooltestlab.category.application.exception.DuplicateCategoryNameException;
+import com.dochiri.tooltestlab.category.domain.model.Category;
+import com.dochiri.tooltestlab.category.domain.model.CategoryName;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class SafeProductPersistenceAdapterTest {
+
+    @Mock
+    private ProductJpaRepository productJpaRepository;
+
+    @Mock
+    private CategoryJpaRepository categoryJpaRepository;
+
+    private SafeProductPersistenceAdapter adapter;
+
+    @BeforeEach
+    void setUp() {
+        adapter = new SafeProductPersistenceAdapter(productJpaRepository, categoryJpaRepository);
+    }
+
+    @Test
+    @DisplayName("안전 카테고리 저장도 중복 카테고리명 예외를 동일하게 반환한다")
+    void translatesDuplicateCategoryNameConstraintViolation() {
+        // given
+        final Category category = Category.create(new CategoryName("전자기기"));
+        when(categoryJpaRepository.saveAndFlush(any()))
+                .thenThrow(new DataIntegrityViolationException("duplicate category name"));
+
+        // when & then
+        assertThatThrownBy(() -> adapter.saveCategory(category))
+                .isInstanceOf(DuplicateCategoryNameException.class)
+                .satisfies(exception -> {
+                    final DuplicateCategoryNameException duplicate =
+                            (DuplicateCategoryNameException) exception;
+                    assertThat(duplicate.code()).isEqualTo(CategoryErrorCode.DUPLICATE_CATEGORY_NAME);
+                    assertThat(duplicate.categoryName()).isEqualTo(category.name());
+                });
+    }
+}

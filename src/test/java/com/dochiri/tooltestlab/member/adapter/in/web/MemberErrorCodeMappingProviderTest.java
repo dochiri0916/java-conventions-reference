@@ -279,4 +279,38 @@ class MemberErrorCodeMappingProviderTest {
         assertThat(mappedError.orElseThrow().code()).isEqualTo(ApiErrorCode.from(MemberErrorCode.NAME_REQUIRED));
         assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
+
+    @Test
+    @DisplayName("회원 가입 이메일 누락 예외를 400으로 매핑한다")
+    void resolveEmailRequiredCommandException() {
+        // given
+        var provider = new MemberErrorCodeMappingProvider();
+        var exception = InvalidCommandException.emailRequired();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(MemberErrorCode.EMAIL_REQUIRED));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @DisplayName("로그인 비밀번호 누락 예외를 400으로 매핑한다")
+    void resolvePasswordRequiredCommandException() {
+        // given
+        var provider = new MemberErrorCodeMappingProvider();
+        var exception = InvalidCommandException.passwordRequired();
+
+        // when
+        var mappedError = provider.resolve(exception);
+
+        // then
+        assertThat(mappedError).isPresent();
+        assertThat(mappedError.orElseThrow().code())
+                .isEqualTo(ApiErrorCode.from(MemberErrorCode.PASSWORD_REQUIRED));
+        assertThat(mappedError.orElseThrow().mapping().status()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 }

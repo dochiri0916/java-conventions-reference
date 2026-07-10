@@ -14,6 +14,7 @@ public class ApiProblemDetailFactory {
 
     public static final String CODE_PROPERTY = "code";
     public static final String TIMESTAMP_PROPERTY = "timestamp";
+    public static final String TRACE_ID_PROPERTY = "traceId";
 
     private final URI baseUri;
 

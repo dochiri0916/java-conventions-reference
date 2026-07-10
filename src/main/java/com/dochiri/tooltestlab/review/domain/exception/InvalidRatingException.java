@@ -7,18 +7,18 @@ public final class InvalidRatingException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private final ReviewDomainErrorCode errorCode;
-    private final int ratingField;
+    private final int invalidRatingValue;
 
     private InvalidRatingException(final ReviewDomainErrorCode errorCode) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.ratingField = 0;
+        this.invalidRatingValue = 0;
     }
 
     private InvalidRatingException(final ReviewDomainErrorCode errorCode, final int rating) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.ratingField = rating;
+        this.invalidRatingValue = rating;
     }
 
     public static InvalidRatingException invalidRating(final int rating) {
@@ -34,6 +34,6 @@ public final class InvalidRatingException extends RuntimeException {
     }
 
     public int rating() {
-        return ratingField;
+        return invalidRatingValue;
     }
 }

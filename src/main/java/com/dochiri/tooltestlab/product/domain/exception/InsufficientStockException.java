@@ -7,16 +7,16 @@ public final class InsufficientStockException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private final ProductDomainErrorCode errorCode;
-    private final int currentStockField;
-    private final int requestedField;
+    private final int availableStock;
+    private final int requestedStock;
 
     private InsufficientStockException(final ProductDomainErrorCode errorCode,
                                        final int currentStock,
                                        final int requested) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.currentStockField = currentStock;
-        this.requestedField = requested;
+        this.availableStock = currentStock;
+        this.requestedStock = requested;
     }
 
     public static InsufficientStockException lowStock(final int currentStock, final int requested) {
@@ -28,10 +28,10 @@ public final class InsufficientStockException extends RuntimeException {
     }
 
     public int currentStock() {
-        return currentStockField;
+        return availableStock;
     }
 
     public int requested() {
-        return requestedField;
+        return requestedStock;
     }
 }

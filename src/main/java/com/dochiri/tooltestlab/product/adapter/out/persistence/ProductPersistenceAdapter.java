@@ -2,11 +2,13 @@ package com.dochiri.tooltestlab.product.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.category.adapter.out.persistence.CategoryEntity;
 import com.dochiri.tooltestlab.category.adapter.out.persistence.CategoryJpaRepository;
+import com.dochiri.tooltestlab.category.application.exception.DuplicateCategoryNameException;
 import com.dochiri.tooltestlab.category.domain.model.Category;
 import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.product.domain.model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
@@ -73,9 +75,13 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
 
     @Override
     public Category saveCategory(final Category category) {
-        final CategoryEntity entity = ProductMapper.toEntity(category);
-        final CategoryEntity saved = categoryJpaRepository.save(entity);
-        return ProductMapper.toDomain(saved);
+        try {
+            final CategoryEntity entity = ProductMapper.toEntity(category);
+            final CategoryEntity saved = categoryJpaRepository.saveAndFlush(entity);
+            return ProductMapper.toDomain(saved);
+        } catch (DataIntegrityViolationException exception) {
+            throw DuplicateCategoryNameException.duplicateCategoryName(category.name());
+        }
     }
 
     @Override

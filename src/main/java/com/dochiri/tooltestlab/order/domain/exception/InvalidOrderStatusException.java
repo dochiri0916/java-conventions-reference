@@ -9,16 +9,16 @@ public final class InvalidOrderStatusException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private final OrderDomainErrorCode errorCode;
-    private final transient OrderId orderIdField;
-    private final String expectedField;
-    private final String actualField;
+    private final transient OrderId invalidOrderIdentifier;
+    private final String expectedStatus;
+    private final String actualStatus;
 
     private InvalidOrderStatusException(final OrderDomainErrorCode errorCode) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.orderIdField = null;
-        this.expectedField = null;
-        this.actualField = null;
+        this.invalidOrderIdentifier = null;
+        this.expectedStatus = null;
+        this.actualStatus = null;
     }
 
     private InvalidOrderStatusException(final OrderDomainErrorCode errorCode,
@@ -27,9 +27,9 @@ public final class InvalidOrderStatusException extends RuntimeException {
                                         final String actual) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.orderIdField = requireNonNull(orderId);
-        this.expectedField = requireNonNull(expected);
-        this.actualField = requireNonNull(actual);
+        this.invalidOrderIdentifier = requireNonNull(orderId);
+        this.expectedStatus = requireNonNull(expected);
+        this.actualStatus = requireNonNull(actual);
     }
 
     public static InvalidOrderStatusException badOrderStatus(final OrderId orderId,
@@ -47,14 +47,14 @@ public final class InvalidOrderStatusException extends RuntimeException {
     }
 
     public OrderId orderId() {
-        return orderIdField;
+        return invalidOrderIdentifier;
     }
 
     public String expected() {
-        return expectedField;
+        return expectedStatus;
     }
 
     public String actual() {
-        return actualField;
+        return actualStatus;
     }
 }

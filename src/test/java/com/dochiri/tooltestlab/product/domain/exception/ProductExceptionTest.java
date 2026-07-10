@@ -145,6 +145,48 @@ class ProductExceptionTest {
     }
 
     @Test
+    @DisplayName("음수 금액 예외는 잘못된 금액을 보존한다")
+    void negativeMoney() {
+        // given
+        final long amount = -1L;
+
+        // when
+        final var ex = InvalidMoneyException.negative(amount);
+
+        // then
+        assertThat(ex.code()).isEqualTo(ProductDomainErrorCode.MONEY_NEGATIVE);
+        assertThat(ex.amount()).isEqualTo(amount);
+    }
+
+    @Test
+    @DisplayName("음수 곱셈 수량 예외는 잘못된 수량을 보존한다")
+    void negativeMultiplyQuantity() {
+        // given
+        final int quantity = -2;
+
+        // when
+        final var ex = InvalidMoneyException.multiplyNegative(quantity);
+
+        // then
+        assertThat(ex.code()).isEqualTo(ProductDomainErrorCode.MONEY_MULTIPLY_NEGATIVE);
+        assertThat(ex.quantity()).isEqualTo(quantity);
+    }
+
+    @Test
+    @DisplayName("최대 개수 예외는 잘못된 최대 개수를 보존한다")
+    void invalidMaxCount() {
+        // given
+        final int value = 0;
+
+        // when
+        final var ex = InvalidMaxCountException.notPositive(value);
+
+        // then
+        assertThat(ex.code()).isEqualTo(ProductDomainErrorCode.MAX_COUNT_NOT_POSITIVE);
+        assertThat(ex.value()).isEqualTo(value);
+    }
+
+    @Test
     @DisplayName("InvalidMoneyException required 정상 생성")
     void moneyRequired() {
         // given
@@ -165,7 +207,7 @@ class ProductExceptionTest {
 
         // when & then
         for (var code : codes) {
-            assertThat(code.title()).isNotBlank();
+            assertThat(code.name()).isNotBlank();
         }
     }
 }

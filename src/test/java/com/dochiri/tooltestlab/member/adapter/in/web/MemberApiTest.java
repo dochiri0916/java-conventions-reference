@@ -82,6 +82,47 @@ class MemberApiTest {
     }
 
     @Test
+    @DisplayName("회원 가입 이메일이 비어 있으면 정확한 400 오류 계약을 반환한다")
+    void registerWithBlankEmailReturnsMappedError() throws Exception {
+        // given
+        Map<String, String> body = Map.of(
+                "email", "",
+                "password", "password123",
+                "name", "홍길동");
+
+        // when
+        var result = mockMvc.perform(post("/api/members/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(400);
+        assertThat(result.getResponse().getContentAsString()).contains(
+                "MEMBER.EMAIL_REQUIRED", "이메일 누락", "이메일은 필수입니다.");
+    }
+
+    @Test
+    @DisplayName("로그인 비밀번호가 비어 있으면 정확한 400 오류 계약을 반환한다")
+    void loginWithBlankPasswordReturnsMappedError() throws Exception {
+        // given
+        Map<String, String> body = Map.of(
+                "email", uniqueEmail(),
+                "password", "");
+
+        // when
+        var result = mockMvc.perform(post("/api/members/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(400);
+        assertThat(result.getResponse().getContentAsString()).contains(
+                "MEMBER.PASSWORD_REQUIRED", "비밀번호 누락", "비밀번호는 필수입니다.");
+    }
+
+    @Test
     @DisplayName("로그인에 성공하면 200과 회원 정보를 반환한다")
     void loginSuccess() throws Exception {
         // given

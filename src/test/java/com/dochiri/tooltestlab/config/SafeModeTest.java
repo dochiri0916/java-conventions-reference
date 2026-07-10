@@ -24,6 +24,8 @@ import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPor
 import com.dochiri.tooltestlab.product.domain.model.Money;
 import com.dochiri.tooltestlab.product.domain.model.Product;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
+import com.dochiri.tooltestlab.review.application.exception.DuplicateReviewException;
+import com.dochiri.tooltestlab.review.application.exception.ReviewApplicationErrorCode;
 import com.dochiri.tooltestlab.review.domain.model.Rating;
 import com.dochiri.tooltestlab.review.domain.model.Review;
 import com.dochiri.tooltestlab.review.domain.model.ReviewContent;
@@ -259,8 +261,9 @@ class SafeModeTest {
 
         // when & then
         assertThatThrownBy(() -> reviewRepositoryPort.save(duplicate))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("이미 이 상품에 리뷰를 작성하셨습니다");
+                .isInstanceOf(DuplicateReviewException.class)
+                .extracting(exception -> ((DuplicateReviewException) exception).code())
+                .isEqualTo(ReviewApplicationErrorCode.DUPLICATE_REVIEW);
     }
 
     @Test

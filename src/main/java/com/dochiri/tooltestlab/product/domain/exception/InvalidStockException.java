@@ -7,18 +7,18 @@ public final class InvalidStockException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private final ProductDomainErrorCode errorCode;
-    private final String detailField;
+    private final String invalidStockReason;
 
     private InvalidStockException(final ProductDomainErrorCode errorCode) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.detailField = null;
+        this.invalidStockReason = null;
     }
 
     private InvalidStockException(final ProductDomainErrorCode errorCode, final String detail) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.detailField = requireNonNull(detail);
+        this.invalidStockReason = requireNonNull(detail);
     }
 
     public static InvalidStockException invalidStock(final String detail) {
@@ -34,6 +34,6 @@ public final class InvalidStockException extends RuntimeException {
     }
 
     public String detail() {
-        return detailField;
+        return invalidStockReason;
     }
 }

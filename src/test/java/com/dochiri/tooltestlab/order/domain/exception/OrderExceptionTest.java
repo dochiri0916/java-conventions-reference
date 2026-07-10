@@ -162,7 +162,7 @@ class OrderExceptionTest {
 
         // when & then
         for (var code : codes) {
-            assertThat(code.title()).isNotBlank();
+            assertThat(code.name()).isNotBlank();
         }
     }
 }

@@ -7,12 +7,12 @@ public final class CartItemLimitExceededException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private final CartDomainErrorCode errorCode;
-    private final int actualSizeField;
+    private final int actualItemCount;
 
     private CartItemLimitExceededException(final CartDomainErrorCode errorCode, final int actualSize) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.actualSizeField = actualSize;
+        this.actualItemCount = actualSize;
     }
 
     public static CartItemLimitExceededException tooManyItems(final int actualSize) {
@@ -24,6 +24,6 @@ public final class CartItemLimitExceededException extends RuntimeException {
     }
 
     public int actualSize() {
-        return actualSizeField;
+        return actualItemCount;
     }
 }

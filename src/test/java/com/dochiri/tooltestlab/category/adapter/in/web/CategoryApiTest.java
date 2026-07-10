@@ -72,6 +72,30 @@ class CategoryApiTest {
     }
 
     @Test
+    @DisplayName("동일한 카테고리명을 등록하면 409 오류 계약을 반환한다")
+    void registerDuplicateCategoryName() throws Exception {
+        // given
+        final String categoryName = "중복 카테고리-" + UUID.randomUUID().toString().substring(0, 8);
+        Map<String, String> body = Map.of("name", categoryName);
+        mockMvc.perform(post("/api/categories")
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(body)));
+
+        // when
+        var result = mockMvc.perform(post("/api/categories")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(409);
+        assertThat(result.getResponse().getContentAsString()).contains(
+                "CATEGORY.DUPLICATE_CATEGORY_NAME", "카테고리명 중복", "이미 등록된 카테고리명입니다.");
+    }
+
+    @Test
     @DisplayName("카테고리 목록을 조회할 수 있다")
     void listCategories() throws Exception {
         // given

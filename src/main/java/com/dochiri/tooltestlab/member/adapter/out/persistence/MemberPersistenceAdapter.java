@@ -1,8 +1,10 @@
 package com.dochiri.tooltestlab.member.adapter.out.persistence;
 
+import com.dochiri.tooltestlab.member.application.exception.DuplicateEmailException;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
 import com.dochiri.tooltestlab.member.domain.model.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -15,9 +17,13 @@ class MemberPersistenceAdapter implements MemberRepositoryPort {
 
     @Override
     public Member save(final Member member) {
-        final MemberEntity entity = MemberMapper.toEntity(member);
-        final MemberEntity saved = jpaRepository.save(entity);
-        return MemberMapper.toDomain(saved);
+        try {
+            final MemberEntity entity = MemberMapper.toEntity(member);
+            final MemberEntity saved = jpaRepository.saveAndFlush(entity);
+            return MemberMapper.toDomain(saved);
+        } catch (DataIntegrityViolationException exception) {
+            throw DuplicateEmailException.duplicateEmail(member.email().value());
+        }
     }
 
     @Override

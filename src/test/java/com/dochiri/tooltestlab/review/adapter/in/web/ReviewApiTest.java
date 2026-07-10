@@ -94,6 +94,32 @@ class ReviewApiTest {
     }
 
     @Test
+    @DisplayName("동일한 상품에 리뷰를 중복 작성하면 409 오류 계약을 반환한다")
+    void writeDuplicateReview() throws Exception {
+        // given
+        Map<String, Object> body = Map.of(
+                "productPublicId", productPublicId,
+                "rating", 5,
+                "content", "첫 번째 리뷰입니다.");
+        mockMvc.perform(post("/api/reviews")
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(body)));
+
+        // when
+        var result = mockMvc.perform(post("/api/reviews")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andReturn();
+
+        // then
+        assertThat(result.getResponse().getStatus()).isEqualTo(409);
+        assertThat(result.getResponse().getContentAsString()).contains(
+                "REVIEW.DUPLICATE_REVIEW", "중복 리뷰", "이미 해당 상품에 리뷰를 작성했습니다.");
+    }
+
+    @Test
     @DisplayName("상품의 리뷰 목록을 인증 없이 조회할 수 있다")
     void retrieveProductReviewsWithoutAuth() throws Exception {
         // given

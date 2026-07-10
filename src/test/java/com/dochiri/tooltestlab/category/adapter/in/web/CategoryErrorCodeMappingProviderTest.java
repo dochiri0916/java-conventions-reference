@@ -20,7 +20,7 @@ import com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryNameExce
 class CategoryErrorCodeMappingProviderTest {
 
     @Test
-    @DisplayName("카테고리 에러 코드 5개를 모두 매핑한다")
+    @DisplayName("카테고리 에러 코드 6개를 모두 매핑한다")
     void hasAllMappings() {
         // given
         var provider = new CategoryErrorCodeMappingProvider();
@@ -29,7 +29,7 @@ class CategoryErrorCodeMappingProviderTest {
         Map<String, ApiExceptionMapper.Mapping> mappings = provider.errorCodeMappings();
 
         // then
-        assertThat(mappings).isNotNull().hasSize(5);
+        assertThat(mappings).isNotNull().hasSize(6);
     }
 
     @Test

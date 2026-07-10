@@ -7,18 +7,18 @@ public final class InvalidOrderLinesException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private final OrderDomainErrorCode errorCode;
-    private final String detailField;
+    private final String invalidOrderLinesReason;
 
     private InvalidOrderLinesException(final OrderDomainErrorCode errorCode) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.detailField = null;
+        this.invalidOrderLinesReason = null;
     }
 
     private InvalidOrderLinesException(final OrderDomainErrorCode errorCode, final String detail) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.detailField = requireNonNull(detail);
+        this.invalidOrderLinesReason = requireNonNull(detail);
     }
 
     public static InvalidOrderLinesException badOrderLines(final String detail) {
@@ -34,6 +34,6 @@ public final class InvalidOrderLinesException extends RuntimeException {
     }
 
     public String detail() {
-        return detailField;
+        return invalidOrderLinesReason;
     }
 }

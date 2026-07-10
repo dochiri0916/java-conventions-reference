@@ -7,18 +7,18 @@ public final class InvalidShippingAddressException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private final OrderDomainErrorCode errorCode;
-    private final String detailField;
+    private final String invalidShippingAddressReason;
 
     private InvalidShippingAddressException(final OrderDomainErrorCode errorCode) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.detailField = null;
+        this.invalidShippingAddressReason = null;
     }
 
     private InvalidShippingAddressException(final OrderDomainErrorCode errorCode, final String detail) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.detailField = requireNonNull(detail);
+        this.invalidShippingAddressReason = requireNonNull(detail);
     }
 
     public static InvalidShippingAddressException badShippingAddr(final String detail) {
@@ -34,6 +34,6 @@ public final class InvalidShippingAddressException extends RuntimeException {
     }
 
     public String detail() {
-        return detailField;
+        return invalidShippingAddressReason;
     }
 }

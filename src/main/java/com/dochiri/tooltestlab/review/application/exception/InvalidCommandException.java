@@ -7,12 +7,12 @@ public final class InvalidCommandException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private final ReviewApplicationErrorCode errorCode;
-    private final String detailField;
+    private final String invalidCommandReason;
 
     private InvalidCommandException(final ReviewApplicationErrorCode errorCode, final String detail) {
         super(errorCode.name());
         this.errorCode = requireNonNull(errorCode);
-        this.detailField = requireNonNull(detail);
+        this.invalidCommandReason = requireNonNull(detail);
     }
 
     public static InvalidCommandException invalidInput(final String detail) {
@@ -24,6 +24,6 @@ public final class InvalidCommandException extends RuntimeException {
     }
 
     public String detail() {
-        return detailField;
+        return invalidCommandReason;
     }
 }
