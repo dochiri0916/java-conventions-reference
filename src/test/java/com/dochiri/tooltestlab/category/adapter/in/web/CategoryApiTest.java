@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.category.adapter.in.web;
 
+import com.dochiri.tooltestlab.catalog.category.adapter.in.web.response.CategoryListResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,9 +16,9 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class CategoryApiTest {
@@ -138,7 +139,7 @@ class CategoryApiTest {
         var name = "전자기기";
 
         // when
-        var response = new com.dochiri.tooltestlab.category.adapter.in.web.response.CategoryListResponse(
+        var response = new CategoryListResponse(
                 publicId, name);
 
         // then

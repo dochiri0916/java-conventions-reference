@@ -1,10 +1,12 @@
 package com.dochiri.tooltestlab.product.adapter.out.persistence;
 
-import com.dochiri.tooltestlab.category.adapter.out.persistence.CategoryJpaRepository;
-import com.dochiri.tooltestlab.category.application.exception.CategoryErrorCode;
-import com.dochiri.tooltestlab.category.application.exception.DuplicateCategoryNameException;
-import com.dochiri.tooltestlab.category.domain.model.Category;
-import com.dochiri.tooltestlab.category.domain.model.CategoryName;
+import com.dochiri.tooltestlab.catalog.category.adapter.out.persistence.CategoryJpaRepository;
+import com.dochiri.tooltestlab.catalog.category.application.exception.CategoryErrorCode;
+import com.dochiri.tooltestlab.catalog.category.application.exception.DuplicateCategoryNameException;
+import com.dochiri.tooltestlab.catalog.product.adapter.out.persistence.ProductJpaRepository;
+import com.dochiri.tooltestlab.catalog.product.adapter.out.persistence.ProductPersistenceAdapter;
+import com.dochiri.tooltestlab.catalog.category.domain.model.Category;
+import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

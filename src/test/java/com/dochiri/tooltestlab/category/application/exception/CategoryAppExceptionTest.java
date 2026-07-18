@@ -1,5 +1,7 @@
 package com.dochiri.tooltestlab.category.application.exception;
 
+import com.dochiri.tooltestlab.catalog.category.application.exception.CategoryErrorCode;
+import com.dochiri.tooltestlab.catalog.category.application.exception.InvalidCommandException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

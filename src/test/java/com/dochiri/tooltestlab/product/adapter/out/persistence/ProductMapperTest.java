@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.product.adapter.out.persistence;
 
+import com.dochiri.tooltestlab.catalog.product.adapter.out.persistence.ProductMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

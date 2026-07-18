@@ -1,10 +1,14 @@
 package com.dochiri.tooltestlab.category.adapter.in.web;
 
-import com.dochiri.tooltestlab.global.error.ApiExceptionMapper;
+import com.dochiri.tooltestlab.catalog.category.adapter.in.web.CategoryErrorCodeMappingProvider;
+import com.dochiri.tooltestlab.catalog.category.application.exception.CategoryErrorCode;
+import com.dochiri.tooltestlab.catalog.category.application.exception.InvalidCommandException;
+import com.dochiri.tooltestlab.catalog.category.domain.exception.CategoryDomainErrorCode;
+import com.dochiri.tooltestlab.catalog.category.domain.exception.InvalidCategoryIdException;
+import com.dochiri.tooltestlab.catalog.category.domain.exception.InvalidCategoryNameException;
 import com.dochiri.tooltestlab.global.error.ApiErrorCode;
+import com.dochiri.tooltestlab.global.error.ApiExceptionMapper;
 import com.dochiri.tooltestlab.global.error.ProblemType;
-import com.dochiri.tooltestlab.category.domain.exception.CategoryDomainErrorCode;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -12,10 +16,6 @@ import org.springframework.http.HttpStatus;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import com.dochiri.tooltestlab.category.application.exception.CategoryErrorCode;
-import com.dochiri.tooltestlab.category.application.exception.InvalidCommandException;
-import com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryIdException;
-import com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryNameException;
 
 class CategoryErrorCodeMappingProviderTest {
 

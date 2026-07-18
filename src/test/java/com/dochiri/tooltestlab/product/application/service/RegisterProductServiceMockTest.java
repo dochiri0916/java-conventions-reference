@@ -1,8 +1,9 @@
 package com.dochiri.tooltestlab.product.application.service;
 
-import com.dochiri.tooltestlab.product.application.exception.ProductNotFoundException;
-import com.dochiri.tooltestlab.product.application.port.in.RegisterProductCommand;
-import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.command.RegisterProductCommand;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.application.service.GetProductService;
+import com.dochiri.tooltestlab.catalog.product.application.service.RegisterProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;

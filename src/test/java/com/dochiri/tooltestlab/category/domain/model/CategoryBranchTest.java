@@ -1,5 +1,7 @@
 package com.dochiri.tooltestlab.category.domain.model;
 
+import com.dochiri.tooltestlab.catalog.category.domain.model.Category;
+import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryName;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

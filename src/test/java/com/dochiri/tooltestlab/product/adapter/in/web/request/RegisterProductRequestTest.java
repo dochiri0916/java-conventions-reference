@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.product.adapter.in.web.request;
 
+import com.dochiri.tooltestlab.catalog.product.adapter.in.web.request.RegisterProductRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

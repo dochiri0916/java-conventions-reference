@@ -1,5 +1,8 @@
 package com.dochiri.tooltestlab.category.domain.exception;
 
+import com.dochiri.tooltestlab.catalog.category.domain.exception.CategoryDomainErrorCode;
+import com.dochiri.tooltestlab.catalog.category.domain.exception.InvalidCategoryIdException;
+import com.dochiri.tooltestlab.catalog.category.domain.exception.InvalidCategoryNameException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
