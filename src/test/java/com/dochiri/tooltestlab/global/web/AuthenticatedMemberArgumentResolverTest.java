@@ -10,7 +10,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -133,13 +132,13 @@ class AuthenticatedMemberArgumentResolverTest {
 
     @SuppressWarnings("unused")
     private static class StubController {
-        void authenticated(@AuthenticatedMember String memberId) {
+        void authenticated(String memberId) {
         }
 
         void notAuthenticated(String memberId) {
         }
 
-        void authenticatedWrongType(@AuthenticatedMember Integer memberId) {
+        void authenticatedWrongType(Integer memberId) {
         }
     }
 }

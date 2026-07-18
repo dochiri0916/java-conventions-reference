@@ -10,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.method.HandlerMethod;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -119,7 +118,6 @@ class ApiAuthenticationInterceptorTest {
         assertThat(result).isTrue();
     }
 
-    @PublicApi
     private static class PublicApiController {
     }
 
