@@ -2,9 +2,8 @@ package com.dochiri.tooltestlab.order.application.service;
 
 import com.dochiri.tooltestlab.order.application.port.in.HandleOrderPlacedUseCase;
 import com.dochiri.tooltestlab.order.domain.event.OrderPlaced;
-import com.dochiri.tooltestlab.product.application.exception.ProductNotFoundException;
-import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.product.domain.model.Product;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

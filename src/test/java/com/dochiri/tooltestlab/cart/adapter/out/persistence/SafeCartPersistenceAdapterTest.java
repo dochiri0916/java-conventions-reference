@@ -3,9 +3,9 @@ package com.dochiri.tooltestlab.cart.adapter.out.persistence;
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.domain.model.Quantity;
-import com.dochiri.tooltestlab.product.domain.model.Money;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.product.domain.model.ProductName;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,9 +19,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SafeCartPersistenceAdapterTest {
@@ -105,6 +103,7 @@ class SafeCartPersistenceAdapterTest {
                         new ProductId("safeCartProduct"),
                         new ProductName("안전 장바구니 상품"),
                         Quantity.from(2),
-                        Money.of(1_000));
+                        new Money(1_000)
+                );
     }
 }

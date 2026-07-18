@@ -1,16 +1,10 @@
 package com.dochiri.tooltestlab.review.adapter.in.web;
 
-import com.dochiri.tooltestlab.global.web.AuthenticatedMember;
-import com.dochiri.tooltestlab.global.web.PublicApi;
 import com.dochiri.tooltestlab.review.adapter.in.web.request.WriteReviewRequest;
 import com.dochiri.tooltestlab.review.adapter.in.web.response.DeleteReviewResponse;
 import com.dochiri.tooltestlab.review.adapter.in.web.response.GetProductReviewsResponse;
 import com.dochiri.tooltestlab.review.adapter.in.web.response.WriteReviewResponse;
-import com.dochiri.tooltestlab.review.application.port.in.DeleteReviewUseCase;
-import com.dochiri.tooltestlab.review.application.port.in.GetProductReviewsResult;
-import com.dochiri.tooltestlab.review.application.port.in.GetProductReviewsUseCase;
-import com.dochiri.tooltestlab.review.application.port.in.WriteReviewCommand;
-import com.dochiri.tooltestlab.review.application.port.in.WriteReviewUseCase;
+import com.dochiri.tooltestlab.review.application.port.in.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,13 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "리뷰", description = "리뷰 작성, 조회, 삭제 API")
 @RestController
@@ -47,7 +35,7 @@ public class ReviewController {
     })
     @PostMapping
     public ResponseEntity<WriteReviewResponse> write(
-            @Parameter(hidden = true) @AuthenticatedMember String memberPublicId,
+            @Parameter(hidden = true) String memberPublicId,
             @Valid @RequestBody WriteReviewRequest request) {
         final var result = writeReviewUseCase.write(
                 new WriteReviewCommand(memberPublicId, request.productPublicId(), request.rating(), request.content()));
@@ -59,7 +47,6 @@ public class ReviewController {
             @ApiResponse(responseCode = "200", description = "리뷰 목록 조회 성공")
     })
     @GetMapping("/product/{productPublicId}")
-    @PublicApi
     public ResponseEntity<GetProductReviewsResponse> getByProduct(
             @Parameter(description = "상품 publicId", example = "p1r2o3d4u5c6")
             @PathVariable String productPublicId) {
@@ -80,7 +67,7 @@ public class ReviewController {
     })
     @DeleteMapping("/{publicId}")
     public ResponseEntity<DeleteReviewResponse> delete(
-            @Parameter(hidden = true) @AuthenticatedMember String memberPublicId,
+            @Parameter(hidden = true) String memberPublicId,
             @Parameter(description = "리뷰 publicId", example = "r1e2v3i4e5w6")
             @PathVariable String publicId) {
         deleteReviewUseCase.delete(publicId, memberPublicId);

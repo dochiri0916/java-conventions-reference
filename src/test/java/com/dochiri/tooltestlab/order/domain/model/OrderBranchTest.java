@@ -1,13 +1,17 @@
 package com.dochiri.tooltestlab.order.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.order.domain.event.OrderPlaced;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderLinesException;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
-import com.dochiri.tooltestlab.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,9 +23,11 @@ class OrderBranchTest {
 
     @BeforeEach
     void setUp() {
-        var line = new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("상품"),
-                new Quantity(1), Money.of(1000));
+        var line = new OrderLine(
+                new ProductId("p1"),
+                new ProductName("상품"),
+                new Quantity(1),
+                new Money(1000));
         var address = new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"),
                 new StreetAddress("서울시"), new ZipCode("12345"));
         pending = Order.create(new MemberId("m1"), OrderLines.from(List.of(line)), address);
@@ -172,13 +178,21 @@ class OrderBranchTest {
     @DisplayName("equals - 다른 인스턴스 같은 ID")
     void equalsDifferentInstanceSameId() {
         // given
-        var line = new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("상품"),
-                new Quantity(1), Money.of(1000));
+        var line = new OrderLine(
+                new ProductId("p1"),
+                new ProductName("상품"),
+                new Quantity(1),
+                new Money(1000));
         var address = new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"),
                 new StreetAddress("서울시"), new ZipCode("12345"));
-        var other = new Order(pending.id(), new MemberId("other"), OrderLines.from(List.of(line)),
-                OrderStatus.DELIVERED, address, Money.of(5000));
+        var other = new Order(
+                pending.id(),
+                new MemberId("other"),
+                OrderLines.from(List.of(line)),
+                OrderStatus.DELIVERED,
+                address,
+                new Money(5000)
+        );
 
         // when
         var result = pending.equals(other);
@@ -226,19 +240,25 @@ class OrderBranchTest {
     @DisplayName("OrderLines totalAmount 계산")
     void orderLinesTotalAmount() {
         // given
-        var line1 = new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("A"),
-                new Quantity(2), Money.of(1000));
-        var line2 = new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p2"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("B"),
-                new Quantity(3), Money.of(500));
+        var line1 = new OrderLine(
+                new ProductId("p1"),
+                new ProductName("A"),
+                new Quantity(2),
+                new Money(1000));
+
+        var line2 = new OrderLine(
+                new ProductId("p2"),
+                new ProductName("B"),
+                new Quantity(3),
+                new Money(500));
+
         var lines = OrderLines.from(List.of(line1, line2));
 
         // when
         var total = lines.totalAmount();
 
         // then
-        assertThat(total).isEqualTo(Money.of(3500));
+        assertThat(total).isEqualTo(new Money(3500));
         assertThat(lines.size()).isEqualTo(2);
     }
 
@@ -257,10 +277,15 @@ class OrderBranchTest {
     @DisplayName("OrderLines - null 요소가 포함되면 예외")
     void orderLinesNullElement() {
         // given
-        var list = new java.util.ArrayList<OrderLine>();
-        list.add(new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("A"),
-                new Quantity(1), Money.of(1000)));
+        var list = new ArrayList<OrderLine>();
+        list.add(
+                new OrderLine(
+                        new ProductId("p1"),
+                        new ProductName("A"),
+                        new Quantity(1),
+                        new Money(1000)
+                )
+        );
         list.add(null);
 
         // when & then
@@ -272,11 +297,16 @@ class OrderBranchTest {
     @DisplayName("OrderLines - 최대 개수 초과 예외")
     void orderLinesMaxExceeded() {
         // given
-        var list = new java.util.ArrayList<OrderLine>();
+        var list = new ArrayList<OrderLine>();
         for (int i = 0; i < 101; i++) {
-            list.add(new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p" + i),
-                    new com.dochiri.tooltestlab.product.domain.model.ProductName("상품"),
-                    new Quantity(1), Money.of(1000)));
+            list.add(
+                    new OrderLine(
+                            new ProductId("p" + i),
+                            new ProductName("상품"),
+                            new Quantity(1),
+                            new Money(1000)
+                    )
+            );
         }
 
         // when & then
@@ -288,12 +318,16 @@ class OrderBranchTest {
     @DisplayName("OrderLines - containsProduct 정상")
     void orderLinesContainsProduct() {
         // given
-        var line = new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("A"),
-                new Quantity(1), Money.of(1000));
+        var line = new OrderLine(
+                new ProductId("p1"),
+                new ProductName("A"),
+                new Quantity(1),
+                new Money(1000)
+        );
+
         var lines = OrderLines.from(List.of(line));
-        var existingProductId = new com.dochiri.tooltestlab.product.domain.model.ProductId("p1");
-        var nonExistingProductId = new com.dochiri.tooltestlab.product.domain.model.ProductId("p2");
+        var existingProductId = new ProductId("p1");
+        var nonExistingProductId = new ProductId("p2");
 
         // when
         var containsExisting = lines.containsProduct(existingProductId);
@@ -308,9 +342,13 @@ class OrderBranchTest {
     @DisplayName("OrderLines - containsProduct에 null 전달 시 예외")
     void orderLinesContainsProductNull() {
         // given
-        var line = new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("A"),
-                new Quantity(1), Money.of(1000));
+        var line = new OrderLine(
+                new ProductId("p1"),
+                new ProductName("A"),
+                new Quantity(1),
+                new Money(1000)
+        );
+
         var lines = OrderLines.from(List.of(line));
 
         // when & then
@@ -333,11 +371,16 @@ class OrderBranchTest {
     @DisplayName("OrderPlacedItems - null 요소가 포함되면 예외")
     void orderPlacedItemsNullElement() {
         // given
-        var list = new java.util.ArrayList<com.dochiri.tooltestlab.order.domain.event.OrderPlaced.ItemDetail>();
-        list.add(new com.dochiri.tooltestlab.order.domain.event.OrderPlaced.ItemDetail(
-                new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("상품"),
-                new Quantity(1), Money.of(1000)));
+        var list = new ArrayList<OrderPlaced.ItemDetail>();
+        list.add(
+                new OrderPlaced.ItemDetail(
+                        new ProductId("p1"),
+                        new ProductName("상품"),
+                        new Quantity(1),
+                        new Money(1000)
+                )
+        );
+
         list.add(null);
 
         // when & then
@@ -362,7 +405,7 @@ class OrderBranchTest {
         // given
         var list = new java.util.ArrayList<com.dochiri.tooltestlab.order.domain.event.OrderCancelled.ItemDetail>();
         list.add(new com.dochiri.tooltestlab.order.domain.event.OrderCancelled.ItemDetail(
-                new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
+                new ProductId("p1"),
                 new Quantity(1)));
         list.add(null);
 

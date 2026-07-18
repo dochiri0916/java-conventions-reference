@@ -6,11 +6,10 @@ import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.domain.model.Quantity;
-import com.dochiri.tooltestlab.product.application.exception.ProductNotFoundException;
-import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.product.domain.model.Money;
-import com.dochiri.tooltestlab.product.domain.model.Product;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +34,7 @@ public final class AddToCartService implements AddToCartUseCase {
                 .orElseGet(() -> Cart.create(memberId));
 
         cart = cart.addItem(product.id(), product.name(),
-                new Quantity(command.quantity()), Money.of(product.price().amount()));
+                new Quantity(command.quantity()), new Money(product.price().amount()));
         cartRepositoryPort.save(cart);
     }
 }

@@ -1,20 +1,12 @@
 package com.dochiri.tooltestlab.member.adapter.in.web;
 
-import com.dochiri.tooltestlab.global.web.ApiAuthenticationInterceptor;
-import com.dochiri.tooltestlab.global.web.AuthenticatedMember;
-import com.dochiri.tooltestlab.global.web.PublicApi;
 import com.dochiri.tooltestlab.member.adapter.in.web.request.LoginMemberRequest;
 import com.dochiri.tooltestlab.member.adapter.in.web.request.RegisterMemberRequest;
 import com.dochiri.tooltestlab.member.adapter.in.web.response.GetMyProfileResponse;
 import com.dochiri.tooltestlab.member.adapter.in.web.response.LoginMemberResponse;
 import com.dochiri.tooltestlab.member.adapter.in.web.response.LogoutMemberResponse;
 import com.dochiri.tooltestlab.member.adapter.in.web.response.RegisterMemberResponse;
-import com.dochiri.tooltestlab.member.application.port.in.LoginMemberCommand;
-import com.dochiri.tooltestlab.member.application.port.in.LoginMemberResult;
-import com.dochiri.tooltestlab.member.application.port.in.LoginMemberUseCase;
-import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberCommand;
-import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberResult;
-import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberUseCase;
+import com.dochiri.tooltestlab.member.application.port.in.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,11 +16,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "회원", description = "회원 가입, 로그인, 로그아웃 API")
 @RestController
@@ -46,7 +34,6 @@ public class MemberController {
             @ApiResponse(responseCode = "409", description = "이미 등록된 이메일")
     })
     @PostMapping("/register")
-    @PublicApi
     public ResponseEntity<RegisterMemberResponse> register(@Valid @RequestBody RegisterMemberRequest request) {
         final RegisterMemberCommand command =
                 new RegisterMemberCommand(request.email(), request.password(), request.name());
@@ -61,7 +48,6 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호 불일치")
     })
     @PostMapping("/login")
-    @PublicApi
     public ResponseEntity<LoginMemberResponse> login(
             @Valid @RequestBody LoginMemberRequest request, final HttpSession session) {
         final LoginMemberCommand command = new LoginMemberCommand(request.email(), request.password());
@@ -87,7 +73,7 @@ public class MemberController {
     })
     @GetMapping("/me")
     public ResponseEntity<GetMyProfileResponse> me(
-            @Parameter(hidden = true) @AuthenticatedMember String memberPublicId) {
+            @Parameter(hidden = true) String memberPublicId) {
         return ResponseEntity.ok(new GetMyProfileResponse(memberPublicId));
     }
 }

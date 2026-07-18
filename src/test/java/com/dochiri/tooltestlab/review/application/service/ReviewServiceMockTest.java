@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.review.application.service;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.review.application.exception.DuplicateReviewException;
 import com.dochiri.tooltestlab.review.application.exception.NotReviewOwnerException;
 import com.dochiri.tooltestlab.review.application.exception.ReviewNotFoundException;

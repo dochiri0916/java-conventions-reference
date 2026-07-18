@@ -2,8 +2,8 @@ package com.dochiri.tooltestlab.domain;
 
 import com.dochiri.tooltestlab.cart.application.port.in.AddToCartCommand;
 import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartCommand;
-import com.dochiri.tooltestlab.category.application.port.in.RegisterCategoryCommand;
-import com.dochiri.tooltestlab.product.application.port.in.RegisterProductCommand;
+import com.dochiri.tooltestlab.catalog.category.application.port.in.command.RegisterCategoryCommand;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.command.RegisterProductCommand;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -100,7 +100,7 @@ class CommandValidationTest {
         List<String> categoryIds = List.of();
 
         // when & then
-        assertThatThrownBy(() -> new RegisterProductCommand(null, description, price, stock, categoryIds))
+        assertThatThrownBy(() -> new RegisterProductCommand(null, description, 1000, stock, categoryIds))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -115,7 +115,7 @@ class CommandValidationTest {
         List<String> categoryIds = List.of();
 
         // when & then
-        assertThatThrownBy(() -> new RegisterProductCommand(blankName, description, price, stock, categoryIds))
+        assertThatThrownBy(() -> new RegisterProductCommand(blankName, description, 1000, stock, categoryIds))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -130,7 +130,7 @@ class CommandValidationTest {
         List<String> categoryIds = List.of();
 
         // when & then
-        assertThatThrownBy(() -> new RegisterProductCommand(name, description, negativePrice, stock, categoryIds))
+        assertThatThrownBy(() -> new RegisterProductCommand(name, description, -1, stock, categoryIds))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -145,7 +145,7 @@ class CommandValidationTest {
         List<String> categoryIds = List.of();
 
         // when & then
-        assertThatThrownBy(() -> new RegisterProductCommand(name, description, price, negativeStock, categoryIds))
+        assertThatThrownBy(() -> new RegisterProductCommand(name, description, 1000, negativeStock, categoryIds))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -159,7 +159,7 @@ class CommandValidationTest {
         var stock = 10;
 
         // when
-        var cmd = new RegisterProductCommand(name, description, price, stock, null);
+        var cmd = new RegisterProductCommand(name, description, 1000, stock, null);
 
         // then
         assertThat(cmd.categoryIds()).isEmpty();

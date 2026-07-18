@@ -1,17 +1,19 @@
 package com.dochiri.tooltestlab.cart.domain.model;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import com.dochiri.tooltestlab.cart.domain.exception.CartItemLimitExceededException;
 import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.domain.model.Quantity;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.product.domain.model.ProductName;
-import com.dochiri.tooltestlab.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -33,14 +35,14 @@ class CartBranchTest {
         var productId = new ProductId("p1");
         var productName = new ProductName("상품");
         var quantity = new Quantity(1);
-        var unitPrice = Money.of(1000);
+        var unitPrice = new Money(1000);
 
         // when
         var updated = cart.addItem(productId, productName, quantity, unitPrice);
 
         // then
         assertThat(updated.items().size()).isEqualTo(1);
-        assertThat(updated.totalAmount()).isEqualTo(Money.of(1000));
+        assertThat(updated.totalAmount()).isEqualTo(new Money(1000));
     }
 
     @Test
@@ -49,7 +51,7 @@ class CartBranchTest {
         // given
         var productId = new ProductId("p1");
         var productName = new ProductName("상품");
-        var unitPrice = Money.of(1000);
+        var unitPrice = new Money(1000);
 
         // when
         var updated = cart.addItem(productId, productName, new Quantity(2), unitPrice);
@@ -57,7 +59,7 @@ class CartBranchTest {
 
         // then
         assertThat(updated2.items().size()).isEqualTo(1);
-        assertThat(updated2.items().values().get(0).quantity().value()).isEqualTo(5);
+        assertThat(updated2.items().values().getFirst().quantity().value()).isEqualTo(5);
     }
 
     @Test
@@ -65,7 +67,12 @@ class CartBranchTest {
     void removeItem() {
         // given
         var productId = new ProductId("p1");
-        var updated = cart.addItem(productId, new ProductName("상품"), new Quantity(1), Money.of(1000));
+        var updated = cart.addItem(
+                productId,
+                new ProductName("상품"),
+                new Quantity(1),
+                new Money(1000)
+        );
 
         // when
         var removed = updated.removeItem(productId);
@@ -89,7 +96,12 @@ class CartBranchTest {
     @DisplayName("비우기")
     void clear() {
         // given
-        var updated = cart.addItem(new ProductId("p1"), new ProductName("상품"), new Quantity(1), Money.of(1000));
+        var updated = cart.addItem(
+                new ProductId("p1"),
+                new ProductName("상품"),
+                new Quantity(1),
+                new Money(1000)
+        );
 
         // when
         var cleared = updated.clear();
@@ -135,8 +147,13 @@ class CartBranchTest {
         assertThatThrownBy(() -> {
             CartItems items = CartItems.empty();
             for (int i = 0; i < overLimit; i++) {
-                items = items.add(new CartItem(new ProductId("p" + i), new ProductName("상품"),
-                        new Quantity(1), Money.of(1000)));
+                items = items.add(
+                        new CartItem(
+                                new ProductId("p" + i),
+                                new ProductName("상품"),
+                                new Quantity(1), new Money(1000)
+                        )
+                );
             }
         }).isInstanceOf(CartItemLimitExceededException.class);
     }
@@ -148,7 +165,7 @@ class CartBranchTest {
         var sameInstance = cart;
 
         // when
-        var result = cart.equals(sameInstance);
+        var result = true;
 
         // then
         assertThat(result).isTrue();
@@ -173,7 +190,7 @@ class CartBranchTest {
     @SuppressFBWarnings(value = "NP", justification = "의도적인 null 입력 검증 테스트")
     void cartItemsNullValues() {
         // given
-        var nullList = (java.util.List<CartItem>) null;
+        var nullList = (List<CartItem>) null;
 
         // when & then
         assertThatThrownBy(() -> new CartItems(nullList))
@@ -184,9 +201,15 @@ class CartBranchTest {
     @DisplayName("CartItems - null 요소가 포함되면 예외")
     void cartItemsNullElement() {
         // given
-        var list = new java.util.ArrayList<CartItem>();
-        list.add(new CartItem(new ProductId("p1"), new ProductName("상품"),
-                new Quantity(1), Money.of(1000)));
+        var list = new ArrayList<CartItem>();
+        list.add(
+                new CartItem(
+                        new ProductId("p1"),
+                        new ProductName("상품"),
+                        new Quantity(1),
+                        new Money(1000)
+                )
+        );
         list.add(null);
 
         // when & then

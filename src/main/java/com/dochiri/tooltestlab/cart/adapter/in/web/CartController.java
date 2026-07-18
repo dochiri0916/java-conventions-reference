@@ -4,13 +4,7 @@ import com.dochiri.tooltestlab.cart.adapter.in.web.request.AddToCartRequest;
 import com.dochiri.tooltestlab.cart.adapter.in.web.response.AddToCartResponse;
 import com.dochiri.tooltestlab.cart.adapter.in.web.response.GetCartResponse;
 import com.dochiri.tooltestlab.cart.adapter.in.web.response.RemoveFromCartResponse;
-import com.dochiri.tooltestlab.cart.application.port.in.AddToCartCommand;
-import com.dochiri.tooltestlab.cart.application.port.in.AddToCartUseCase;
-import com.dochiri.tooltestlab.cart.application.port.in.GetCartResult;
-import com.dochiri.tooltestlab.cart.application.port.in.GetCartUseCase;
-import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartCommand;
-import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartUseCase;
-import com.dochiri.tooltestlab.global.web.AuthenticatedMember;
+import com.dochiri.tooltestlab.cart.application.port.in.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,13 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "장바구니", description = "장바구니 조회, 추가, 삭제 API")
 @RestController
@@ -44,7 +32,7 @@ public class CartController {
             @ApiResponse(responseCode = "404", description = "장바구니가 존재하지 않음")
     })
     @GetMapping
-    public ResponseEntity<GetCartResponse> get(@Parameter(hidden = true) @AuthenticatedMember String memberPublicId) {
+    public ResponseEntity<GetCartResponse> get(@Parameter(hidden = true) String memberPublicId) {
         final GetCartResult result = getCartUseCase.getCart(memberPublicId);
         final var items = result.items().stream()
                 .map(i -> new GetCartResponse.Item(
@@ -63,7 +51,7 @@ public class CartController {
     })
     @PostMapping("/items")
     public ResponseEntity<AddToCartResponse> add(
-            @Parameter(hidden = true) @AuthenticatedMember String memberPublicId,
+            @Parameter(hidden = true) String memberPublicId,
             @Valid @RequestBody AddToCartRequest request) {
         addToCartUseCase.add(new AddToCartCommand(
                 memberPublicId, request.productPublicId(), request.quantity()));
@@ -79,7 +67,7 @@ public class CartController {
     })
     @DeleteMapping("/items/{productPublicId}")
     public ResponseEntity<RemoveFromCartResponse> remove(
-            @Parameter(hidden = true) @AuthenticatedMember String memberPublicId,
+            @Parameter(hidden = true) String memberPublicId,
             @Parameter(description = "상품 publicId", example = "p1r2o3d4u5c6")
             @PathVariable String productPublicId) {
         removeFromCartUseCase.remove(new RemoveFromCartCommand(memberPublicId, productPublicId));

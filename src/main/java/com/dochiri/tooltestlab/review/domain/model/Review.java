@@ -2,8 +2,7 @@ package com.dochiri.tooltestlab.review.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.exception.InvalidMemberIdException;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
-import com.dochiri.tooltestlab.product.domain.exception.InvalidProductIdException;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.review.domain.exception.InvalidRatingException;
 import com.dochiri.tooltestlab.review.domain.exception.InvalidReviewContentException;
 import com.dochiri.tooltestlab.review.domain.exception.InvalidReviewIdException;

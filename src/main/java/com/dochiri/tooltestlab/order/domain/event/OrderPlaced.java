@@ -7,9 +7,9 @@ import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderLinesException
 import com.dochiri.tooltestlab.order.domain.model.OrderId;
 import com.dochiri.tooltestlab.order.domain.model.OrderPlacedItems;
 import com.dochiri.tooltestlab.order.domain.model.Quantity;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.product.domain.model.ProductName;
-import com.dochiri.tooltestlab.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 
 public record OrderPlaced(
         OrderId orderId,

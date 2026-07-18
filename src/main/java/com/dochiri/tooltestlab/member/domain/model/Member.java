@@ -1,10 +1,6 @@
 package com.dochiri.tooltestlab.member.domain.model;
 
-import com.dochiri.tooltestlab.member.domain.exception.InvalidEmailException;
-import com.dochiri.tooltestlab.member.domain.exception.InvalidMemberException;
-import com.dochiri.tooltestlab.member.domain.exception.InvalidMemberIdException;
-import com.dochiri.tooltestlab.member.domain.exception.InvalidMemberNameException;
-import com.dochiri.tooltestlab.member.domain.exception.InvalidPasswordException;
+import com.dochiri.tooltestlab.member.domain.exception.*;
 
 public record Member(
         MemberId id,

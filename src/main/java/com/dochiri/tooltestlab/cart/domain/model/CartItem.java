@@ -3,12 +3,9 @@ package com.dochiri.tooltestlab.cart.domain.model;
 import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidQuantityException;
 import com.dochiri.tooltestlab.order.domain.model.Quantity;
-import com.dochiri.tooltestlab.product.domain.exception.InvalidMoneyException;
-import com.dochiri.tooltestlab.product.domain.exception.InvalidProductIdException;
-import com.dochiri.tooltestlab.product.domain.exception.InvalidProductNameException;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.product.domain.model.ProductName;
-import com.dochiri.tooltestlab.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 
 public record CartItem(ProductId productId, ProductName productName, Quantity quantity, Money unitPrice) {
 

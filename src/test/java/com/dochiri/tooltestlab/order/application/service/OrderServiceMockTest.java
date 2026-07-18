@@ -11,24 +11,12 @@ import com.dochiri.tooltestlab.order.application.exception.OrderNotFoundExceptio
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
 import com.dochiri.tooltestlab.order.application.port.out.OrderEventPort;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
-import com.dochiri.tooltestlab.order.domain.model.Order;
-import com.dochiri.tooltestlab.order.domain.model.OrderLine;
-import com.dochiri.tooltestlab.order.domain.model.OrderLines;
-import com.dochiri.tooltestlab.order.domain.model.Phone;
-import com.dochiri.tooltestlab.order.domain.model.Quantity;
-import com.dochiri.tooltestlab.order.domain.model.RecipientName;
-import com.dochiri.tooltestlab.order.domain.model.ShippingAddress;
-import com.dochiri.tooltestlab.order.domain.model.StreetAddress;
-import com.dochiri.tooltestlab.order.domain.model.ZipCode;
-import com.dochiri.tooltestlab.product.application.exception.ProductNotFoundException;
-import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.product.domain.exception.InsufficientStockException;
-import com.dochiri.tooltestlab.product.domain.model.Money;
-import com.dochiri.tooltestlab.product.domain.model.Product;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.product.domain.model.ProductName;
-import com.dochiri.tooltestlab.product.domain.model.ProductStatus;
-import com.dochiri.tooltestlab.product.domain.model.Stock;
+import com.dochiri.tooltestlab.order.domain.model.*;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -73,9 +61,9 @@ class OrderServiceMockTest {
     }
 
     private Order createTestOrder(String memberId) {
-        var line = new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("상품"),
-                new Quantity(1), Money.of(1000));
+        var line = new OrderLine(new ProductId("p1"),
+                new ProductName("상품"),
+                new Quantity(1), new Money(1000));
         var address = new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"),
                 new StreetAddress("서울시"), new ZipCode("12345"));
         return Order.create(new MemberId(memberId), OrderLines.from(List.of(line)), address);
@@ -84,7 +72,7 @@ class OrderServiceMockTest {
     private Cart createCartWithItem(String memberId) {
         var cart = Cart.create(new MemberId(memberId));
         var item = new CartItem(new ProductId("p1"), new ProductName("상품"),
-                new Quantity(1), Money.of(1000));
+                new Quantity(1), new Money(1000));
         return new Cart(cart.id(), cart.memberId(), CartItems.from(List.of(item)));
     }
 
@@ -187,9 +175,12 @@ class OrderServiceMockTest {
         // given
         var cmd = createPlaceOrderCommand();
         var cart = createCartWithItem("m1");
-        var lowStockProduct = new Product(new ProductId("p1"), new ProductName("상품"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductDescription("설명"),
-                Money.of(1000), new Stock(0), ProductStatus.SOLD_OUT);
+        var lowStockProduct = Product.create(
+                "상품",
+                "설명",
+                1000,
+                0
+        );
         when(cartRepositoryPort.findByMemberId("m1")).thenReturn(Optional.of(cart));
         when(productRepositoryPort.findByPublicId("p1")).thenReturn(Optional.of(lowStockProduct));
 

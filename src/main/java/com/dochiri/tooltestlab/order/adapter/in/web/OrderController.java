@@ -1,25 +1,13 @@
 package com.dochiri.tooltestlab.order.adapter.in.web;
 
-import com.dochiri.tooltestlab.global.web.AuthenticatedMember;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.adapter.in.web.request.PlaceOrderRequest;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.CancelOrderResponse;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.GetOrderResponse;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.OrderSummaryResponse;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.PlaceOrderResponse;
-import com.dochiri.tooltestlab.order.application.port.in.CancelOrderUseCase;
-import com.dochiri.tooltestlab.order.application.port.in.GetOrderResult;
-import com.dochiri.tooltestlab.order.application.port.in.GetOrderUseCase;
-import com.dochiri.tooltestlab.order.application.port.in.ListOrdersResult;
-import com.dochiri.tooltestlab.order.application.port.in.ListOrdersUseCase;
-import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
-import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderResult;
-import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderUseCase;
-import com.dochiri.tooltestlab.order.domain.model.Phone;
-import com.dochiri.tooltestlab.order.domain.model.RecipientName;
-import com.dochiri.tooltestlab.order.domain.model.ShippingAddress;
-import com.dochiri.tooltestlab.order.domain.model.StreetAddress;
-import com.dochiri.tooltestlab.order.domain.model.ZipCode;
+import com.dochiri.tooltestlab.order.application.port.in.*;
+import com.dochiri.tooltestlab.order.domain.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,12 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -57,7 +40,7 @@ public class OrderController {
     })
     @PostMapping
     public ResponseEntity<PlaceOrderResponse> place(
-            @Parameter(hidden = true) @AuthenticatedMember String memberPublicId,
+            @Parameter(hidden = true) String memberPublicId,
             @Valid @RequestBody PlaceOrderRequest request) {
         final ShippingAddress shippingAddress = new ShippingAddress(
                 new RecipientName(request.recipientName()), new Phone(request.phone()),
@@ -81,7 +64,7 @@ public class OrderController {
     })
     @GetMapping
     public ResponseEntity<List<OrderSummaryResponse>> list(
-            @Parameter(hidden = true) @AuthenticatedMember String memberPublicId) {
+            @Parameter(hidden = true) String memberPublicId) {
         final ListOrdersResult result = listOrdersUseCase.listByMember(memberPublicId);
         final var body = result.orders().stream()
                 .map(o -> new OrderSummaryResponse(o.publicId(), o.status(), o.totalAmount(), o.itemCount()))
@@ -98,7 +81,7 @@ public class OrderController {
     })
     @GetMapping("/{publicId}")
     public ResponseEntity<GetOrderResponse> get(
-            @Parameter(hidden = true) @AuthenticatedMember String memberPublicId,
+            @Parameter(hidden = true) String memberPublicId,
             @Parameter(description = "주문 publicId", example = "a1b2c3d4e5f6")
             @PathVariable String publicId) {
         final GetOrderResult result = getOrderUseCase.getOrder(memberPublicId, publicId);
@@ -128,7 +111,7 @@ public class OrderController {
     })
     @PostMapping("/{publicId}/cancel")
     public ResponseEntity<CancelOrderResponse> cancel(
-            @Parameter(hidden = true) @AuthenticatedMember String memberPublicId,
+            @Parameter(hidden = true) String memberPublicId,
             @Parameter(description = "주문 publicId", example = "a1b2c3d4e5f6")
             @PathVariable String publicId) {
         cancelOrderUseCase.cancel(memberPublicId, publicId);

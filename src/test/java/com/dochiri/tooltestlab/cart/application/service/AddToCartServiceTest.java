@@ -2,8 +2,7 @@ package com.dochiri.tooltestlab.cart.application.service;
 
 import com.dochiri.tooltestlab.cart.application.port.in.AddToCartCommand;
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
-import com.dochiri.tooltestlab.product.application.exception.ProductNotFoundException;
-import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

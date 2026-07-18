@@ -2,9 +2,9 @@ package com.dochiri.tooltestlab.cart.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.domain.model.Quantity;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.product.domain.model.ProductName;
-import com.dochiri.tooltestlab.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -35,14 +35,14 @@ class CartTest {
         var productId = new ProductId("product1");
         var productName = new ProductName("노트북");
         var quantity = new Quantity(2);
-        var unitPrice = Money.of(1_000_000L);
+        var unitPrice = new Money(1_000_000L);
 
         // when
         final Cart updated = cart.addItem(productId, productName, quantity, unitPrice);
 
         // then
         assertThat(updated.items().values()).hasSize(1);
-        assertThat(updated.totalAmount()).isEqualTo(Money.of(2_000_000L));
+        assertThat(updated.totalAmount()).isEqualTo(new Money(2_000_000L));
     }
 
     @Test
@@ -52,7 +52,7 @@ class CartTest {
         final Cart cart = Cart.create(new MemberId("member1"));
         var productId = new ProductId("product1");
         var productName = new ProductName("노트북");
-        var unitPrice = Money.of(1_000_000L);
+        var unitPrice = new Money(1_000_000L);
 
         // when
         final Cart updated = cart.addItem(productId, productName, new Quantity(2), unitPrice);
@@ -60,8 +60,8 @@ class CartTest {
 
         // then
         assertThat(updated2.items().values()).hasSize(1);
-        assertThat(updated2.items().values().get(0).quantity()).isEqualTo(new Quantity(5));
-        assertThat(updated2.totalAmount()).isEqualTo(Money.of(5_000_000L));
+        assertThat(updated2.items().values().getFirst().quantity()).isEqualTo(new Quantity(5));
+        assertThat(updated2.totalAmount()).isEqualTo(new Money(5_000_000L));
     }
 
     @Test
@@ -72,7 +72,7 @@ class CartTest {
         var productId = new ProductId("product1");
         var productName = new ProductName("노트북");
         var quantity = new Quantity(2);
-        var unitPrice = Money.of(1_000_000L);
+        var unitPrice = new Money(1_000_000L);
         final Cart updated = cart.addItem(productId, productName, quantity, unitPrice);
 
         // when
@@ -90,7 +90,7 @@ class CartTest {
         var productId = new ProductId("product1");
         var productName = new ProductName("노트북");
         var quantity = new Quantity(2);
-        var unitPrice = Money.of(1_000_000L);
+        var unitPrice = new Money(1_000_000L);
         final Cart updated = cart.addItem(productId, productName, quantity, unitPrice);
 
         // when

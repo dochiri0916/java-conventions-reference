@@ -9,15 +9,13 @@ import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.out.OrderEventPort;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
 import com.dochiri.tooltestlab.order.domain.event.OrderPlaced;
-import com.dochiri.tooltestlab.order.domain.model.OrderPlacedItems;
 import com.dochiri.tooltestlab.order.domain.model.Order;
 import com.dochiri.tooltestlab.order.domain.model.OrderLine;
 import com.dochiri.tooltestlab.order.domain.model.OrderLines;
-import com.dochiri.tooltestlab.product.application.exception.ProductNotFoundException;
-import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.product.domain.exception.InsufficientStockException;
-import com.dochiri.tooltestlab.product.domain.model.Product;
-import com.dochiri.tooltestlab.product.domain.model.Money;
+import com.dochiri.tooltestlab.order.domain.model.OrderPlacedItems;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +53,7 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
 
             orderLines.add(new OrderLine(
                     cartItem.productId(), cartItem.productName(),
-                    cartItem.quantity(), Money.of(cartItem.unitPrice().amount())));
+                    cartItem.quantity(), new Money(cartItem.unitPrice().amount())));
         }
 
         Order order = Order.create(command.memberId(), OrderLines.from(orderLines), command.shippingAddress());

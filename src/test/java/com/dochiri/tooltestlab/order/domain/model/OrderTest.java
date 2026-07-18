@@ -2,9 +2,9 @@ package com.dochiri.tooltestlab.order.domain.model;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.product.domain.model.ProductName;
-import com.dochiri.tooltestlab.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ class OrderTest {
     void createOrder() {
         // given
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
-                new Quantity(2), Money.of(1_000_000L));
+                new Quantity(2), new Money(1_000_000L));
         final ShippingAddress address = new ShippingAddress(
                 new RecipientName("홍길동"),
                 new Phone("01012345678"),
@@ -34,7 +34,7 @@ class OrderTest {
         assertThat(order.id().value()).isNotBlank();
         assertThat(order.memberId()).isEqualTo(new MemberId("member1"));
         assertThat(order.items().size()).isEqualTo(1);
-        assertThat(order.totalAmount()).isEqualTo(Money.of(2_000_000L));
+        assertThat(order.totalAmount()).isEqualTo(new Money(2_000_000L));
         assertThat(order.status()).isEqualTo(OrderStatus.PENDING);
     }
 
@@ -43,7 +43,7 @@ class OrderTest {
     void cancelOrder() {
         // given
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
-                new Quantity(2), Money.of(1_000_000L));
+                new Quantity(2), new Money(1_000_000L));
         final ShippingAddress address = new ShippingAddress(
                 new RecipientName("홍길동"),
                 new Phone("01012345678"),
@@ -63,7 +63,7 @@ class OrderTest {
     void cannotCancelTwice() {
         // given
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
-                new Quantity(2), Money.of(1_000_000L));
+                new Quantity(2), new Money(1_000_000L));
         final ShippingAddress address = new ShippingAddress(
                 new RecipientName("홍길동"),
                 new Phone("01012345678"),
@@ -82,7 +82,7 @@ class OrderTest {
     void cannotCancelDelivered() {
         // given
         final OrderLine line = new OrderLine(new ProductId("product1"), new ProductName("노트북"),
-                new Quantity(2), Money.of(1_000_000L));
+                new Quantity(2), new Money(1_000_000L));
         final ShippingAddress address = new ShippingAddress(
                 new RecipientName("홍길동"),
                 new Phone("01012345678"),

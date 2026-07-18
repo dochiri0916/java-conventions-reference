@@ -1,25 +1,27 @@
 package com.dochiri.tooltestlab.domain;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
 import com.dochiri.tooltestlab.cart.domain.model.CartItem;
 import com.dochiri.tooltestlab.cart.domain.model.CartItems;
-import com.dochiri.tooltestlab.category.domain.model.Category;
-import com.dochiri.tooltestlab.category.domain.model.CategoryName;
+import com.dochiri.tooltestlab.catalog.category.domain.exception.InvalidCategoryIdException;
+import com.dochiri.tooltestlab.catalog.category.domain.exception.InvalidCategoryNameException;
+import com.dochiri.tooltestlab.catalog.category.domain.model.Category;
+import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
+import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryName;
+import com.dochiri.tooltestlab.catalog.product.domain.model.*;
 import com.dochiri.tooltestlab.member.domain.model.Email;
+import com.dochiri.tooltestlab.member.domain.model.EncodedPassword;
 import com.dochiri.tooltestlab.member.domain.model.Member;
 import com.dochiri.tooltestlab.member.domain.model.MemberName;
-import com.dochiri.tooltestlab.member.domain.model.EncodedPassword;
 import com.dochiri.tooltestlab.order.domain.event.OrderCancelled;
 import com.dochiri.tooltestlab.order.domain.event.OrderPlaced;
 import com.dochiri.tooltestlab.order.domain.model.OrderLine;
+import com.dochiri.tooltestlab.order.domain.model.OrderLines;
 import com.dochiri.tooltestlab.order.domain.model.Quantity;
 import com.dochiri.tooltestlab.order.domain.model.ShippingAddress;
-import com.dochiri.tooltestlab.product.domain.model.Product;
-import com.dochiri.tooltestlab.product.domain.model.ProductDescription;
 import com.dochiri.tooltestlab.review.domain.model.Rating;
 import com.dochiri.tooltestlab.review.domain.model.Review;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -35,12 +37,12 @@ class AggregateNullValidationTest {
     void categoryNullFields() {
         // given
         var name = new CategoryName("전자기기");
-        var id = com.dochiri.tooltestlab.category.domain.model.CategoryId.generate();
+        var id = CategoryId.generate();
         // when & then
         assertThatThrownBy(() -> new Category(null, name))
-                .isInstanceOf(com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryIdException.class);
+                .isInstanceOf(InvalidCategoryIdException.class);
         assertThatThrownBy(() -> new Category(id, null))
-                .isInstanceOf(com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryNameException.class);
+                .isInstanceOf(InvalidCategoryNameException.class);
     }
 
     @Test
@@ -69,25 +71,20 @@ class AggregateNullValidationTest {
     @DisplayName("Product null 필드 검증")
     void productNullFields() {
         // given
-        var id = com.dochiri.tooltestlab.product.domain.model.ProductId.generate();
-        var name = new com.dochiri.tooltestlab.product.domain.model.ProductName("상품");
-        var desc = new ProductDescription("설명");
-        var price = com.dochiri.tooltestlab.product.domain.model.Money.of(1000);
-        var stock = com.dochiri.tooltestlab.product.domain.model.Stock.from(10);
-        var status = com.dochiri.tooltestlab.product.domain.model.ProductStatus.ON_SALE;
+        var name = "상품";
+        var desc = "설명";
+        var price = 1000;
+        var stock = 10;
+
         // when & then
-        assertThatThrownBy(() -> new Product(null, name, desc, price, stock, status))
-                .isInstanceOf(com.dochiri.tooltestlab.product.domain.exception.InvalidProductIdException.class);
-        assertThatThrownBy(() -> new Product(id, null, desc, price, stock, status))
-                .isInstanceOf(com.dochiri.tooltestlab.product.domain.exception.InvalidProductNameException.class);
-        assertThatThrownBy(() -> new Product(id, name, null, price, stock, status))
-                .isInstanceOf(com.dochiri.tooltestlab.product.domain.exception.InvalidProductException.class);
-        assertThatThrownBy(() -> new Product(id, name, desc, null, stock, status))
-                .isInstanceOf(com.dochiri.tooltestlab.product.domain.exception.InvalidMoneyException.class);
-        assertThatThrownBy(() -> new Product(id, name, desc, price, null, status))
-                .isInstanceOf(com.dochiri.tooltestlab.product.domain.exception.InvalidStockException.class);
-        assertThatThrownBy(() -> new Product(id, name, desc, price, stock, null))
-                .isInstanceOf(com.dochiri.tooltestlab.product.domain.exception.InvalidProductException.class);
+        assertThatThrownBy(() -> Product.create(null, desc, price, stock))
+                .isInstanceOf(InvalidProductNameException.class);
+        assertThatThrownBy(() -> Product.create(name, null, price, stock))
+                .isInstanceOf(InvalidProductDescriptionException.class);
+        assertThatThrownBy(() -> Product.create(name, desc, -1, stock))
+                .isInstanceOf(InvalidMoneyException.class);
+        assertThatThrownBy(() -> Product.create(name, desc, price, -1))
+                .isInstanceOf(InvalidStockException.class);
     }
 
     @Test
@@ -96,7 +93,7 @@ class AggregateNullValidationTest {
         // given
         var id = com.dochiri.tooltestlab.review.domain.model.ReviewId.generate();
         var memberId = new com.dochiri.tooltestlab.member.domain.model.MemberId("m1");
-        var productId = new com.dochiri.tooltestlab.product.domain.model.ProductId("p1");
+        var productId = new ProductId("p1");
         var rating = new Rating(5);
         var content = new com.dochiri.tooltestlab.review.domain.model.ReviewContent("좋아요");
         // when & then
@@ -155,10 +152,10 @@ class AggregateNullValidationTest {
     @DisplayName("OrderLine null 필드 검증")
     void orderLineNullFields() {
         // given
-        var productId = new com.dochiri.tooltestlab.product.domain.model.ProductId("p1");
-        var productName = new com.dochiri.tooltestlab.product.domain.model.ProductName("상품");
+        var productId = new ProductId("p1");
+        var productName = new ProductName("상품");
         var quantity = new Quantity(1);
-        var unitPrice = com.dochiri.tooltestlab.product.domain.model.Money.of(1000);
+        var unitPrice = new Money(1000);
         // when & then
         assertThatThrownBy(() -> new OrderLine(null, productName, quantity, unitPrice))
                 .isInstanceOf(com.dochiri.tooltestlab.product.domain.exception.InvalidProductIdException.class);
@@ -238,10 +235,10 @@ class AggregateNullValidationTest {
     @DisplayName("CartItem null 필드 검증")
     void cartItemNullFields() {
         // given
-        var productId = new com.dochiri.tooltestlab.product.domain.model.ProductId("p1");
-        var productName = new com.dochiri.tooltestlab.product.domain.model.ProductName("상품");
+        var productId = new ProductId("p1");
+        var productName = new ProductName("상품");
         var quantity = new Quantity(1);
-        var unitPrice = com.dochiri.tooltestlab.product.domain.model.Money.of(1000);
+        var unitPrice = new Money(1000);
         // when & then
         assertThatThrownBy(() -> new CartItem(null, productName, quantity, unitPrice))
                 .isInstanceOf(com.dochiri.tooltestlab.product.domain.exception.InvalidProductIdException.class);
@@ -258,10 +255,10 @@ class AggregateNullValidationTest {
     void cartAddItemNullFields() {
         // given
         var cart = Cart.create(new com.dochiri.tooltestlab.member.domain.model.MemberId("m1"));
-        var productId = new com.dochiri.tooltestlab.product.domain.model.ProductId("p1");
-        var productName = new com.dochiri.tooltestlab.product.domain.model.ProductName("상품");
+        var productId = new ProductId("p1");
+        var productName = new ProductName("상품");
         var quantity = new Quantity(1);
-        var unitPrice = com.dochiri.tooltestlab.product.domain.model.Money.of(1000);
+        var unitPrice = new Money(1000);
         // when & then
         assertThatThrownBy(() -> cart.addItem(null, productName, quantity, unitPrice))
                 .isInstanceOf(com.dochiri.tooltestlab.product.domain.exception.InvalidProductIdException.class);
@@ -278,15 +275,20 @@ class AggregateNullValidationTest {
     void cartItemsReplaceNull() {
         // given
         var item = new CartItem(
-                new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("상품"),
+                new ProductId("p1"),
+                new ProductName("상품"),
                 new Quantity(1),
-                com.dochiri.tooltestlab.product.domain.model.Money.of(1000));
+                new Money(1000)
+        );
         var items = CartItems.from(List.of(item));
-        var oldItem = items.values().get(0);
-        var newItem = new CartItem(new com.dochiri.tooltestlab.product.domain.model.ProductId("p2"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("상품2"),
-                new Quantity(1), com.dochiri.tooltestlab.product.domain.model.Money.of(1000));
+        var oldItem = items.values().getFirst();
+        var newItem = new CartItem(
+                new ProductId("p2"),
+                new ProductName("상품2"),
+                new Quantity(1),
+                new Money(1000)
+        );
+
         // when & then
         assertThatThrownBy(() -> items.replace(null, newItem))
                 .isInstanceOf(com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException.class);
@@ -294,10 +296,15 @@ class AggregateNullValidationTest {
                 .isInstanceOf(com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException.class);
     }
 
-    private static com.dochiri.tooltestlab.order.domain.model.OrderLines getOrderLines() {
-        return com.dochiri.tooltestlab.order.domain.model.OrderLines.from(List.of(
-                new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
-                        new com.dochiri.tooltestlab.product.domain.model.ProductName("상품"),
-                        new Quantity(1), com.dochiri.tooltestlab.product.domain.model.Money.of(1000))));
+    private static OrderLines getOrderLines() {
+        return OrderLines.from(List.of(
+                        new OrderLine(
+                                new ProductId("p1"),
+                                new ProductName("상품"),
+                                new Quantity(1),
+                                new Money(1000)
+                        )
+                )
+        );
     }
 }

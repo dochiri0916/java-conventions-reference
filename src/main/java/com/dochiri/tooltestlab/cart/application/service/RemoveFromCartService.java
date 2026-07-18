@@ -6,7 +6,7 @@ import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartUseCase;
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

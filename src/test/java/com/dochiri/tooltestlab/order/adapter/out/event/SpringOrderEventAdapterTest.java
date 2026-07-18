@@ -7,9 +7,9 @@ import com.dochiri.tooltestlab.order.domain.model.OrderCancelledItems;
 import com.dochiri.tooltestlab.order.domain.model.OrderId;
 import com.dochiri.tooltestlab.order.domain.model.OrderPlacedItems;
 import com.dochiri.tooltestlab.order.domain.model.Quantity;
-import com.dochiri.tooltestlab.product.domain.model.Money;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.product.domain.model.ProductName;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -82,7 +82,7 @@ class SpringOrderEventAdapterTest {
                 ProductId.generate(),
                 new ProductName("상품"),
                 Quantity.from(1),
-                Money.of(1_000)
+                new Money(1_000)
         );
         return new OrderPlaced(
                 OrderId.generate(),

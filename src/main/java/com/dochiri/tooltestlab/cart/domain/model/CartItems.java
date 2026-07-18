@@ -2,10 +2,8 @@ package com.dochiri.tooltestlab.cart.domain.model;
 
 import com.dochiri.tooltestlab.cart.domain.exception.CartItemLimitExceededException;
 import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException;
-import com.dochiri.tooltestlab.product.domain.exception.InvalidProductIdException;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.product.domain.model.MaxCount;
-import com.dochiri.tooltestlab.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 
 import java.util.ArrayList;
 import java.util.List;

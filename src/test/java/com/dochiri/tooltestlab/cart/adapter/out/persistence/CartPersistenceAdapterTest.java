@@ -4,9 +4,9 @@ import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.domain.model.Quantity;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.product.domain.model.ProductName;
-import com.dochiri.tooltestlab.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ class CartPersistenceAdapterTest {
 
             // when
         var cartWithItem = cart.addItem(new ProductId("prod01notebook000000000000000"),
-                new ProductName("테스트상품"), new Quantity(2), Money.of(1000));
+                new ProductName("테스트상품"), new Quantity(2), new Money(1000));
         var saved = cartRepositoryPort.save(cartWithItem);
 
             // then

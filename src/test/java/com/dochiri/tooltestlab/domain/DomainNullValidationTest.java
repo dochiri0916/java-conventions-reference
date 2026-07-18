@@ -1,21 +1,18 @@
 package com.dochiri.tooltestlab.domain;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import com.dochiri.tooltestlab.cart.domain.model.CartId;
 import com.dochiri.tooltestlab.cart.domain.model.CartItems;
-import com.dochiri.tooltestlab.category.domain.model.CategoryId;
-import com.dochiri.tooltestlab.category.domain.model.CategoryName;
-import com.dochiri.tooltestlab.order.domain.model.OrderId;
-import com.dochiri.tooltestlab.order.domain.model.Phone;
-import com.dochiri.tooltestlab.order.domain.model.RecipientName;
-import com.dochiri.tooltestlab.order.domain.model.StreetAddress;
-import com.dochiri.tooltestlab.order.domain.model.ZipCode;
-import com.dochiri.tooltestlab.product.domain.model.ProductDescription;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.product.domain.model.ProductName;
+import com.dochiri.tooltestlab.catalog.category.domain.exception.InvalidCategoryIdException;
+import com.dochiri.tooltestlab.catalog.category.domain.exception.InvalidCategoryNameException;
+import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
+import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryName;
+import com.dochiri.tooltestlab.order.domain.model.*;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductDescription;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import com.dochiri.tooltestlab.review.domain.model.ReviewContent;
 import com.dochiri.tooltestlab.review.domain.model.ReviewId;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -32,13 +29,13 @@ class DomainNullValidationTest {
         var blankInput = "  ";
         // when & then
         assertThatThrownBy(() -> new CategoryName(nullInput))
-                .isInstanceOf(com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryNameException.class);
+                .isInstanceOf(InvalidCategoryNameException.class);
         assertThatThrownBy(() -> new CategoryName(blankInput))
-                .isInstanceOf(com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryNameException.class);
+                .isInstanceOf(InvalidCategoryNameException.class);
         assertThatThrownBy(() -> new CategoryId(nullInput))
-                .isInstanceOf(com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryIdException.class);
+                .isInstanceOf(InvalidCategoryIdException.class);
         assertThatThrownBy(() -> new CategoryId(blankInput))
-                .isInstanceOf(com.dochiri.tooltestlab.category.domain.exception.InvalidCategoryIdException.class);
+                .isInstanceOf(InvalidCategoryIdException.class);
     }
 
     @Test

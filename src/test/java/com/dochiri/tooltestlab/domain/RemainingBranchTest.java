@@ -1,7 +1,5 @@
 package com.dochiri.tooltestlab.domain;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import com.dochiri.tooltestlab.cart.application.port.in.AddToCartCommand;
 import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartCommand;
 import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartIdException;
@@ -14,10 +12,11 @@ import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberCommand;
 import com.dochiri.tooltestlab.order.domain.model.OrderLine;
 import com.dochiri.tooltestlab.order.domain.model.OrderLines;
 import com.dochiri.tooltestlab.order.domain.model.Quantity;
-import com.dochiri.tooltestlab.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.product.domain.model.ProductName;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import com.dochiri.tooltestlab.review.application.port.in.WriteReviewCommand;
-import com.dochiri.tooltestlab.product.domain.model.Money;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -314,7 +313,12 @@ class RemainingBranchTest {
     @DisplayName("CartItem - 수량 증가")
     void cartItemIncrease() {
         // given
-        var item = new CartItem(new ProductId("p1"), new ProductName("상품"), new Quantity(1), Money.of(1000));
+        var item = new CartItem(
+                new ProductId("p1"),
+                new ProductName("상품"),
+                new Quantity(1),
+                new Money(1000)
+        );
         var increaseBy = 2;
 
         // when
@@ -322,14 +326,19 @@ class RemainingBranchTest {
 
         // then
         assertThat(increased.quantity().value()).isEqualTo(3);
-        assertThat(increased.totalPrice()).isEqualTo(Money.of(3000));
+        assertThat(increased.totalPrice()).isEqualTo(new Money(3000));
     }
 
     @Test
     @DisplayName("CartItem - 수량 증가 0 이하 예외")
     void cartItemIncreaseInvalid() {
         // given
-        var item = new CartItem(new ProductId("p1"), new ProductName("상품"), new Quantity(1), Money.of(1000));
+        var item = new CartItem(
+                new ProductId("p1"),
+                new ProductName("상품"),
+                new Quantity(1),
+                new Money(1000)
+        );
         var invalidIncrease = 0;
 
         // when & then
@@ -342,8 +351,19 @@ class RemainingBranchTest {
     void cartItemsReplaceNotFound() {
         // given
         var items = CartItems.empty();
-        var item = new CartItem(new ProductId("p1"), new ProductName("상품"), new Quantity(1), Money.of(1000));
-        var newItem = new CartItem(new ProductId("p1"), new ProductName("상품"), new Quantity(2), Money.of(1000));
+        var item = new CartItem(
+                new ProductId("p1"),
+                new ProductName("상품"),
+                new Quantity(1),
+                new Money(1000)
+        );
+
+        var newItem = new CartItem(
+                new ProductId("p1"),
+                new ProductName("상품"),
+                new Quantity(2),
+                new Money(1000)
+        );
 
         // when & then
         assertThatThrownBy(() -> items.replace(item, newItem))
@@ -354,7 +374,12 @@ class RemainingBranchTest {
     @DisplayName("CartItems - 상품ID로 찾기 및 포함 여부")
     void cartItemsFind() {
         // given
-        var item = new CartItem(new ProductId("p1"), new ProductName("상품"), new Quantity(1), Money.of(1000));
+        var item = new CartItem(
+                new ProductId("p1"),
+                new ProductName("상품"),
+                new Quantity(1),
+                new Money(1000)
+        );
         var items = CartItems.from(List.of(item));
         var existingProductId = new ProductId("p1");
         var nonExistingProductId = new ProductId("p2");
@@ -381,20 +406,25 @@ class RemainingBranchTest {
         var productId = new ProductId("p1");
         var productName = new ProductName("상품");
         var quantity = new Quantity(3);
-        var unitPrice = Money.of(1000);
+        var unitPrice = new Money(1000);
 
         // when
         var line = new OrderLine(productId, productName, quantity, unitPrice);
 
         // then
-        assertThat(line.totalPrice()).isEqualTo(Money.of(3000));
+        assertThat(line.totalPrice()).isEqualTo(new Money(3000));
     }
 
     @Test
     @DisplayName("OrderLines 배열로부터 생성")
     void orderLinesFromArray() {
         // given
-        var line = new OrderLine(new ProductId("p1"), new ProductName("상품"), new Quantity(1), Money.of(1000));
+        var line = new OrderLine(
+                new ProductId("p1"),
+                new ProductName("상품"),
+                new Quantity(1),
+                new Money(1000)
+        );
 
         // when
         var lines = OrderLines.fromArray(line);

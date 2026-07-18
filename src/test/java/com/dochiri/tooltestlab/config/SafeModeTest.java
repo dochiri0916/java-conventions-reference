@@ -2,30 +2,20 @@ package com.dochiri.tooltestlab.config;
 
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
-import com.dochiri.tooltestlab.category.domain.model.Category;
-import com.dochiri.tooltestlab.category.domain.model.CategoryName;
+import com.dochiri.tooltestlab.catalog.category.domain.model.Category;
+import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryName;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
-import com.dochiri.tooltestlab.member.domain.model.Email;
-import com.dochiri.tooltestlab.member.domain.model.EncodedPassword;
-import com.dochiri.tooltestlab.member.domain.model.Member;
-import com.dochiri.tooltestlab.member.domain.model.MemberId;
-import com.dochiri.tooltestlab.member.domain.model.MemberName;
+import com.dochiri.tooltestlab.member.domain.model.*;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
-import com.dochiri.tooltestlab.order.domain.model.Order;
-import com.dochiri.tooltestlab.order.domain.model.OrderLine;
-import com.dochiri.tooltestlab.order.domain.model.OrderLines;
-import com.dochiri.tooltestlab.order.domain.model.Phone;
-import com.dochiri.tooltestlab.order.domain.model.Quantity;
-import com.dochiri.tooltestlab.order.domain.model.RecipientName;
-import com.dochiri.tooltestlab.order.domain.model.ShippingAddress;
-import com.dochiri.tooltestlab.order.domain.model.StreetAddress;
-import com.dochiri.tooltestlab.order.domain.model.ZipCode;
-import com.dochiri.tooltestlab.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.product.domain.model.Money;
-import com.dochiri.tooltestlab.product.domain.model.Product;
-import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
+import com.dochiri.tooltestlab.order.domain.model.*;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import com.dochiri.tooltestlab.review.application.exception.DuplicateReviewException;
 import com.dochiri.tooltestlab.review.application.exception.ReviewApplicationErrorCode;
+import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
 import com.dochiri.tooltestlab.review.domain.model.Rating;
 import com.dochiri.tooltestlab.review.domain.model.Review;
 import com.dochiri.tooltestlab.review.domain.model.ReviewContent;
@@ -48,12 +38,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional
 class SafeModeTest {
 
-    @Autowired private CartRepositoryPort cartRepositoryPort;
-    @Autowired private MemberRepositoryPort memberRepositoryPort;
-    @Autowired private OrderRepositoryPort orderRepositoryPort;
-    @Autowired private ProductRepositoryPort productRepositoryPort;
-    @Autowired private ReviewRepositoryPort reviewRepositoryPort;
-    @Autowired private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private CartRepositoryPort cartRepositoryPort;
+    @Autowired
+    private MemberRepositoryPort memberRepositoryPort;
+    @Autowired
+    private OrderRepositoryPort orderRepositoryPort;
+    @Autowired
+    private ProductRepositoryPort productRepositoryPort;
+    @Autowired
+    private ReviewRepositoryPort reviewRepositoryPort;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     @DisplayName("safe 모드에서 멤버 저장 및 조회")
@@ -73,7 +69,7 @@ class SafeModeTest {
     @DisplayName("safe 모드에서 상품 저장 및 조회")
     void safeProductSave() {
         // given
-        var product = Product.create("safe상품", "설명", Money.of(1000), 10);
+        var product = Product.create("safe상품", "설명", 1000, 10);
 
         // when
         var saved = productRepositoryPort.save(product, List.of());
@@ -87,7 +83,7 @@ class SafeModeTest {
     @DisplayName("safe 모드에서 상품 업데이트")
     void safeProductUpdate() {
         // given
-        var product = Product.create("safe상품2", "설명", Money.of(2000), 20);
+        var product = Product.create("safe상품2", "설명", 2000, 20);
         var saved = productRepositoryPort.save(product, List.of());
 
         // when
@@ -116,13 +112,21 @@ class SafeModeTest {
     @DisplayName("safe 모드에서 주문 저장 및 조회")
     void safeOrderSave() {
         // given
-        var line = new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("상품"),
-                new Quantity(1), Money.of(1000));
+        var line = new OrderLine(
+                new ProductId("p1"),
+                new ProductName("상품"),
+                new Quantity(1),
+                new Money(1000)
+        );
+
         var address = new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"),
                 new StreetAddress("서울시"), new ZipCode("12345"));
-        var order = Order.create(new com.dochiri.tooltestlab.member.domain.model.MemberId("safeM1"),
-                OrderLines.from(List.of(line)), address);
+
+        var order = Order.create(
+                new MemberId("safeM1"),
+                OrderLines.from(List.of(line)),
+                address
+        );
 
         // when
         var saved = orderRepositoryPort.save(order);
@@ -137,7 +141,7 @@ class SafeModeTest {
     void safeReviewSave() {
         // given
         var review = Review.create(new com.dochiri.tooltestlab.member.domain.model.MemberId("safeM1"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
+                new ProductId("p1"),
                 new Rating(5), new ReviewContent("좋아요"));
 
         // when
@@ -152,12 +156,20 @@ class SafeModeTest {
     @DisplayName("safe 모드에서 회원의 주문 목록을 조회할 수 있다")
     void safeOrderFindByMemberId() {
         // given
-        var memberId = new com.dochiri.tooltestlab.member.domain.model.MemberId("safeOrdM1");
-        var line = new OrderLine(new com.dochiri.tooltestlab.product.domain.model.ProductId("p1"),
-                new com.dochiri.tooltestlab.product.domain.model.ProductName("상품"),
-                new Quantity(1), Money.of(1000));
-        var address = new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"),
-                new StreetAddress("서울시"), new ZipCode("12345"));
+        var memberId = new MemberId("safeOrdM1");
+        var line = new OrderLine(new ProductId("p1"),
+                new ProductName("상품"),
+                new Quantity(1),
+                new Money(1000)
+        );
+
+        var address = new ShippingAddress(
+                new RecipientName("홍길동"),
+                new Phone("01012345678"),
+                new StreetAddress("서울시"),
+                new ZipCode("12345")
+        );
+
         var order = Order.create(memberId, OrderLines.from(List.of(line)), address);
         orderRepositoryPort.save(order);
 
@@ -172,7 +184,7 @@ class SafeModeTest {
     @DisplayName("safe 모드에서 카테고리를 저장하고 publicId로 조회할 수 있다")
     void safeProductFindCategoryByPublicId() {
         // given
-        var category = Category.create(new com.dochiri.tooltestlab.category.domain.model.CategoryName("safe-카테고리"));
+        var category = Category.create(new CategoryName("safe-카테고리"));
 
         // when
         var saved = productRepositoryPort.saveCategory(category);
@@ -186,9 +198,9 @@ class SafeModeTest {
     @DisplayName("safe 모드에서 상품의 카테고리 목록을 조회할 수 있다")
     void safeProductFindCategoriesByProductPublicId() {
         // given
-        var category = Category.create(new com.dochiri.tooltestlab.category.domain.model.CategoryName("safe-카테고리2"));
+        var category = Category.create(new CategoryName("safe-카테고리2"));
         var savedCategory = productRepositoryPort.saveCategory(category);
-        var product = Product.create("safe상품3", "설명", Money.of(3000), 30);
+        var product = Product.create("safe상품3", "설명", 3000, 30);
         var savedProduct = productRepositoryPort.save(product, List.of(savedCategory));
 
         // when
@@ -221,7 +233,7 @@ class SafeModeTest {
         var category2 = productRepositoryPort.saveCategory(Category.create(new CategoryName("safe-카테고리6")));
 
         // when
-        var product = Product.create("카테고리상품", "설명", Money.of(5000), 50);
+        var product = Product.create("카테고리상품", "설명", 5000, 50);
         var saved = productRepositoryPort.save(product, List.of(category1, category2));
         var categories = productRepositoryPort.findCategoriesByProductPublicId(saved.id().value());
 
@@ -234,7 +246,7 @@ class SafeModeTest {
     void safeReviewFindByProductId() {
         // given
         var memberId = new com.dochiri.tooltestlab.member.domain.model.MemberId("safeRevM1");
-        var productId = new com.dochiri.tooltestlab.product.domain.model.ProductId("safeRevP1");
+        var productId = new ProductId("safeRevP1");
         reviewRepositoryPort.save(Review.create(memberId, productId,
                 new Rating(4), new ReviewContent("첫 번째 리뷰")));
 
@@ -250,7 +262,7 @@ class SafeModeTest {
     void safeReviewDuplicateThrowsException() {
         // given
         var memberId = new com.dochiri.tooltestlab.member.domain.model.MemberId("safeRevDup");
-        var productId = new com.dochiri.tooltestlab.product.domain.model.ProductId("safeRevDupP1");
+        var productId = new ProductId("safeRevDupP1");
         var review = Review.create(memberId, productId,
                 new Rating(5), new ReviewContent("리뷰 내용"));
         reviewRepositoryPort.save(review);
@@ -296,7 +308,7 @@ class SafeModeTest {
     @DisplayName("safe 모드에서 상품 목록을 페이지네이션으로 조회할 수 있다")
     void safeProductFindAll() {
         // given
-        var product = Product.create("safe상품페이지", "설명", Money.of(1000), 10);
+        var product = Product.create("safe상품페이지", "설명", 1000, 10);
         productRepositoryPort.save(product, List.of());
 
         // when
@@ -323,9 +335,9 @@ class SafeModeTest {
     @DisplayName("safe 모드에서 상품 업데이트 시 카테고리도 함께 갱신된다")
     void safeProductUpdateWithCategories() {
         // given
-        var category = Category.create(new com.dochiri.tooltestlab.category.domain.model.CategoryName("safe-갱신카테고리"));
+        var category = Category.create(new CategoryName("safe-갱신카테고리"));
         var savedCategory = productRepositoryPort.saveCategory(category);
-        var product = Product.create("safe갱신상품", "설명", Money.of(2000), 20);
+        var product = Product.create("safe갱신상품", "설명", 2000, 20);
         var saved = productRepositoryPort.save(product, List.of());
 
         // when
@@ -343,7 +355,7 @@ class SafeModeTest {
     void safeReviewDeleteByPublicId() {
         // given
         var memberId = new com.dochiri.tooltestlab.member.domain.model.MemberId("safeRevDel");
-        var productId = new com.dochiri.tooltestlab.product.domain.model.ProductId("safeRevDelP1");
+        var productId = new ProductId("safeRevDelP1");
         var review = Review.create(memberId, productId,
                 new Rating(4), new ReviewContent("삭제될 리뷰"));
         var saved = reviewRepositoryPort.save(review);
