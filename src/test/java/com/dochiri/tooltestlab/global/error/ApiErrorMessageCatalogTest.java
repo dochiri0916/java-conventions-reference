@@ -1,16 +1,14 @@
 package com.dochiri.tooltestlab.global.error;
 
 import com.dochiri.tooltestlab.cart.application.exception.CartErrorCode;
-import com.dochiri.tooltestlab.category.application.exception.CategoryErrorCode;
+import com.dochiri.tooltestlab.catalog.category.application.exception.CategoryErrorCode;
 import com.dochiri.tooltestlab.order.application.exception.OrderApplicationErrorCode;
-import com.dochiri.tooltestlab.product.application.exception.ProductErrorCode;
+import com.dochiri.tooltestlab.catalog.product.application.exception.ProductApplicationErrorCode;
 import com.dochiri.tooltestlab.review.application.exception.ReviewApplicationErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class ApiErrorMessageCatalogTest {
@@ -64,7 +62,7 @@ class ApiErrorMessageCatalogTest {
     @DisplayName("상품 오류는 컨텍스트 전용 한국어 메시지를 반환한다")
     void productErrorHasContextMessage() {
         // given
-        var code = ApiErrorCode.from(ProductErrorCode.PRODUCT_NOT_FOUND);
+        var code = ApiErrorCode.from(ProductApplicationErrorCode.PRODUCT_NOT_FOUND);
 
         // when
         var message = catalog.findByCode(code);

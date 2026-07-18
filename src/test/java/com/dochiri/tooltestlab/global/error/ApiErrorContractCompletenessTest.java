@@ -2,14 +2,12 @@ package com.dochiri.tooltestlab.global.error;
 
 import com.dochiri.tooltestlab.cart.adapter.in.web.CartErrorCodeMappingProvider;
 import com.dochiri.tooltestlab.cart.adapter.in.web.CartErrorMessageProvider;
-import com.dochiri.tooltestlab.category.adapter.in.web.CategoryErrorCodeMappingProvider;
-import com.dochiri.tooltestlab.category.adapter.in.web.CategoryErrorMessageProvider;
+import com.dochiri.tooltestlab.catalog.category.adapter.in.web.CategoryErrorCodeMappingProvider;
+import com.dochiri.tooltestlab.catalog.category.adapter.in.web.CategoryErrorMessageProvider;
 import com.dochiri.tooltestlab.member.adapter.in.web.MemberErrorCodeMappingProvider;
 import com.dochiri.tooltestlab.member.adapter.in.web.MemberErrorMessageProvider;
 import com.dochiri.tooltestlab.order.adapter.in.web.OrderErrorCodeMappingProvider;
 import com.dochiri.tooltestlab.order.adapter.in.web.OrderErrorMessageProvider;
-import com.dochiri.tooltestlab.product.adapter.in.web.ProductErrorCodeMappingProvider;
-import com.dochiri.tooltestlab.product.adapter.in.web.ProductErrorMessageProvider;
 import com.dochiri.tooltestlab.review.adapter.in.web.ReviewErrorCodeMappingProvider;
 import com.dochiri.tooltestlab.review.adapter.in.web.ReviewErrorMessageProvider;
 import org.junit.jupiter.api.DisplayName;
