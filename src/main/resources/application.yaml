@@ -6,19 +6,6 @@ spring:
   aop:
     proxy-target-class: false
 
-  # H2 In-Memory Database (MySQL 호환 모드)
-  datasource:
-    url: jdbc:h2:mem:tooltestlab;MODE=MySQL
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-
-  # H2 Console — http://localhost:18080/h2-console (dev profile only)
-  h2:
-    console:
-      enabled: false
-      path: /h2-console
-
   # JPA / Hibernate
   jpa:
     hibernate:
@@ -35,11 +22,6 @@ api:
   problem:
     base-uri: https://api.example.com
 
-# Tool Test Lab — 동시성 모드
-tool-test-lab:
-  concurrency:
-    safe: false # true로 바꾸면 @Version + PESSIMISTIC_WRITE 활성화
-
 # Server
 server:
   port: 18080
@@ -51,6 +33,9 @@ springdoc:
     display-request-duration: true
     operations-sorter: method
     tags-sorter: alpha
+
+time:
+  timezone: Asia/Seoul
 
 # Logging
 logging:

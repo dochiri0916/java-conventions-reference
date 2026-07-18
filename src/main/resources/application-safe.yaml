@@ -1,4 +1,0 @@
-# 동시성 안전 모드 — 낙관적 락(@Version) + 비관적 락(PESSIMISTIC_WRITE) 활성화
-tool-test-lab:
-  concurrency:
-    safe: true
