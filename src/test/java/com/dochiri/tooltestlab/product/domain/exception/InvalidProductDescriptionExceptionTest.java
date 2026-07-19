@@ -1,50 +1,55 @@
 package com.dochiri.tooltestlab.product.domain.exception;
 
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDomainException;
 import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDomainErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 class InvalidProductDescriptionExceptionTest {
 
     @Test
-    @DisplayName("필수 상품 설명 예외는 의미 코드만 보존한다")
-    void createsRequiredFailure() {
+    @DisplayName("필수 상품 설명 예외는 전용 ErrorCode를 가진다")
+    void required() {
         // given
-        ProductDomainErrorCode expectedCode = ProductDomainErrorCode.PRODUCT_DESCRIPTION_REQUIRED;
 
         // when
-        InvalidProductDescriptionException exception = InvalidProductDescriptionException.required();
+        final var exception = ProductDomainException.productDescriptionRequired();
 
         // then
-        assertThat(exception.code()).isEqualTo(expectedCode);
-        assertThat(exception.getMessage()).isEqualTo(expectedCode.name());
+        assertThat(exception.errorCode())
+                .isEqualTo(ProductDomainErrorCode.PRODUCT_DESCRIPTION_REQUIRED);
     }
 
     @Test
-    @DisplayName("짧은 상품 설명 예외는 의미 코드만 보존한다")
-    void createsTooShortFailure() {
+    @DisplayName("짧은 상품 설명 예외는 최소 길이를 실패 맥락으로 보존한다")
+    void tooShort() {
         // given
-        ProductDomainErrorCode expectedCode = ProductDomainErrorCode.PRODUCT_DESCRIPTION_TOO_SHORT;
+        final int minimumLength = 10;
 
         // when
-        InvalidProductDescriptionException exception = InvalidProductDescriptionException.tooShort();
+        final var exception = ProductDomainException.productDescriptionTooShort(minimumLength);
 
         // then
-        assertThat(exception.code()).isEqualTo(expectedCode);
-        assertThat(exception.getMessage()).isEqualTo(expectedCode.name());
+        assertThat(exception.errorCode())
+                .isEqualTo(ProductDomainErrorCode.PRODUCT_DESCRIPTION_TOO_SHORT);
+        assertThat(exception.extensions()).containsEntry("minimumLength", minimumLength);
     }
 
     @Test
-    @DisplayName("긴 상품 설명 예외는 의미 코드만 보존한다")
-    void createsTooLongFailure() {
+    @DisplayName("긴 상품 설명 예외는 최대 길이를 실패 맥락으로 보존한다")
+    void tooLong() {
         // given
-        ProductDomainErrorCode expectedCode = ProductDomainErrorCode.PRODUCT_DESCRIPTION_TOO_LONG;
+        final int maximumLength = 500;
 
         // when
-        InvalidProductDescriptionException exception = InvalidProductDescriptionException.tooLong();
+        final var exception = ProductDomainException.productDescriptionTooLong(maximumLength);
 
         // then
-        assertThat(exception.code()).isEqualTo(expectedCode);
-        assertThat(exception.getMessage()).isEqualTo(expectedCode.name());
+        assertThat(exception.errorCode())
+                .isEqualTo(ProductDomainErrorCode.PRODUCT_DESCRIPTION_TOO_LONG);
+        assertThat(exception.extensions()).containsEntry("maximumLength", maximumLength);
     }
+
 }

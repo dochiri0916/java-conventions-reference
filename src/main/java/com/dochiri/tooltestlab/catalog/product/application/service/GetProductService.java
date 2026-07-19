@@ -1,10 +1,13 @@
 package com.dochiri.tooltestlab.catalog.product.application.service;
 
+import com.dochiri.tooltestlab.catalog.category.application.port.out.CategoryRepositoryPort;
+import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
 import com.dochiri.tooltestlab.catalog.product.application.exception.ProductApplicationException;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.GetProductUseCase;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.result.GetProductResult;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,15 +20,15 @@ import java.util.Set;
 public final class GetProductService implements GetProductUseCase {
 
     private final ProductRepositoryPort productRepositoryPort;
-    private final CategoryReferenceQueryPort categoryReferenceQueryPort;
+    private final CategoryRepositoryPort categoryRepositoryPort;
 
     @Override
     @Transactional(readOnly = true)
     public GetProductResult getProduct(final String publicId) {
-        final Product product = productRepositoryPort.findById(publicId)
+        final Product product = productRepositoryPort.findById(new ProductId(publicId))
                 .orElseThrow(() -> ProductApplicationException.notFound(publicId));
 
-        final List<String> categoryNames = findCategoryNames(product.categoryReferences());
+        final List<String> categoryNames = findCategoryNames(product.categoryIds());
 
         return new GetProductResult(
                 product.id().value(),
@@ -38,15 +41,15 @@ public final class GetProductService implements GetProductUseCase {
         );
     }
 
-    private List<String> findCategoryNames(final Set<CategoryReferenceId> categoryReferences) {
-        if (categoryReferences.isEmpty()) {
+    private List<String> findCategoryNames(final Set<CategoryId> categoryIds) {
+        if (categoryIds.isEmpty()) {
             return List.of();
         }
 
-        return categoryReferenceQueryPort
-                .findByIds(categoryReferences)
+        return categoryRepositoryPort
+                .findAllByIds(categoryIds)
                 .stream()
-                .map(CategoryReferenceData::categoryName)
+                .map(category -> category.name().value())
                 .sorted()
                 .toList();
     }

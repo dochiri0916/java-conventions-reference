@@ -43,6 +43,14 @@ public final class ProductApplicationException extends ApplicationException {
         );
     }
 
+    public static ProductApplicationException categoriesNotActive(final Set<String> categoryIds) {
+        return new ProductApplicationException(
+                ProductApplicationErrorCode.CATEGORY_NOT_ACTIVE,
+                ProductApplicationErrorCode.CATEGORY_NOT_ACTIVE.detail(),
+                Map.of("categoryIds", Set.copyOf(categoryIds))
+        );
+    }
+
     private ProductApplicationException(final ProductApplicationErrorCode errorCode) {
         super(errorCode);
     }

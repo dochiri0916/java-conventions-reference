@@ -5,7 +5,7 @@ import com.dochiri.tooltestlab.catalog.product.domain.model.ProductStatus;
 import java.util.List;
 
 public record GetProductResult(
-        String productId,
+        String publicId,
         String name,
         String description,
         long priceAmount,

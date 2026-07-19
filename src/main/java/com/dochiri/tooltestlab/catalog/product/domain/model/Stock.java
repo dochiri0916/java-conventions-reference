@@ -1,15 +1,12 @@
 package com.dochiri.tooltestlab.catalog.product.domain.model;
 
-import com.dochiri.tooltestlab.catalog.product.domain.exception.InsufficientStockException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.InvalidStockQuantityException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.NegativeStockException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.StockOverflowException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDomainException;
 
 public record Stock(int value) {
 
     public Stock {
         if (value < 0) {
-            throw new NegativeStockException(value);
+            throw ProductDomainException.negativeStock(value);
         }
     }
 
@@ -17,7 +14,7 @@ public record Stock(int value) {
         validatePositiveQuantity(quantity);
 
         if (value < quantity) {
-            throw new InsufficientStockException(
+            throw ProductDomainException.insufficientStock(
                     value,
                     quantity
             );
@@ -32,7 +29,7 @@ public record Stock(int value) {
         final long increasedStock = (long) value + quantity;
 
         if (increasedStock > Integer.MAX_VALUE) {
-            throw new StockOverflowException(
+            throw ProductDomainException.stockOverflow(
                     value,
                     quantity
             );
@@ -47,7 +44,7 @@ public record Stock(int value) {
 
     private static void validatePositiveQuantity(final int quantity) {
         if (quantity <= 0) {
-            throw new InvalidStockQuantityException(quantity);
+            throw ProductDomainException.invalidStockQuantity(quantity);
         }
     }
 

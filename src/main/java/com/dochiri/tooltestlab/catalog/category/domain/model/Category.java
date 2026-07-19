@@ -26,6 +26,14 @@ public final class Category {
         );
     }
 
+    public static Category restore(
+            final CategoryId id,
+            final CategoryName name,
+            final CategoryStatus status
+    ) {
+        return new Category(id, name, status);
+    }
+
     public Category rename(final String name) {
         return new Category(
                 id,

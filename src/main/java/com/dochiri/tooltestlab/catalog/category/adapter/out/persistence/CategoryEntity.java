@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.catalog.category.adapter.out.persistence;
 
+import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,25 +38,30 @@ public class CategoryEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 16)
+    private CategoryStatus status;
+
     private CategoryEntity(
             final String publicId,
-            final String name
+            final String name,
+            final CategoryStatus status
     ) {
         this.publicId = publicId;
         this.name = name;
+        this.status = status;
     }
 
     static CategoryEntity create(
             final String publicId,
-            final String name
+            final String name,
+            final CategoryStatus status
     ) {
-        return new CategoryEntity(
-                publicId,
-                name
-        );
+        return new CategoryEntity(publicId, name, status);
     }
 
-    void updateName(final String name) {
+    void update(final String name, final CategoryStatus status) {
         this.name = name;
+        this.status = status;
     }
 }

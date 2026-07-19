@@ -4,8 +4,12 @@ import com.dochiri.tooltestlab.global.exception.DomainException;
 
 public final class InvalidCategoryIdException extends DomainException {
 
-    public InvalidCategoryIdException() {
+    private InvalidCategoryIdException() {
         super(CategoryDomainErrorCode.CATEGORY_ID_INVALID);
+    }
+
+    public static InvalidCategoryIdException invalid() {
+        return new InvalidCategoryIdException();
     }
 
 }

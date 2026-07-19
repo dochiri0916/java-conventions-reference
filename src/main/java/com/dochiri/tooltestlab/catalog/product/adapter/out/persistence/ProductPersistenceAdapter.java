@@ -1,10 +1,10 @@
 package com.dochiri.tooltestlab.catalog.product.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductPage;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
@@ -43,9 +43,14 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
     }
 
     @Override
-    public Page<Product> findAll(final int page, final int size) {
-        return productJpaRepository.findAll(PageRequest.of(page, size))
-                .map(ProductMapper::toDomain);
+    public ProductPage findAll(final int page, final int size) {
+        final org.springframework.data.domain.Page<ProductEntity> productPage =
+                productJpaRepository.findAll(PageRequest.of(page, size));
+
+        return new ProductPage(
+                productPage.getContent().stream().map(ProductMapper::toDomain).toList(),
+                productPage.getTotalElements()
+        );
     }
 
 }

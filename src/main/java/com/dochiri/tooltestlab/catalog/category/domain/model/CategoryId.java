@@ -9,11 +9,11 @@ public record CategoryId(String value) {
 
     public CategoryId {
         if (value == null) {
-            throw new CategoryIdRequiredException();
+            throw CategoryIdRequiredException.required();
         }
         value = value.strip();
         if (value.isBlank()) {
-            throw new InvalidCategoryIdException();
+            throw InvalidCategoryIdException.invalid();
         }
     }
 

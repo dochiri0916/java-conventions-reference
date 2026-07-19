@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.domain.model;
 
-import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductStatusTransitionNotAllowedException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDomainException;
 
 public enum ProductStatus {
     PREPARING("판매 준비"),
@@ -16,7 +16,7 @@ public enum ProductStatus {
 
     public ProductStatus startSale() {
         if (this != PREPARING && this != SALE_ENDED) {
-            throw new ProductStatusTransitionNotAllowedException(
+            throw ProductDomainException.statusTransitionNotAllowed(
                     this,
                     ON_SALE
             );
@@ -27,7 +27,7 @@ public enum ProductStatus {
 
     public ProductStatus endSale() {
         if (this != ON_SALE) {
-            throw new ProductStatusTransitionNotAllowedException(
+            throw ProductDomainException.statusTransitionNotAllowed(
                     this,
                     SALE_ENDED
             );

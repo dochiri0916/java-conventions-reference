@@ -6,6 +6,7 @@ public enum ErrorKind {
     NOT_FOUND,
     CONFLICT,
     FORBIDDEN,
-    INVALID_STATE
+    INVALID_STATE,
+    INTERNAL_ERROR
 
 }

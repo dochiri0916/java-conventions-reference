@@ -30,7 +30,7 @@ public enum CategoryDomainErrorCode implements ErrorCode {
     @Override
     public String code() {
         return code;
-    }
+}
 
     @Override
     public ErrorKind kind() {

@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.product.domain.exception;
 
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDomainException;
 import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDomainErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,206 +10,48 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ProductDomainExceptionTest {
 
     @Test
-    @DisplayName("InvalidProductIdException 정상 생성")
-    void badProductId() {
+    @DisplayName("유효하지 않은 상품 ID는 입력값을 실패 맥락으로 보존한다")
+    void invalidProductId() {
         // given
-        var expectedCode = ProductDomainErrorCode.BAD_PRODUCT_ID;
+        final String productId = "invalid-id";
 
         // when
-        var ex = InvalidProductIdException.badProductId();
+        final var exception = ProductDomainException.invalidProductId(productId);
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(exception.errorCode()).isEqualTo(ProductDomainErrorCode.PRODUCT_ID_INVALID);
+        assertThat(exception.extensions()).containsEntry("productId", productId);
     }
 
     @Test
-    @DisplayName("InvalidProductIdException required 정상 생성")
-    void productIdRequired() {
+    @DisplayName("재고 부족은 현재 재고와 요청 수량을 실패 맥락으로 보존한다")
+    void insufficientStock() {
         // given
-        var expectedCode = ProductDomainErrorCode.PRODUCT_ID_REQUIRED;
+        final int currentStock = 5;
+        final int requestedQuantity = 10;
 
         // when
-        var ex = InvalidProductIdException.required();
+        final var exception = ProductDomainException.insufficientStock(currentStock, requestedQuantity);
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(exception.errorCode()).isEqualTo(ProductDomainErrorCode.STOCK_INSUFFICIENT);
+        assertThat(exception.extensions())
+                .containsEntry("currentStock", currentStock)
+                .containsEntry("requestedQuantity", requestedQuantity);
     }
 
     @Test
-    @DisplayName("InvalidProductNameException 정상 생성")
-    void badProductName() {
-        // given
-        var expectedCode = ProductDomainErrorCode.BAD_PRODUCT_NAME;
-
-        // when
-        var ex = InvalidProductNameException.badProductName();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidProductNameException required 정상 생성")
-    void productNameRequired() {
-        // given
-        var expectedCode = ProductDomainErrorCode.PRODUCT_NAME_REQUIRED;
-
-        // when
-        var ex = InvalidProductNameException.required();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidStockException 정상 생성")
-    void invalidStock() {
-        // given
-        var expectedCode = ProductDomainErrorCode.INVALID_STOCK;
-        var expectedDetail = "detail";
-
-        // when
-        var ex = InvalidStockException.invalidStock(expectedDetail);
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-        assertThat(ex.detail()).isEqualTo(expectedDetail);
-    }
-
-    @Test
-    @DisplayName("InvalidStockException required 정상 생성")
-    void stockRequired() {
-        // given
-        var expectedCode = ProductDomainErrorCode.STOCK_REQUIRED;
-
-        // when
-        var ex = InvalidStockException.required();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-        assertThat(ex.detail()).isNull();
-    }
-
-    @Test
-    @DisplayName("InsufficientStockException 정상 생성")
-    void lowStock() {
-        // given
-        var expectedCode = ProductDomainErrorCode.LOW_STOCK;
-        var currentStock = 5;
-        var requested = 10;
-
-        // when
-        var ex = InsufficientStockException.lowStock(currentStock, requested);
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-        assertThat(ex.currentStock()).isEqualTo(currentStock);
-        assertThat(ex.requested()).isEqualTo(requested);
-    }
-
-    @Test
-    @DisplayName("InvalidProductException 정상 생성")
-    void invalidProduct() {
-        // given
-        var expectedCode = ProductDomainErrorCode.INVALID_PRODUCT;
-
-        // when
-        var ex = InvalidProductException.invalidProduct();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidProductException required 정상 생성")
-    void productRequired() {
-        // given
-        var expectedCode = ProductDomainErrorCode.PRODUCT_REQUIRED;
-
-        // when
-        var ex = InvalidProductException.required();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidMoneyException 정상 생성")
-    void moneyAddNull() {
-        // given
-        var expectedCode = ProductDomainErrorCode.MONEY_ADD_NULL;
-
-        // when
-        var ex = InvalidMoneyException.addNull();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("음수 금액 예외는 잘못된 금액을 보존한다")
-    void negativeMoney() {
-        // given
-        final long amount = -1L;
-
-        // when
-        final var ex = InvalidMoneyException.negative(amount);
-
-        // then
-        assertThat(ex.code()).isEqualTo(ProductDomainErrorCode.MONEY_NEGATIVE);
-        assertThat(ex.amount()).isEqualTo(amount);
-    }
-
-    @Test
-    @DisplayName("음수 곱셈 수량 예외는 잘못된 수량을 보존한다")
-    void negativeMultiplyQuantity() {
-        // given
-        final int quantity = -2;
-
-        // when
-        final var ex = InvalidMoneyException.multiplyNegative(quantity);
-
-        // then
-        assertThat(ex.code()).isEqualTo(ProductDomainErrorCode.MONEY_MULTIPLIER_NEGATIVE);
-        assertThat(ex.quantity()).isEqualTo(quantity);
-    }
-
-    @Test
-    @DisplayName("최대 개수 예외는 잘못된 최대 개수를 보존한다")
-    void invalidMaxCount() {
-        // given
-        final int value = 0;
-
-        // when
-        final var ex = InvalidMaxCountException.notPositive(value);
-
-        // then
-        assertThat(ex.code()).isEqualTo(ProductDomainErrorCode.MAX_COUNT_NOT_POSITIVE);
-        assertThat(ex.value()).isEqualTo(value);
-    }
-
-    @Test
-    @DisplayName("InvalidMoneyException required 정상 생성")
-    void moneyRequired() {
-        // given
-        var expectedCode = ProductDomainErrorCode.MONEY_REQUIRED;
-
-        // when
-        var ex = InvalidMoneyException.required();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("ProductDomainErrorCode 모든 코드가 title을 가진다")
+    @DisplayName("상품 Domain ErrorCode는 공개 응답 정보를 모두 제공한다")
     void errorCodes() {
         // given
-        var codes = ProductDomainErrorCode.values();
+        final ProductDomainErrorCode[] errorCodes = ProductDomainErrorCode.values();
 
         // when & then
-        for (var code : codes) {
-            assertThat(code.name()).isNotBlank();
-        }
+        assertThat(errorCodes).allSatisfy(errorCode -> {
+            assertThat(errorCode.code()).isNotBlank();
+            assertThat(errorCode.kind()).isNotNull();
+            assertThat(errorCode.detail()).isNotBlank();
+        });
     }
+
 }

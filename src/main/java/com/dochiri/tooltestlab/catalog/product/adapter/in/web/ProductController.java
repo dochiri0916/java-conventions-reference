@@ -21,11 +21,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.stream.Collectors;
+
 @Tag(name = "상품", description = "상품 등록, 조회, 목록 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
-public class ProductController {
+public final class ProductController {
 
     private final RegisterProductUseCase registerProductUseCase;
     private final GetProductUseCase getProductUseCase;
@@ -40,10 +42,10 @@ public class ProductController {
     public ResponseEntity<RegisterProductResponse> register(@Valid @RequestBody RegisterProductRequest request) {
         final RegisterProductResult result = registerProductUseCase.register(
                 new RegisterProductCommand(request.name(), request.description(), request.priceAmount(),
-                        request.stock(), request.categoryIds()));
+                        request.stock(), request.categoryIds().stream().collect(Collectors.toUnmodifiableSet())));
         return ResponseEntity.ok(new RegisterProductResponse(
                 result.publicId(), result.name(), null, result.priceAmount(),
-                result.stock(), result.status(), result.categoryNames()));
+                result.stock(), result.status().name(), result.categoryNames()));
     }
 
     @Operation(summary = "상품 목록 조회", description = "상품 목록을 페이지네이션으로 조회합니다.")
@@ -59,7 +61,7 @@ public class ProductController {
         final ListProductsResult result = listProductsUseCase.list(page, size);
         final var summaries = result.products().stream()
                 .map(p -> new ProductListResponse.ProductSummary(
-                        p.publicId(), p.name(), p.priceAmount(), p.stock(), p.status(), p.categoryNames()))
+                        p.publicId(), p.name(), p.priceAmount(), p.stock(), p.status().name(), p.categoryNames()))
                 .toList();
         return ResponseEntity.ok(new ProductListResponse(summaries, result.page(), result.size(), result.totalCount()));
     }
@@ -76,6 +78,6 @@ public class ProductController {
         final GetProductResult result = getProductUseCase.getProduct(publicId);
         return ResponseEntity.ok(new GetProductResponse(
                 result.publicId(), result.name(), result.description(), result.priceAmount(),
-                result.stock(), result.status(), result.categoryNames()));
+                result.stock(), result.status().name(), result.categoryNames()));
     }
 }

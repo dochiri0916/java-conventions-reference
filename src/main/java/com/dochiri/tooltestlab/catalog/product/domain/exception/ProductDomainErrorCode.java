@@ -30,8 +30,16 @@ public enum ProductDomainErrorCode implements ErrorCode {
     STOCK_OVERFLOW("STOCK_OVERFLOW", ErrorKind.INVALID_INPUT, "재고가 허용 범위를 초과합니다."),
 
     // PRODUCT_STATUS
-    PRODUCT_STATUS_TRANSITION_NOT_ALLOWED("PRODUCT_STATUS_TRANSITION_NOT_ALLOWED", ErrorKind.INVALID_STATE, "허용되지 않는 상품 상태 변경입니다."),
-    PRODUCT_OPERATION_NOT_ALLOWED("PRODUCT_OPERATION_NOT_ALLOWED", ErrorKind.INVALID_STATE, "현재 상품 상태에서는 요청한 작업을 수행할 수 없습니다.");
+    PRODUCT_STATUS_TRANSITION_NOT_ALLOWED(
+            "PRODUCT_STATUS_TRANSITION_NOT_ALLOWED",
+            ErrorKind.INVALID_STATE,
+            "허용되지 않는 상품 상태 변경입니다."
+    ),
+    PRODUCT_OPERATION_NOT_ALLOWED(
+            "PRODUCT_OPERATION_NOT_ALLOWED",
+            ErrorKind.INVALID_STATE,
+            "현재 상품 상태에서는 요청한 작업을 수행할 수 없습니다."
+    );
 
     private final String code;
     private final ErrorKind kind;

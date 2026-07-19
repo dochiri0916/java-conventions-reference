@@ -1,7 +1,12 @@
 package com.dochiri.tooltestlab.catalog.product.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
-import com.dochiri.tooltestlab.catalog.product.domain.model.*;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductDescription;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Stock;
 
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -1,6 +1,8 @@
 package com.dochiri.tooltestlab.category.domain.exception;
 
 import com.dochiri.tooltestlab.catalog.category.domain.exception.CategoryDomainErrorCode;
+import com.dochiri.tooltestlab.catalog.category.domain.exception.CategoryIdRequiredException;
+import com.dochiri.tooltestlab.catalog.category.domain.exception.CategoryNameRequiredException;
 import com.dochiri.tooltestlab.catalog.category.domain.exception.InvalidCategoryIdException;
 import com.dochiri.tooltestlab.catalog.category.domain.exception.InvalidCategoryNameException;
 import org.junit.jupiter.api.DisplayName;
@@ -17,10 +19,10 @@ class CategoryExceptionTest {
         var expectedCode = CategoryDomainErrorCode.CATEGORY_ID_INVALID;
 
         // when
-        var ex = InvalidCategoryIdException.invalidCatId();
+        var ex = InvalidCategoryIdException.invalid();
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.errorCode()).isEqualTo(expectedCode);
     }
 
     @Test
@@ -30,10 +32,10 @@ class CategoryExceptionTest {
         var expectedCode = CategoryDomainErrorCode.CATEGORY_ID_REQUIRED;
 
         // when
-        var ex = InvalidCategoryIdException.required();
+        var ex = CategoryIdRequiredException.required();
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.errorCode()).isEqualTo(expectedCode);
     }
 
     @Test
@@ -43,10 +45,10 @@ class CategoryExceptionTest {
         var expectedCode = CategoryDomainErrorCode.INVALID_CAT_NAME;
 
         // when
-        var ex = InvalidCategoryNameException.invalidCatName();
+        var ex = InvalidCategoryNameException.invalid();
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.errorCode()).isEqualTo(expectedCode);
     }
 
     @Test
@@ -56,21 +58,23 @@ class CategoryExceptionTest {
         var expectedCode = CategoryDomainErrorCode.CATEGORY_NAME_REQUIRED;
 
         // when
-        var ex = InvalidCategoryNameException.required();
+        var ex = CategoryNameRequiredException.required();
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.errorCode()).isEqualTo(expectedCode);
     }
 
     @Test
-    @DisplayName("CategoryDomainErrorCode 모든 코드가 title을 가진다")
+    @DisplayName("CategoryDomainErrorCode 모든 코드가 안정적인 오류 계약을 가진다")
     void errorCodes() {
         // given
         var codes = CategoryDomainErrorCode.values();
 
         // when & then
         for (var code : codes) {
-            assertThat(code.name()).isNotBlank();
+            assertThat(code.code()).isNotBlank();
+            assertThat(code.kind()).isNotNull();
+            assertThat(code.detail()).isNotBlank();
         }
     }
 }

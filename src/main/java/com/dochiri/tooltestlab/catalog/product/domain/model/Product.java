@@ -37,7 +37,7 @@ public final class Product {
     public static Product create(
             final String name,
             final String description,
-            final int price,
+            final long price,
             final int stock,
             final Set<CategoryId> categoryIds
     ) {
@@ -50,6 +50,15 @@ public final class Product {
                 ProductStatus.PREPARING,
                 categoryIds
         );
+    }
+
+    public static Product create(
+            final String name,
+            final String description,
+            final long price,
+            final int stock
+    ) {
+        return create(name, description, price, stock, Set.of());
     }
 
     public static Product restore(
@@ -70,6 +79,17 @@ public final class Product {
                 status,
                 categoryIds
         );
+    }
+
+    public static Product restore(
+            final ProductId id,
+            final ProductName name,
+            final ProductDescription description,
+            final Money price,
+            final Stock stock,
+            final ProductStatus status
+    ) {
+        return restore(id, name, description, price, stock, status, Set.of());
     }
 
     public Product replaceCategories(final Set<CategoryId> categoryIds) {

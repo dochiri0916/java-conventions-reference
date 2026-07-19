@@ -3,8 +3,10 @@ package com.dochiri.tooltestlab.catalog.category.adapter.in.web;
 import com.dochiri.tooltestlab.catalog.category.adapter.in.web.request.CreateCategoryRequest;
 import com.dochiri.tooltestlab.catalog.category.adapter.in.web.response.CategoryListResponse;
 import com.dochiri.tooltestlab.catalog.category.adapter.in.web.response.CreateCategoryResponse;
+import com.dochiri.tooltestlab.catalog.category.application.port.in.GetCategorySummariesUseCase;
 import com.dochiri.tooltestlab.catalog.category.application.port.in.RegisterCategoryUseCase;
 import com.dochiri.tooltestlab.catalog.category.application.port.in.command.RegisterCategoryCommand;
+import com.dochiri.tooltestlab.catalog.category.application.port.in.result.CategorySummary;
 import com.dochiri.tooltestlab.catalog.category.application.port.in.result.RegisterCategoryResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,9 +23,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
-public class CategoryController {
+public final class CategoryController {
 
     private final RegisterCategoryUseCase registerCategoryUseCase;
+    private final GetCategorySummariesUseCase getCategorySummariesUseCase;
 
     @Operation(summary = "카테고리 등록", description = "새로운 카테고리를 등록합니다.")
     @ApiResponses({
@@ -43,6 +46,14 @@ public class CategoryController {
     })
     @GetMapping
     public ResponseEntity<List<CategoryListResponse>> list() {
-        return ResponseEntity.ok(List.of());
+        final List<CategoryListResponse> response = getCategorySummariesUseCase.getAll().stream()
+                .map(CategoryController::toResponse)
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+    private static CategoryListResponse toResponse(final CategorySummary summary) {
+        return new CategoryListResponse(summary.publicId(), summary.name());
     }
 }

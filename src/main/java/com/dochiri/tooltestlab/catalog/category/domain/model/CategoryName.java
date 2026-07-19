@@ -7,11 +7,11 @@ public record CategoryName(String value) {
 
     public CategoryName {
         if (value == null) {
-            throw new CategoryNameRequiredException();
+            throw CategoryNameRequiredException.required();
         }
         value = value.strip();
         if (value.isBlank()) {
-            throw new InvalidCategoryNameException();
+            throw InvalidCategoryNameException.invalid();
         }
     }
 }

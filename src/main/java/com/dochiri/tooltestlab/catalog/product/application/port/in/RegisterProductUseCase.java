@@ -1,10 +1,10 @@
 package com.dochiri.tooltestlab.catalog.product.application.port.in;
 
 import com.dochiri.tooltestlab.catalog.product.application.port.in.command.RegisterProductCommand;
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.result.RegisterProductResult;
 
 public interface RegisterProductUseCase {
 
-    ProductId register(RegisterProductCommand command);
+    RegisterProductResult register(RegisterProductCommand command);
 
 }

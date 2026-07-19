@@ -93,7 +93,7 @@ class CategoryApiTest {
         // then
         assertThat(result.getResponse().getStatus()).isEqualTo(409);
         assertThat(result.getResponse().getContentAsString()).contains(
-                "CATEGORY.DUPLICATE_CATEGORY_NAME", "카테고리명 중복", "이미 등록된 카테고리명입니다.");
+                "DUPLICATE_CATEGORY_NAME", "이미 등록된 카테고리명입니다.", categoryName);
     }
 
     @Test

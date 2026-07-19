@@ -9,26 +9,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.net.URI;
-import java.util.Locale;
-
 @Slf4j
 @RestControllerAdvice
 public final class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private static final String INTERNAL_ERROR_TITLE = "서버 오류";
-    private static final String INTERNAL_ERROR_DETAIL = "일시적인 오류가 발생했습니다.";
-
     @ExceptionHandler(BusinessException.class)
     public ProblemDetail handleBusinessException(final BusinessException exception) {
         final ErrorCode errorCode = exception.errorCode();
-        final HttpStatus status = statusOf(errorCode.kind());
-
-        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, exception.getMessage());
-
-        problemDetail.setTitle(titleOf(errorCode.kind()));
-        problemDetail.setType(URI.create("/problems/" + toType(errorCode.code())));
-        problemDetail.setProperty("code", errorCode.code());
+        final ProblemDetail problemDetail = toProblemDetail(errorCode);
 
         exception.extensions().forEach(problemDetail::setProperty);
 
@@ -37,21 +25,7 @@ public final class GlobalExceptionHandler extends ResponseEntityExceptionHandler
 
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
     public ProblemDetail handleOptimisticLockingFailure(final ObjectOptimisticLockingFailureException exception) {
-        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.CONFLICT,
-                "다른 요청에서 이미 리소스를 변경했습니다. 최신 상태를 조회한 후 다시 시도해 주세요."
-        );
-
-        problemDetail.setTitle("동시 수정 충돌");
-        problemDetail.setType(
-                URI.create("/problems/concurrent-modification")
-        );
-        problemDetail.setProperty(
-                "code",
-                "CONCURRENT_MODIFICATION"
-        );
-
-        return problemDetail;
+        return toProblemDetail(GlobalErrorCode.CONCURRENT_MODIFICATION);
     }
 
     @ExceptionHandler(Exception.class)
@@ -66,11 +40,15 @@ public final class GlobalExceptionHandler extends ResponseEntityExceptionHandler
                 exception
         );
 
+        return toProblemDetail(GlobalErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    private static ProblemDetail toProblemDetail(final ErrorCode errorCode) {
         final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                INTERNAL_ERROR_DETAIL
+                statusOf(errorCode.kind()),
+                errorCode.detail()
         );
-        problemDetail.setTitle(INTERNAL_ERROR_TITLE);
+        problemDetail.setProperty("code", errorCode.code());
 
         return problemDetail;
     }
@@ -81,22 +59,8 @@ public final class GlobalExceptionHandler extends ResponseEntityExceptionHandler
             case NOT_FOUND -> HttpStatus.NOT_FOUND;
             case CONFLICT, INVALID_STATE -> HttpStatus.CONFLICT;
             case FORBIDDEN -> HttpStatus.FORBIDDEN;
+            case INTERNAL_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
-    }
-
-    private static String titleOf(final ErrorKind kind) {
-        return switch (kind) {
-            case INVALID_INPUT -> "잘못된 요청";
-            case NOT_FOUND -> "리소스를 찾을 수 없음";
-            case CONFLICT -> "요청 충돌";
-            case FORBIDDEN -> "접근 거부";
-            case INVALID_STATE -> "잘못된 상태";
-        };
-    }
-
-    private static String toType(final String code) {
-        return code.toLowerCase(Locale.ROOT)
-                .replace('_', '-');
     }
 
 }

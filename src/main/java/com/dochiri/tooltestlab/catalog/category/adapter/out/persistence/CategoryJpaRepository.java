@@ -9,4 +9,6 @@ public interface CategoryJpaRepository extends JpaRepository<CategoryEntity, Lon
 
     List<CategoryEntity> findAllByPublicIdIn(Collection<String> publicIds);
 
+    List<CategoryEntity> findAllByNameIn(Collection<String> names);
+
 }
