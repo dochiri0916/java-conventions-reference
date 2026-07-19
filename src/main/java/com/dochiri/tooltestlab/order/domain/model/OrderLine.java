@@ -1,9 +1,9 @@
 package com.dochiri.tooltestlab.order.domain.model;
 
-import com.dochiri.tooltestlab.order.domain.exception.InvalidQuantityException;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
+import com.dochiri.tooltestlab.order.domain.exception.InvalidQuantityException;
 
 public record OrderLine(
         ProductId productId,

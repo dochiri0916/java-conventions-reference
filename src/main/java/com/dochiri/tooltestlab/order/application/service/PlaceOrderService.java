@@ -2,6 +2,9 @@ package com.dochiri.tooltestlab.order.application.service;
 
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderResult;
@@ -13,9 +16,6 @@ import com.dochiri.tooltestlab.order.domain.model.Order;
 import com.dochiri.tooltestlab.order.domain.model.OrderLine;
 import com.dochiri.tooltestlab.order.domain.model.OrderLines;
 import com.dochiri.tooltestlab.order.domain.model.OrderPlacedItems;
-import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +44,7 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
 
         final List<OrderLine> orderLines = new ArrayList<>();
         for (var cartItem : cart.items().values()) {
-            final Product product = productRepositoryPort.findByPublicId(cartItem.productId().value())
+            final Product product = productRepositoryPort.findById(cartItem.productId().value())
                     .orElseThrow(() -> ProductNotFoundException.productNotFound(cartItem.productId().value()));
 
             if (product.stock().value() < cartItem.quantity().value()) {

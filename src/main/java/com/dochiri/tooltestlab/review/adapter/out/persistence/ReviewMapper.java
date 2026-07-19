@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.review.adapter.out.persistence;
 
-import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.review.domain.model.Rating;
 import com.dochiri.tooltestlab.review.domain.model.Review;
 import com.dochiri.tooltestlab.review.domain.model.ReviewContent;

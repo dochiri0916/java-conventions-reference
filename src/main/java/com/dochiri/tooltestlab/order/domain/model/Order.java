@@ -1,11 +1,11 @@
 package com.dochiri.tooltestlab.order.domain.model;
 
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderIdException;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderLinesException;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidShippingAddressException;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
 
 public record Order(
         OrderId id,
