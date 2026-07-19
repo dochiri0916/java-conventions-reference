@@ -37,7 +37,7 @@ class AddToCartServiceTest {
     void productNotFoundThrowsException() {
         // given
         var command = new AddToCartCommand("member1", "product1", 2);
-        when(productRepositoryPort.findByPublicId(anyString())).thenReturn(Optional.empty());
+        when(productRepositoryPort.findById(anyString())).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> addToCartService.add(command))

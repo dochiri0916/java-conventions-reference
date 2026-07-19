@@ -4,6 +4,11 @@ import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
 import com.dochiri.tooltestlab.cart.domain.model.CartItem;
 import com.dochiri.tooltestlab.cart.domain.model.CartItems;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
 import com.dochiri.tooltestlab.order.application.exception.NotOrderOwnerException;
@@ -12,11 +17,6 @@ import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
 import com.dochiri.tooltestlab.order.application.port.out.OrderEventPort;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
 import com.dochiri.tooltestlab.order.domain.model.*;
-import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -162,7 +162,7 @@ class OrderServiceMockTest {
         var cmd = createPlaceOrderCommand();
         var cart = createCartWithItem("m1");
         when(cartRepositoryPort.findByMemberId("m1")).thenReturn(Optional.of(cart));
-        when(productRepositoryPort.findByPublicId("p1")).thenReturn(Optional.empty());
+        when(productRepositoryPort.findById("p1")).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> placeOrderService.place(cmd))
@@ -182,7 +182,7 @@ class OrderServiceMockTest {
                 0
         );
         when(cartRepositoryPort.findByMemberId("m1")).thenReturn(Optional.of(cart));
-        when(productRepositoryPort.findByPublicId("p1")).thenReturn(Optional.of(lowStockProduct));
+        when(productRepositoryPort.findById("p1")).thenReturn(Optional.of(lowStockProduct));
 
         // when & then
         assertThatThrownBy(() -> placeOrderService.place(cmd))

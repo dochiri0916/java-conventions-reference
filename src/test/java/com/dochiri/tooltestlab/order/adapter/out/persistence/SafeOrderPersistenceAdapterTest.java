@@ -1,10 +1,10 @@
 package com.dochiri.tooltestlab.order.adapter.out.persistence;
 
-import com.dochiri.tooltestlab.member.domain.model.MemberId;
-import com.dochiri.tooltestlab.order.domain.model.*;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
+import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.order.domain.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

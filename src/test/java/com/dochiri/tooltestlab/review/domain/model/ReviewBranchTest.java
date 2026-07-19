@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.review.domain.model;
 
-import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

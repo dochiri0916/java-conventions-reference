@@ -6,10 +6,10 @@ import com.dochiri.tooltestlab.catalog.category.domain.exception.InvalidCategory
 import com.dochiri.tooltestlab.catalog.category.domain.exception.InvalidCategoryNameException;
 import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
 import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryName;
-import com.dochiri.tooltestlab.order.domain.model.*;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductDescription;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
+import com.dochiri.tooltestlab.order.domain.model.*;
 import com.dochiri.tooltestlab.review.domain.model.ReviewContent;
 import com.dochiri.tooltestlab.review.domain.model.ReviewId;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;

@@ -66,7 +66,7 @@ class RegisterProductServiceMockTest {
     @DisplayName("getProduct - 존재하지 않는 상품 예외")
     void retrieveProductNotFound() {
         // given
-        when(productRepositoryPort.findByPublicId("nonexistent")).thenReturn(Optional.empty());
+        when(productRepositoryPort.findById("nonexistent")).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> getProductService.getProduct("nonexistent"))

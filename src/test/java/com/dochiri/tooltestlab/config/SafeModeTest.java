@@ -4,15 +4,15 @@ import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.model.Cart;
 import com.dochiri.tooltestlab.catalog.category.domain.model.Category;
 import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryName;
-import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
-import com.dochiri.tooltestlab.member.domain.model.*;
-import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
-import com.dochiri.tooltestlab.order.domain.model.*;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
+import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
+import com.dochiri.tooltestlab.member.domain.model.*;
+import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
+import com.dochiri.tooltestlab.order.domain.model.*;
 import com.dochiri.tooltestlab.review.application.exception.DuplicateReviewException;
 import com.dochiri.tooltestlab.review.application.exception.ReviewApplicationErrorCode;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
@@ -73,7 +73,7 @@ class SafeModeTest {
 
         // when
         var saved = productRepositoryPort.save(product, List.of());
-        var found = productRepositoryPort.findByPublicId(saved.id().value());
+        var found = productRepositoryPort.findById(saved.id().value());
 
         // then
         assertThat(found).isPresent();

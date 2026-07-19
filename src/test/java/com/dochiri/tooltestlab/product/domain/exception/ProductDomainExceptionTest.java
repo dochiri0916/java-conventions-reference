@@ -169,7 +169,7 @@ class ProductDomainExceptionTest {
         final var ex = InvalidMoneyException.multiplyNegative(quantity);
 
         // then
-        assertThat(ex.code()).isEqualTo(ProductDomainErrorCode.MONEY_MULTIPLY_NEGATIVE);
+        assertThat(ex.code()).isEqualTo(ProductDomainErrorCode.MONEY_MULTIPLIER_NEGATIVE);
         assertThat(ex.quantity()).isEqualTo(quantity);
     }
 

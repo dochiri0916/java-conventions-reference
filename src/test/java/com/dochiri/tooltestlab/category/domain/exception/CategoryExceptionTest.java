@@ -14,7 +14,7 @@ class CategoryExceptionTest {
     @DisplayName("InvalidCategoryIdException 정상 생성")
     void invalidCatId() {
         // given
-        var expectedCode = CategoryDomainErrorCode.INVALID_CAT_ID;
+        var expectedCode = CategoryDomainErrorCode.CATEGORY_ID_INVALID;
 
         // when
         var ex = InvalidCategoryIdException.invalidCatId();

@@ -2,13 +2,13 @@ package com.dochiri.tooltestlab.adapter;
 
 import com.dochiri.tooltestlab.catalog.category.domain.model.Category;
 import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryName;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
 import com.dochiri.tooltestlab.member.domain.model.Email;
 import com.dochiri.tooltestlab.member.domain.model.EncodedPassword;
 import com.dochiri.tooltestlab.member.domain.model.Member;
 import com.dochiri.tooltestlab.member.domain.model.MemberName;
-import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

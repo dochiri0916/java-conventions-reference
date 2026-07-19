@@ -1,9 +1,9 @@
 package com.dochiri.tooltestlab.product.adapter.in.web;
 
+import com.dochiri.tooltestlab.catalog.product.application.exception.ProductApplicationErrorCode;
 import com.dochiri.tooltestlab.global.error.ApiErrorCode;
 import com.dochiri.tooltestlab.global.error.ApiExceptionMapper;
 import com.dochiri.tooltestlab.global.error.ProblemType;
-import com.dochiri.tooltestlab.catalog.product.application.exception.ProductApplicationErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
