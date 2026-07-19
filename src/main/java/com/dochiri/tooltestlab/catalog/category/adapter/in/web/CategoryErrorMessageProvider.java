@@ -13,7 +13,7 @@ import java.util.Map;
 public class CategoryErrorMessageProvider implements ApiErrorMessageProvider {
 
     private static final Map<String, ApiErrorMessage> ERROR_MESSAGES = Map.ofEntries(
-            message(CategoryDomainErrorCode.INVALID_CAT_ID, "카테고리 ID 오류", "카테고리 ID는 공백일 수 없습니다."),
+            message(CategoryDomainErrorCode.CATEGORY_ID_INVALID, "카테고리 ID 오류", "카테고리 ID는 공백일 수 없습니다."),
             message(CategoryDomainErrorCode.CATEGORY_ID_REQUIRED, "카테고리 ID 누락", "카테고리 ID는 필수입니다."),
             message(CategoryDomainErrorCode.INVALID_CAT_NAME, "카테고리명 오류", "카테고리명은 공백일 수 없습니다."),
             message(CategoryDomainErrorCode.CATEGORY_NAME_REQUIRED, "카테고리명 누락", "카테고리명은 필수입니다."),

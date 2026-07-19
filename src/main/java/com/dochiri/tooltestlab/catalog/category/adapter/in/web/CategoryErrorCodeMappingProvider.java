@@ -22,7 +22,7 @@ public class CategoryErrorCodeMappingProvider implements ErrorCodeMappingProvide
     @Override
     public Map<String, ApiExceptionMapper.Mapping> errorCodeMappings() {
         return Map.ofEntries(
-                validation(CategoryDomainErrorCode.INVALID_CAT_ID),
+                validation(CategoryDomainErrorCode.CATEGORY_ID_INVALID),
                 validation(CategoryDomainErrorCode.CATEGORY_ID_REQUIRED),
                 validation(CategoryDomainErrorCode.INVALID_CAT_NAME),
                 validation(CategoryDomainErrorCode.CATEGORY_NAME_REQUIRED),

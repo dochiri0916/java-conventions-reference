@@ -1,7 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.domain.model;
 
 import com.dochiri.tooltestlab.catalog.product.domain.exception.InvalidProductIdException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDomainException;
 import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductIdRequiredException;
 
 import java.util.UUID;

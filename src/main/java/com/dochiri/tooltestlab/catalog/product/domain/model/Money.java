@@ -1,6 +1,8 @@
 package com.dochiri.tooltestlab.catalog.product.domain.model;
 
-import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDomainException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.MoneyMultiplyNegativeQuantityException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.MoneyOverflowException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.NegativeMoneyException;
 
 import static java.util.Objects.requireNonNull;
 
@@ -10,7 +12,7 @@ public record Money(long amount) {
 
     public Money {
         if (amount < 0) {
-            throw ProductDomainException.negativeMoney(amount);
+            throw new NegativeMoneyException(amount);
         }
     }
 
@@ -22,13 +24,13 @@ public record Money(long amount) {
                     Math.addExact(this.amount, other.amount)
             );
         } catch (final ArithmeticException exception) {
-            throw ProductDomainException.moneyOverflow();
+            throw new MoneyOverflowException();
         }
     }
 
     public Money multiply(final int quantity) {
         if (quantity < 0) {
-            throw ProductDomainException.moneyMultiplyNegativeQuantity(quantity);
+            throw new MoneyMultiplyNegativeQuantityException(quantity);
         }
 
         try {
@@ -36,7 +38,7 @@ public record Money(long amount) {
                     Math.multiplyExact(this.amount, (long) quantity)
             );
         } catch (final ArithmeticException exception) {
-            throw ProductDomainException.moneyOverflow();
+            throw new MoneyOverflowException();
         }
     }
 }

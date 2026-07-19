@@ -1,7 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.domain.model;
 
 import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDomainException;
 
 import java.util.Set;
 
@@ -32,9 +31,7 @@ public final class Product {
         this.price = requireNonNull(price, "상품 가격은 null일 수 없습니다.");
         this.stock = requireNonNull(stock, "상품 재고는 null일 수 없습니다.");
         this.status = requireNonNull(status, "상품 상태는 null일 수 없습니다.");
-        this.categoryIds = Set.copyOf(
-                requireNonNull(categoryIds, "카테고리 ID 목록은 null일 수 없습니다.")
-        );
+        this.categoryIds = Set.copyOf(requireNonNull(categoryIds, "카테고리 ID 목록은 null일 수 없습니다."));
     }
 
     public static Product create(
@@ -100,40 +97,15 @@ public final class Product {
     }
 
     public Product startSale() {
-        if (status != ProductStatus.PREPARING
-                && status != ProductStatus.SALE_ENDED) {
-            throw ProductDomainException.statusTransitionNotAllowed(status, ProductStatus.ON_SALE);
-        }
-
-        return copy(
-                stock,
-                ProductStatus.ON_SALE,
-                categoryIds
-        );
+        return changeStatus(status.startSale());
     }
 
     public Product endSale() {
-        if (status != ProductStatus.ON_SALE) {
-            throw ProductDomainException.statusTransitionNotAllowed(status, ProductStatus.SALE_ENDED);
-        }
-
-        return copy(
-                stock,
-                ProductStatus.SALE_ENDED,
-                categoryIds
-        );
+        return changeStatus(status.endSale());
     }
 
     public Product discontinue() {
-        if (status == ProductStatus.DISCONTINUED) {
-            return this;
-        }
-
-        return copy(
-                stock,
-                ProductStatus.DISCONTINUED,
-                categoryIds
-        );
+        return changeStatus(status.discontinue());
     }
 
     public StockStatus stockStatus() {
@@ -186,6 +158,18 @@ public final class Product {
                 price,
                 stock,
                 status,
+                categoryIds
+        );
+    }
+
+    private Product changeStatus(final ProductStatus changedStatus) {
+        if (status == changedStatus) {
+            return this;
+        }
+
+        return copy(
+                stock,
+                changedStatus,
                 categoryIds
         );
     }
