@@ -23,6 +23,6 @@ public class GetCategorySummariesService implements GetCategorySummariesUseCase 
             return List.of();
         }
 
-        return categoryRepositoryPort.;
+        return null;
     }
 }

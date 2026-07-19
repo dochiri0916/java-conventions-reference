@@ -58,6 +58,10 @@ public final class Category {
         return name;
     }
 
+    public CategoryStatus state() {
+        return status;
+    }
+
     @Override
     public boolean equals(final Object other) {
         return this == other
