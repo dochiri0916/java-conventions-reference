@@ -37,9 +37,9 @@ public final class ProductApplicationException extends ApplicationException {
     public static ProductApplicationException categoriesNotFound(final Set<String> categoryIds) {
         return new ProductApplicationException(
                 ProductApplicationErrorCode.CATEGORY_NOT_FOUND,
-                "일부 카테고리를 찾을 수 없습니다. categoryIds=%s"
+                "일부 카테고리를 찾을 수 없습니다. existingCategoryIds=%s"
                         .formatted(categoryIds),
-                Map.of("categoryIds", Set.copyOf(categoryIds))
+                Map.of("existingCategoryIds", Set.copyOf(categoryIds))
         );
     }
 

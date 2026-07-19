@@ -15,7 +15,7 @@ public record ProductId(String value) {
         value = value.strip();
 
         if (value.isBlank()) {
-            throw new InvalidProductIdException();
+            throw new InvalidProductIdException(value);
         }
     }
 
