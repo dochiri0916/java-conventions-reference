@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -30,6 +31,25 @@ public final class GlobalExceptionHandler extends ResponseEntityExceptionHandler
         problemDetail.setProperty("code", errorCode.code());
 
         exception.extensions().forEach(problemDetail::setProperty);
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ProblemDetail handleOptimisticLockingFailure(final ObjectOptimisticLockingFailureException exception) {
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                "다른 요청에서 이미 리소스를 변경했습니다. 최신 상태를 조회한 후 다시 시도해 주세요."
+        );
+
+        problemDetail.setTitle("동시 수정 충돌");
+        problemDetail.setType(
+                URI.create("/problems/concurrent-modification")
+        );
+        problemDetail.setProperty(
+                "code",
+                "CONCURRENT_MODIFICATION"
+        );
 
         return problemDetail;
     }
