@@ -53,27 +53,27 @@ public class ProductEntity {
     @Getter(AccessLevel.NONE)
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
-            name = "product_category_references",
+            name = "product_categories",
             joinColumns = @JoinColumn(
                     name = "product_id",
                     nullable = false
             ),
             uniqueConstraints = {
                     @UniqueConstraint(
-                            name = "uk_product_category_references",
+                            name = "uk_product_categories_product_category",
                             columnNames = {
                                     "product_id",
-                                    "category_reference_id"
+                                    "category_public_id"
                             }
                     )
             }
     )
     @Column(
-            name = "category_reference_id",
+            name = "category_public_id",
             nullable = false,
             length = 32
     )
-    private Set<String> categoryReferenceIds = new HashSet<>();
+    private Set<String> categoryPublicIds = new HashSet<>();
 
     private ProductEntity(
             final String publicId,
@@ -81,7 +81,8 @@ public class ProductEntity {
             final String description,
             long priceAmount,
             final int stock,
-            final ProductStatus status
+            final ProductStatus status,
+            final Set<String> categoryPublicIds
     ) {
         this.publicId = publicId;
         this.name = name;
@@ -89,6 +90,7 @@ public class ProductEntity {
         this.priceAmount = priceAmount;
         this.stock = stock;
         this.status = status;
+        replaceCategoryPublicIds(categoryPublicIds);
     }
 
     static ProductEntity create(
@@ -97,7 +99,8 @@ public class ProductEntity {
             final String description,
             final long priceAmount,
             final int stock,
-            final ProductStatus status
+            final ProductStatus status,
+            final Set<String> categoryPublicIds
     ) {
         return new ProductEntity(
                 publicId,
@@ -105,7 +108,8 @@ public class ProductEntity {
                 description,
                 priceAmount,
                 stock,
-                status
+                status,
+                categoryPublicIds
         );
     }
 
@@ -114,24 +118,26 @@ public class ProductEntity {
             final String description,
             final long priceAmount,
             final int stock,
-            final ProductStatus status
+            final ProductStatus status,
+            final Set<String> categoryPublicIds
     ) {
         this.name = name;
         this.description = description;
         this.priceAmount = priceAmount;
         this.stock = stock;
         this.status = status;
+        replaceCategoryPublicIds(categoryPublicIds);
     }
 
-    Set<String> categoryReferenceIds() {
-        return Set.copyOf(categoryReferenceIds);
+    Set<String> categoryPublicIds() {
+        return Set.copyOf(categoryPublicIds);
     }
 
-    void replaceCategoryReferenceIds(final Set<String> categoryReferenceIds) {
-        final Set<String> replacement = Set.copyOf(categoryReferenceIds);
+    private void replaceCategoryPublicIds(final Set<String> categoryPublicIds) {
+        final Set<String> replacement = Set.copyOf(categoryPublicIds);
 
-        this.categoryReferenceIds.clear();
-        this.categoryReferenceIds.addAll(replacement);
+        this.categoryPublicIds.clear();
+        this.categoryPublicIds.addAll(replacement);
     }
 
 }

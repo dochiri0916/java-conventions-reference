@@ -1,10 +1,10 @@
 package com.dochiri.tooltestlab.catalog.product.application.service;
 
-import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import com.dochiri.tooltestlab.catalog.category.domain.model.Category;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.ListProductsUseCase;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.result.ListProductsResult;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;

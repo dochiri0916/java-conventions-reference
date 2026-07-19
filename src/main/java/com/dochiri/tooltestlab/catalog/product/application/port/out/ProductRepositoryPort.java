@@ -1,15 +1,18 @@
 package com.dochiri.tooltestlab.catalog.product.application.port.out;
 
 import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
+import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;
 
 public interface ProductRepositoryPort {
 
-    Product save(Product product);
+    Product create(Product product);
 
-    Optional<Product> findByPublicId(String publicId);
+    Product update(Product product);
+
+    Optional<Product> findById(ProductId productId);
 
     Page<Product> findAll(int page, int size);
 

@@ -3,8 +3,6 @@ package com.dochiri.tooltestlab.catalog.product.application.service;
 import com.dochiri.tooltestlab.catalog.product.application.exception.ProductApplicationException;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.GetProductUseCase;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.result.GetProductResult;
-import com.dochiri.tooltestlab.catalog.product.application.port.out.CategoryReferenceData;
-import com.dochiri.tooltestlab.catalog.product.application.port.out.CategoryReferenceQueryPort;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +22,7 @@ public final class GetProductService implements GetProductUseCase {
     @Override
     @Transactional(readOnly = true)
     public GetProductResult getProduct(final String publicId) {
-        final Product product = productRepositoryPort.findByPublicId(publicId)
+        final Product product = productRepositoryPort.findById(publicId)
                 .orElseThrow(() -> ProductApplicationException.notFound(publicId));
 
         final List<String> categoryNames = findCategoryNames(product.categoryReferences());
