@@ -63,7 +63,7 @@ class ProductApiTest {
                 "description", "Apple M4 Pro 칩 탑재",
                 "priceAmount", 3_690_000L,
                 "stock", 100,
-                "categoryIds", List.of());
+                "existingCategoryIds", List.of());
 
         // when
         var result = mockMvc.perform(post("/api/products")
@@ -87,7 +87,7 @@ class ProductApiTest {
                     "description", "설명" + i,
                     "priceAmount", 10000L * (i + 1),
                     "stock", 10,
-                    "categoryIds", List.of());
+                    "existingCategoryIds", List.of());
             mockMvc.perform(post("/api/products")
                     .session(session)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -115,7 +115,7 @@ class ProductApiTest {
                 "description", "고성능 노트북",
                 "priceAmount", 3_690_000L,
                 "stock", 100,
-                "categoryIds", List.of());
+                "existingCategoryIds", List.of());
         String response = mockMvc.perform(post("/api/products")
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -156,7 +156,7 @@ class ProductApiTest {
                 "description", "고성능 노트북",
                 "priceAmount", 3_690_000L,
                 "stock", 100,
-                "categoryIds", List.of());
+                "existingCategoryIds", List.of());
 
         // when
         var result = mockMvc.perform(post("/api/products")
@@ -186,7 +186,7 @@ class ProductApiTest {
                 "description", "카테고리 포함 상품",
                 "priceAmount", 50_000L,
                 "stock", 50,
-                "categoryIds", List.of(categoryId));
+                "existingCategoryIds", List.of(categoryId));
 
         // when
         var result = mockMvc.perform(post("/api/products")

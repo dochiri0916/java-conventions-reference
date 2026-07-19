@@ -58,7 +58,7 @@ class OrderApiTest {
                 "description", "주문 테스트용",
                 "priceAmount", 50_000L,
                 "stock", 50,
-                "categoryIds", List.of());
+                "existingCategoryIds", List.of());
         String productResponse = mockMvc.perform(post("/api/products")
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON)

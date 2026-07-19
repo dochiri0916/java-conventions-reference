@@ -58,7 +58,7 @@ class CartApiTest {
                 "description", "장바구니 테스트용",
                 "priceAmount", 10_000L,
                 "stock", 100,
-                "categoryIds", List.of());
+                "existingCategoryIds", List.of());
         String productResponse = mockMvc.perform(post("/api/products")
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON)

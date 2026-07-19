@@ -162,6 +162,6 @@ class CommandValidationTest {
         var cmd = new RegisterProductCommand(name, description, 1000, stock, null);
 
         // then
-        assertThat(cmd.categoryIds()).isEmpty();
+        assertThat(cmd.existingCategoryIds()).isEmpty();
     }
 }
