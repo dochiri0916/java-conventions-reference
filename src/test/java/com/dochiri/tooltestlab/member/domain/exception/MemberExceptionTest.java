@@ -8,149 +8,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MemberExceptionTest {
 
     @Test
-    @DisplayName("InvalidEmailException 정상 생성")
-    void invalidEmail() {
+    @DisplayName("회원 도메인 예외는 ErrorCode와 안전한 상세 정보를 가진다")
+    void memberDomainException() {
         // given
-        var expectedCode = MemberDomainErrorCode.INVALID_EMAIL;
 
         // when
-        var ex = InvalidEmailException.invalidEmail();
+        final MemberDomainException exception = MemberDomainException.invalidEmail("invalid-email");
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidEmailException required 정상 생성")
-    void emailRequired() {
-        // given
-        var expectedCode = MemberDomainErrorCode.EMAIL_REQUIRED;
-
-        // when
-        var ex = InvalidEmailException.required();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidMemberIdException 정상 생성")
-    void invalidMemberId() {
-        // given
-        var expectedCode = MemberDomainErrorCode.INVALID_MEMBER_ID;
-
-        // when
-        var ex = InvalidMemberIdException.invalidMemberId();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidMemberIdException required 정상 생성")
-    void memberIdRequired() {
-        // given
-        var expectedCode = MemberDomainErrorCode.MEMBER_ID_REQUIRED;
-
-        // when
-        var ex = InvalidMemberIdException.required();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidMemberNameException 정상 생성")
-    void invalidMbrName() {
-        // given
-        var expectedCode = MemberDomainErrorCode.INVALID_MBR_NAME;
-
-        // when
-        var ex = InvalidMemberNameException.invalidMbrName();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidMemberNameException required 정상 생성")
-    void memberNameRequired() {
-        // given
-        var expectedCode = MemberDomainErrorCode.MEMBER_NAME_REQUIRED;
-
-        // when
-        var ex = InvalidMemberNameException.required();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidPasswordException 정상 생성")
-    void invalidPassword() {
-        // given
-        var expectedCode = MemberDomainErrorCode.INVALID_PASSWORD;
-
-        // when
-        var ex = InvalidPasswordException.invalidPassword();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidPasswordException required 정상 생성")
-    void passwordRequired() {
-        // given
-        var expectedCode = MemberDomainErrorCode.PASSWORD_REQUIRED;
-
-        // when
-        var ex = InvalidPasswordException.required();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidMemberException 정상 생성")
-    void invalidMember() {
-        // given
-        var expectedCode = MemberDomainErrorCode.INVALID_MEMBER;
-
-        // when
-        var ex = InvalidMemberException.invalidMember();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidMemberException required 정상 생성")
-    void memberRequired() {
-        // given
-        var expectedCode = MemberDomainErrorCode.MEMBER_REQUIRED;
-
-        // when
-        var ex = InvalidMemberException.required();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("MemberDomainErrorCode는 안정적인 코드 이름만 가진다")
-    void errorCodes() {
-        // given
-        var codes = MemberDomainErrorCode.values();
-
-        // when
-        var codeNames = java.util.Arrays.stream(codes)
-                .map(Enum::name)
-                .toList();
-
-        // then
-        for (var code : codes) {
-            assertThat(codeNames).contains(code.name());
-        }
+        assertThat(exception.errorCode()).isEqualTo(MemberDomainErrorCode.EMAIL_INVALID);
+        assertThat(exception.extensions()).isEmpty();
+        assertThat(exception.getMessage()).isEqualTo(MemberDomainErrorCode.EMAIL_INVALID.detail());
     }
 }

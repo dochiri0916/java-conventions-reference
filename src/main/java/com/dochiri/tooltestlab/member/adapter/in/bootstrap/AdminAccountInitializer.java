@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.member.adapter.in.bootstrap;
 
-import com.dochiri.tooltestlab.member.application.exception.DuplicateEmailException;
+import com.dochiri.tooltestlab.member.application.exception.MemberApplicationErrorCode;
+import com.dochiri.tooltestlab.member.application.exception.MemberApplicationException;
 import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberCommand;
 import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberUseCase;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,11 @@ public class AdminAccountInitializer implements CommandLineRunner {
         try {
             registerMemberUseCase.register(new RegisterMemberCommand("admin@test.com", "1234", "관리자"));
             LOG.info("[AdminAccountInitializer] 관리자 계정 생성 완료");
-        } catch (DuplicateEmailException e) {
-            LOG.info("[AdminAccountInitializer] 관리자 계정이 이미 존재합니다: {}", e.getMessage());
+        } catch (MemberApplicationException exception) {
+            if (exception.errorCode() != MemberApplicationErrorCode.DUPLICATE_EMAIL) {
+                throw exception;
+            }
+            LOG.info("[AdminAccountInitializer] 관리자 계정이 이미 존재합니다: {}", exception.getMessage());
         }
     }
 }

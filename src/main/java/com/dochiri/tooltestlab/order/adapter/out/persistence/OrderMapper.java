@@ -26,7 +26,7 @@ final class OrderMapper {
                 new RecipientName(entity.getRecipientName()), new Phone(entity.getPhone()),
                 new StreetAddress(entity.getAddress()), new ZipCode(entity.getZipCode()));
 
-        return new Order(
+        return Order.restore(
                 new OrderId(entity.getOrderId()), new MemberId(entity.getMemberId()), OrderLines.from(domainItems),
                 OrderStatus.valueOf(entity.getStatus()), shippingAddress, new Money(entity.getTotalAmount()));
     }

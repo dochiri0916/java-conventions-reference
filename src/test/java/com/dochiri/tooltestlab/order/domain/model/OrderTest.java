@@ -4,7 +4,7 @@ import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
-import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
+import com.dochiri.tooltestlab.order.domain.exception.OrderDomainException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -74,7 +74,7 @@ class OrderTest {
 
         // when & then
         assertThatThrownBy(cancelled::cancel)
-                .isInstanceOf(InvalidOrderStatusException.class);
+                .isInstanceOf(OrderDomainException.class);
     }
 
     @Test
@@ -95,6 +95,6 @@ class OrderTest {
 
         // when & then
         assertThatThrownBy(delivered::cancel)
-                .isInstanceOf(InvalidOrderStatusException.class);
+                .isInstanceOf(OrderDomainException.class);
     }
 }

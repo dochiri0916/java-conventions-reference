@@ -1,7 +1,6 @@
 package com.dochiri.tooltestlab.cart.domain.model;
 
-import com.dochiri.tooltestlab.cart.domain.exception.CartItemLimitExceededException;
-import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException;
+import com.dochiri.tooltestlab.cart.domain.exception.CartDomainException;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
@@ -89,7 +88,7 @@ class CartBranchTest {
 
         // when & then
         assertThatThrownBy(() -> cart.removeItem(nonExistentProductId))
-                .isInstanceOf(InvalidCartItemException.class);
+                .isInstanceOf(CartDomainException.class);
     }
 
     @Test
@@ -128,7 +127,7 @@ class CartBranchTest {
     void equalsDifferentInstanceSameId() {
         // given
         var c1 = Cart.create(new MemberId("m1"));
-        var c2 = new Cart(c1.id(), new MemberId("m2"), CartItems.empty());
+        var c2 = Cart.restore(c1.id(), new MemberId("m2"), CartItems.empty());
 
         // when
         var result = c1.equals(c2);
@@ -155,7 +154,7 @@ class CartBranchTest {
                         )
                 );
             }
-        }).isInstanceOf(CartItemLimitExceededException.class);
+        }).isInstanceOf(CartDomainException.class);
     }
 
     @Test
@@ -186,7 +185,7 @@ class CartBranchTest {
     }
 
     @Test
-    @DisplayName("CartItems - null 목록이면 InvalidCartItemException")
+    @DisplayName("CartItems - null 목록이면 CartDomainException")
     @SuppressFBWarnings(value = "NP", justification = "의도적인 null 입력 검증 테스트")
     void cartItemsNullValues() {
         // given
@@ -194,7 +193,7 @@ class CartBranchTest {
 
         // when & then
         assertThatThrownBy(() -> new CartItems(nullList))
-                .isInstanceOf(InvalidCartItemException.class);
+                .isInstanceOf(CartDomainException.class);
     }
 
     @Test
@@ -214,17 +213,17 @@ class CartBranchTest {
 
         // when & then
         assertThatThrownBy(() -> CartItems.from(list))
-                .isInstanceOf(InvalidCartItemException.class);
+                .isInstanceOf(CartDomainException.class);
     }
 
     @Test
-    @DisplayName("CartItems - null 아이템 추가 시 InvalidCartItemException")
+    @DisplayName("CartItems - null 아이템 추가 시 CartDomainException")
     void cartItemsAddNull() {
         // given
         var items = CartItems.empty();
 
         // when & then
         assertThatThrownBy(() -> items.add(null))
-                .isInstanceOf(InvalidCartItemException.class);
+                .isInstanceOf(CartDomainException.class);
     }
 }

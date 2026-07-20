@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.member.adapter.in.web;
 
 import com.dochiri.tooltestlab.member.adapter.in.bootstrap.AdminAccountInitializer;
-import com.dochiri.tooltestlab.member.application.exception.DuplicateEmailException;
+import com.dochiri.tooltestlab.member.application.exception.MemberApplicationException;
 import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberCommand;
 import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberUseCase;
 import org.junit.jupiter.api.DisplayName;
@@ -25,11 +25,12 @@ class AdminAccountInitializerTest {
     private AdminAccountInitializer initializer;
 
     @Test
-    @DisplayName("관리자 계정이 이미 존재하면 DuplicateEmailException을 잡아 run이 정상 종료된다")
+    @DisplayName("관리자 계정이 이미 존재하면 회원 애플리케이션 예외를 잡아 run이 정상 종료된다")
     void catchesDuplicateEmailException() {
         // given
         var captor = ArgumentCaptor.forClass(RegisterMemberCommand.class);
-        doThrow(DuplicateEmailException.class).when(registerMemberUseCase).register(captor.capture());
+        doThrow(MemberApplicationException.duplicateEmail("admin@test.com"))
+                .when(registerMemberUseCase).register(captor.capture());
 
         // when
         initializer.run();

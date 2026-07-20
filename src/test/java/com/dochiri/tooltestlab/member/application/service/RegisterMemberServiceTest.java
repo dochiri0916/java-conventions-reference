@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.member.application.service;
 
-import com.dochiri.tooltestlab.member.application.exception.DuplicateEmailException;
+import com.dochiri.tooltestlab.member.application.exception.MemberApplicationException;
 import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberCommand;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
 import com.dochiri.tooltestlab.member.application.port.out.PasswordEncoderPort;
@@ -25,7 +25,7 @@ class RegisterMemberServiceTest {
 
         // when & then
         assertThatThrownBy(() -> service.register(command))
-                .isInstanceOf(DuplicateEmailException.class);
+                .isInstanceOf(MemberApplicationException.class);
         verify(memberRepositoryPort).existsByEmail("user@example.com");
     }
 
@@ -39,7 +39,7 @@ class RegisterMemberServiceTest {
         var command = new RegisterMemberCommand(" user@example.com ", "password123", "홍길동");
         when(memberRepositoryPort.existsByEmail("user@example.com")).thenReturn(false);
         when(passwordEncoderPort.encode("password123")).thenReturn(new EncodedPassword("encoded"));
-        when(memberRepositoryPort.save(org.mockito.ArgumentMatchers.any()))
+        when(memberRepositoryPort.create(org.mockito.ArgumentMatchers.any()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         // when

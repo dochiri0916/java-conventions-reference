@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.order.domain.model;
 
-import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderIdException;
+import com.dochiri.tooltestlab.order.domain.exception.OrderDomainException;
 
 import java.util.UUID;
 
@@ -8,11 +8,11 @@ public record OrderId(String value) {
 
     public OrderId {
         if (value == null) {
-            throw InvalidOrderIdException.required();
+            throw OrderDomainException.orderIdRequired();
         }
         final String stripped = value.strip();
         if (stripped.isBlank()) {
-            throw InvalidOrderIdException.invalidOrderId();
+            throw OrderDomainException.invalidOrderId();
         }
         value = stripped;
     }

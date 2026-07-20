@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.order.application.service;
 
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.application.exception.ProductApplicationException;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import com.dochiri.tooltestlab.order.application.port.in.HandleOrderPlacedUseCase;
 import com.dochiri.tooltestlab.order.domain.event.OrderPlaced;
@@ -9,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,10 +28,10 @@ public final class HandleOrderPlacedService implements HandleOrderPlacedUseCase 
                 event.items().values().size());
 
         for (var item : event.items().values()) {
-            final Product product = productRepositoryPort.findById(item.productId().value())
-                    .orElseThrow(() -> ProductNotFoundException.productNotFound(item.productId().value()));
+            final Product product = productRepositoryPort.findById(item.productId())
+                    .orElseThrow(() -> ProductApplicationException.notFound(item.productId().value()));
             final Product decreased = product.decreaseStock(item.quantity().value());
-            productRepositoryPort.save(decreased, List.of());
+            productRepositoryPort.update(decreased);
             LOG.debug("재고 차감 완료. productPublicId={}, quantity={}", item.productId().value(), item.quantity());
         }
     }

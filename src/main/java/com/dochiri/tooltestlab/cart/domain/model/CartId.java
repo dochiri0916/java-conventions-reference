@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.cart.domain.model;
 
-import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartIdException;
+import com.dochiri.tooltestlab.cart.domain.exception.CartDomainException;
 
 import java.util.UUID;
 
@@ -8,11 +8,11 @@ public record CartId(String value) {
 
     public CartId {
         if (value == null) {
-            throw InvalidCartIdException.required();
+            throw CartDomainException.cartIdRequired();
         }
         final String stripped = value.strip();
         if (stripped.isBlank()) {
-            throw InvalidCartIdException.invalidCartId();
+            throw CartDomainException.invalidCartId();
         }
         value = stripped;
     }

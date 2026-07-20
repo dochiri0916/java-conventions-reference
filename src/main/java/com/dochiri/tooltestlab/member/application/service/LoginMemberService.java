@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.member.application.service;
 
-import com.dochiri.tooltestlab.member.application.exception.LoginFailedException;
+import com.dochiri.tooltestlab.member.application.exception.MemberApplicationException;
 import com.dochiri.tooltestlab.member.application.port.in.LoginMemberCommand;
 import com.dochiri.tooltestlab.member.application.port.in.LoginMemberResult;
 import com.dochiri.tooltestlab.member.application.port.in.LoginMemberUseCase;
@@ -24,10 +24,10 @@ public final class LoginMemberService implements LoginMemberUseCase {
     public LoginMemberResult login(final LoginMemberCommand command) {
         final Email email = new Email(command.email());
         final Member member = memberRepositoryPort.findByEmail(email.value())
-                .orElseThrow(LoginFailedException::loginFailed);
+                .orElseThrow(MemberApplicationException::loginFailed);
 
         if (!passwordEncoderPort.matches(command.password(), member.encodedPassword())) {
-            throw LoginFailedException.loginFailed();
+            throw MemberApplicationException.loginFailed();
         }
 
         return new LoginMemberResult(member.id().value(), member.email().value(), member.name().value());

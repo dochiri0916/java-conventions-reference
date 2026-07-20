@@ -45,7 +45,8 @@ class ReviewBranchTest {
     void equalsDifferentInstanceSameId() {
         // given
         var r1 = Review.create(new MemberId("m1"), new ProductId("p1"), new Rating(5), new ReviewContent("좋아요"));
-        var r2 = new Review(r1.id(), new MemberId("m2"), new ProductId("p2"), new Rating(1), new ReviewContent("별로"));
+        var r2 = Review.restore(
+                r1.id(), new MemberId("m2"), new ProductId("p2"), new Rating(1), new ReviewContent("별로"));
 
         // when
         var result = r1.equals(r2);

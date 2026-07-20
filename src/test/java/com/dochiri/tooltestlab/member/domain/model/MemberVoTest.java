@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.member.domain.model;
 
-import com.dochiri.tooltestlab.member.domain.exception.*;
+import com.dochiri.tooltestlab.member.domain.exception.MemberDomainException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ class MemberVoTest {
     @DisplayName("Email 생성 - null이면 InvalidEmailException")
     void emailNull() {
         // given
-        var expectedException = InvalidEmailException.class;
+        var expectedException = MemberDomainException.class;
 
         // when & then
         assertThatThrownBy(() -> new Email(null))
@@ -41,7 +41,7 @@ class MemberVoTest {
 
         // when & then
         assertThatThrownBy(() -> new Email(blankEmail))
-                .isInstanceOf(InvalidEmailException.class);
+                .isInstanceOf(MemberDomainException.class);
     }
 
     @Test
@@ -52,7 +52,7 @@ class MemberVoTest {
 
         // when & then
         assertThatThrownBy(() -> new Email(invalidEmail))
-                .isInstanceOf(InvalidEmailException.class);
+                .isInstanceOf(MemberDomainException.class);
     }
 
     @Test
@@ -72,7 +72,7 @@ class MemberVoTest {
     @DisplayName("MemberId 생성 - null이면 InvalidMemberIdException")
     void memberIdNull() {
         // given
-        var expectedException = InvalidMemberIdException.class;
+        var expectedException = MemberDomainException.class;
 
         // when & then
         assertThatThrownBy(() -> new MemberId(null))
@@ -110,7 +110,7 @@ class MemberVoTest {
     @DisplayName("MemberName 생성 - null이면 InvalidMemberNameException")
     void memberNameNull() {
         // given
-        var expectedException = InvalidMemberNameException.class;
+        var expectedException = MemberDomainException.class;
 
         // when & then
         assertThatThrownBy(() -> new MemberName(null))
@@ -125,7 +125,7 @@ class MemberVoTest {
 
         // when & then
         assertThatThrownBy(() -> new MemberName(blankName))
-                .isInstanceOf(InvalidMemberNameException.class);
+                .isInstanceOf(MemberDomainException.class);
     }
 
     @Test
@@ -145,7 +145,7 @@ class MemberVoTest {
     @DisplayName("암호화 비밀번호 생성 - null이면 InvalidPasswordException")
     void encodedPasswordNull() {
         // given
-        var expectedException = InvalidPasswordException.class;
+        var expectedException = MemberDomainException.class;
 
         // when & then
         assertThatThrownBy(() -> new EncodedPassword(null))
@@ -160,7 +160,7 @@ class MemberVoTest {
 
         // when & then
         assertThatThrownBy(() -> new EncodedPassword(blankPassword))
-                .isInstanceOf(InvalidPasswordException.class);
+                .isInstanceOf(MemberDomainException.class);
     }
 
     @Test
@@ -172,7 +172,7 @@ class MemberVoTest {
         var encodedPassword = new EncodedPassword("enc");
 
         // when
-        var member = Member.register(email, encodedPassword, name);
+        var member = Member.create(email, encodedPassword, name);
 
         // then
         assertThat(member.id()).isNotNull();
@@ -192,15 +192,15 @@ class MemberVoTest {
         var status = MemberStatus.ACTIVE;
 
         // when & then
-        assertThatThrownBy(() -> new Member(null, email, encodedPassword, name, status))
-                .isInstanceOf(InvalidMemberIdException.class);
-        assertThatThrownBy(() -> new Member(id, null, encodedPassword, name, status))
-                .isInstanceOf(InvalidEmailException.class);
-        assertThatThrownBy(() -> new Member(id, email, null, name, status))
-                .isInstanceOf(InvalidPasswordException.class);
-        assertThatThrownBy(() -> new Member(id, email, encodedPassword, null, status))
-                .isInstanceOf(InvalidMemberNameException.class);
-        assertThatThrownBy(() -> new Member(id, email, encodedPassword, name, null))
-                .isInstanceOf(InvalidMemberException.class);
+        assertThatThrownBy(() -> Member.restore(null, email, encodedPassword, name, status))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> Member.restore(id, null, encodedPassword, name, status))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> Member.restore(id, email, null, name, status))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> Member.restore(id, email, encodedPassword, null, status))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> Member.restore(id, email, encodedPassword, name, null))
+                .isInstanceOf(NullPointerException.class);
     }
 }

@@ -2,7 +2,7 @@ package com.dochiri.tooltestlab.order.domain.model;
 
 import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderLinesException;
+import com.dochiri.tooltestlab.order.domain.exception.OrderDomainException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,23 +10,23 @@ import java.util.Objects;
 
 public record OrderLines(List<OrderLine> values) {
 
-    public static final MaxCount MAX_LINE_COUNT = MaxCount.of(100);
+    private static final int MAX_LINE_COUNT = 100;
 
     public OrderLines {
         if (values == null) {
-            throw InvalidOrderLinesException.required();
+            throw OrderDomainException.orderLinesRequired();
         }
 
         if (values.isEmpty()) {
-            throw InvalidOrderLinesException.badOrderLines("주문 상품은 최소 1개 이상이어야 합니다.");
+            throw OrderDomainException.badOrderLines("주문 상품은 최소 1개 이상이어야 합니다.");
         }
-        if (values.size() > MAX_LINE_COUNT.value()) {
-            throw InvalidOrderLinesException.badOrderLines(
-                    "주문 상품은 최대 " + MAX_LINE_COUNT.value() + "개까지 가능합니다. 입력값: " + values.size());
+        if (values.size() > MAX_LINE_COUNT) {
+            throw OrderDomainException.badOrderLines(
+                    "주문 상품은 최대 " + MAX_LINE_COUNT + "개까지 가능합니다. 입력값: " + values.size());
         }
 
         if (values.stream().anyMatch(Objects::isNull)) {
-            throw InvalidOrderLinesException.badOrderLines("주문 상품은 null일 수 없습니다.");
+            throw OrderDomainException.badOrderLines("주문 상품은 null일 수 없습니다.");
         }
 
         values = List.copyOf(values);
@@ -34,7 +34,7 @@ public record OrderLines(List<OrderLine> values) {
 
     public static OrderLines fromArray(final OrderLine... lines) {
         if (lines == null) {
-            throw InvalidOrderLinesException.required();
+            throw OrderDomainException.orderLinesRequired();
         }
         return new OrderLines(Arrays.asList(lines));
     }
@@ -55,7 +55,7 @@ public record OrderLines(List<OrderLine> values) {
 
     public boolean containsProduct(final ProductId productId) {
         if (productId == null) {
-            throw InvalidProductIdException.required();
+            throw OrderDomainException.productIdRequired();
         }
         return values.stream().anyMatch(line -> line.productId().equals(productId));
     }

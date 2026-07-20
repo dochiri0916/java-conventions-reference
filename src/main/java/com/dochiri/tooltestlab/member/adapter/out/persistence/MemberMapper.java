@@ -9,7 +9,7 @@ final class MemberMapper {
     }
 
     static Member toDomain(final MemberEntity entity) {
-        return Member.reconstitute(
+        return Member.restore(
                 new MemberId(entity.getMemberId()),
                 new Email(entity.getEmail()),
                 new EncodedPassword(entity.getEncodedPassword()),

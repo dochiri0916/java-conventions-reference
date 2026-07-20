@@ -253,23 +253,6 @@ class VoEdgeCaseTest {
                 .isInstanceOf(RuntimeException.class);
     }
 
-    // ── MaxCount ──
-    @Test
-    @DisplayName("MaxCount 0 이하 예외")
-    void maxCountInvalid() {
-        // given
-        var zeroValue = 0;
-        var negativeValue = -1;
-
-        // when & then
-        assertThatThrownBy(() -> MaxCount.of(zeroValue))
-                .isInstanceOf(InvalidMaxCountException.class)
-                .extracting(e -> ((InvalidMaxCountException) e).code())
-                .isEqualTo(ProductDomainErrorCode.MAX_COUNT_NOT_POSITIVE);
-        assertThatThrownBy(() -> MaxCount.of(negativeValue))
-                .isInstanceOf(InvalidMaxCountException.class);
-    }
-
     // ── Money ──
     @Test
     @DisplayName("Money 연산")

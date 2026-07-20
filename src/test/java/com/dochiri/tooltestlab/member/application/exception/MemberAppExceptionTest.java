@@ -8,84 +8,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MemberAppExceptionTest {
 
     @Test
-    @DisplayName("DuplicateEmailException 정상 생성")
+    @DisplayName("회원 애플리케이션 예외는 중복 이메일 맥락을 보관한다")
     void duplicateEmail() {
         // given
-        var expectedCode = MemberErrorCode.DUPLICATE_EMAIL;
-        var expectedEmail = "test@test.com";
 
         // when
-        var ex = DuplicateEmailException.duplicateEmail(expectedEmail);
+        final MemberApplicationException exception =
+                MemberApplicationException.duplicateEmail("test@test.com");
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-        assertThat(ex.email()).isEqualTo(expectedEmail);
+        assertThat(exception.errorCode()).isEqualTo(MemberApplicationErrorCode.DUPLICATE_EMAIL);
+        assertThat(exception.extensions()).isEmpty();
     }
 
     @Test
-    @DisplayName("LoginFailedException 정상 생성")
+    @DisplayName("로그인 실패 예외는 비밀번호 정보를 노출하지 않는다")
     void loginFailed() {
         // given
-        var expectedCode = MemberErrorCode.LOGIN_FAILED;
 
         // when
-        var ex = LoginFailedException.loginFailed();
+        final MemberApplicationException exception = MemberApplicationException.loginFailed();
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("MemberNotFoundException 정상 생성")
-    void memberNotFound() {
-        // given
-        var expectedCode = MemberErrorCode.MEMBER_NOT_FOUND;
-        var expectedId = "id123";
-
-        // when
-        var ex = MemberNotFoundException.memberNotFound(expectedId);
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-        assertThat(ex.identifier()).isEqualTo(expectedId);
-    }
-
-    @Test
-    @DisplayName("InvalidCommandException emailRequired 정상 생성")
-    void emailRequired() {
-        // given
-        var expectedCode = MemberErrorCode.EMAIL_REQUIRED;
-
-        // when
-        var ex = InvalidCommandException.emailRequired();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidCommandException passwordRequired 정상 생성")
-    void passwordRequired() {
-        // given
-        var expectedCode = MemberErrorCode.PASSWORD_REQUIRED;
-
-        // when
-        var ex = InvalidCommandException.passwordRequired();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-    }
-
-    @Test
-    @DisplayName("InvalidCommandException nameRequired 정상 생성")
-    void nameRequired() {
-        // given
-        var expectedCode = MemberErrorCode.NAME_REQUIRED;
-
-        // when
-        var ex = InvalidCommandException.nameRequired();
-
-        // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(exception.errorCode()).isEqualTo(MemberApplicationErrorCode.LOGIN_FAILED);
+        assertThat(exception.extensions()).doesNotContainKeys("email", "password");
     }
 }

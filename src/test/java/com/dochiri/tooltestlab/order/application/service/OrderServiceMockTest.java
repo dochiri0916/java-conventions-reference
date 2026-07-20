@@ -5,14 +5,13 @@ import com.dochiri.tooltestlab.cart.domain.model.Cart;
 import com.dochiri.tooltestlab.cart.domain.model.CartItem;
 import com.dochiri.tooltestlab.cart.domain.model.CartItems;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.application.exception.ProductApplicationException;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
-import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
-import com.dochiri.tooltestlab.order.application.exception.NotOrderOwnerException;
-import com.dochiri.tooltestlab.order.application.exception.OrderNotFoundException;
+import com.dochiri.tooltestlab.order.application.exception.OrderApplicationException;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
 import com.dochiri.tooltestlab.order.application.port.out.OrderEventPort;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
@@ -73,7 +72,7 @@ class OrderServiceMockTest {
         var cart = Cart.create(new MemberId(memberId));
         var item = new CartItem(new ProductId("p1"), new ProductName("상품"),
                 new Quantity(1), new Money(1000));
-        return new Cart(cart.id(), cart.memberId(), CartItems.from(List.of(item)));
+        return Cart.restore(cart.id(), cart.memberId(), CartItems.from(List.of(item)));
     }
 
     private PlaceOrderCommand createPlaceOrderCommand() {
@@ -90,7 +89,7 @@ class OrderServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> cancelOrderService.cancel("m1", "nonexistent"))
-                .isInstanceOf(OrderNotFoundException.class);
+                .isInstanceOf(OrderApplicationException.class);
     }
 
     @Test
@@ -102,7 +101,7 @@ class OrderServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> cancelOrderService.cancel("otherUser", order.id().value()))
-                .isInstanceOf(NotOrderOwnerException.class);
+                .isInstanceOf(OrderApplicationException.class);
     }
 
     @Test
@@ -113,7 +112,7 @@ class OrderServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> getOrderService.getOrder("m1", "nonexistent"))
-                .isInstanceOf(OrderNotFoundException.class);
+                .isInstanceOf(OrderApplicationException.class);
     }
 
     @Test
@@ -125,7 +124,7 @@ class OrderServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> getOrderService.getOrder("otherUser", order.id().value()))
-                .isInstanceOf(NotOrderOwnerException.class);
+                .isInstanceOf(OrderApplicationException.class);
     }
 
     // ── PlaceOrderService ──
@@ -139,7 +138,7 @@ class OrderServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> placeOrderService.place(cmd))
-                .isInstanceOf(EmptyCartException.class);
+                .isInstanceOf(OrderApplicationException.class);
     }
 
     @Test
@@ -152,7 +151,7 @@ class OrderServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> placeOrderService.place(cmd))
-                .isInstanceOf(EmptyCartException.class);
+                .isInstanceOf(OrderApplicationException.class);
     }
 
     @Test
@@ -166,7 +165,7 @@ class OrderServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> placeOrderService.place(cmd))
-                .isInstanceOf(ProductNotFoundException.class);
+                .isInstanceOf(ProductApplicationException.class);
     }
 
     @Test
@@ -186,6 +185,6 @@ class OrderServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> placeOrderService.place(cmd))
-                .isInstanceOf(InsufficientStockException.class);
+                .isInstanceOf(ProductApplicationException.class);
     }
 }

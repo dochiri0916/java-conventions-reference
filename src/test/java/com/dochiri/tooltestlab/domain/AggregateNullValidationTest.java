@@ -58,16 +58,16 @@ class AggregateNullValidationTest {
         var name = new MemberName("홍길동");
         var status = com.dochiri.tooltestlab.member.domain.model.MemberStatus.ACTIVE;
         // when & then
-        assertThatThrownBy(() -> new Member(null, email, password, name, status))
-                .isInstanceOf(com.dochiri.tooltestlab.member.domain.exception.InvalidMemberIdException.class);
-        assertThatThrownBy(() -> new Member(id, null, password, name, status))
-                .isInstanceOf(com.dochiri.tooltestlab.member.domain.exception.InvalidEmailException.class);
-        assertThatThrownBy(() -> new Member(id, email, null, name, status))
-                .isInstanceOf(com.dochiri.tooltestlab.member.domain.exception.InvalidPasswordException.class);
-        assertThatThrownBy(() -> new Member(id, email, password, null, status))
-                .isInstanceOf(com.dochiri.tooltestlab.member.domain.exception.InvalidMemberNameException.class);
-        assertThatThrownBy(() -> new Member(id, email, password, name, null))
-                .isInstanceOf(com.dochiri.tooltestlab.member.domain.exception.InvalidMemberException.class);
+        assertThatThrownBy(() -> Member.restore(null, email, password, name, status))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> Member.restore(id, null, password, name, status))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> Member.restore(id, email, null, name, status))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> Member.restore(id, email, password, null, status))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> Member.restore(id, email, password, name, null))
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -103,7 +103,7 @@ class AggregateNullValidationTest {
         assertThatThrownBy(() -> new Review(null, memberId, productId, rating, content))
                 .isInstanceOf(com.dochiri.tooltestlab.review.domain.exception.InvalidReviewIdException.class);
         assertThatThrownBy(() -> new Review(id, null, productId, rating, content))
-                .isInstanceOf(com.dochiri.tooltestlab.member.domain.exception.InvalidMemberIdException.class);
+                .isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> new Review(id, memberId, null, rating, content))
                 .isInstanceOf(com.dochiri.tooltestlab.product.domain.exception.InvalidProductIdException.class);
         assertThatThrownBy(() -> new Review(id, memberId, productId, null, content))
@@ -133,7 +133,7 @@ class AggregateNullValidationTest {
         assertThatThrownBy(() -> new com.dochiri.tooltestlab.order.domain.model.Order(
                 id, null, items, com.dochiri.tooltestlab.order.domain.model.OrderStatus.PENDING,
                 address, totalAmount))
-                .isInstanceOf(com.dochiri.tooltestlab.member.domain.exception.InvalidMemberIdException.class);
+                .isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> new com.dochiri.tooltestlab.order.domain.model.Order(
                 id, memberId, null, com.dochiri.tooltestlab.order.domain.model.OrderStatus.PENDING,
                 address, totalAmount))
@@ -200,7 +200,7 @@ class AggregateNullValidationTest {
         assertThatThrownBy(() -> new OrderPlaced(null, memberId, items))
                 .isInstanceOf(com.dochiri.tooltestlab.order.domain.exception.InvalidOrderIdException.class);
         assertThatThrownBy(() -> new OrderPlaced(orderId, null, items))
-                .isInstanceOf(com.dochiri.tooltestlab.member.domain.exception.InvalidMemberIdException.class);
+                .isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> new OrderPlaced(orderId, memberId, null))
                 .isInstanceOf(com.dochiri.tooltestlab.order.domain.exception.InvalidOrderLinesException.class);
     }
@@ -226,11 +226,11 @@ class AggregateNullValidationTest {
         var memberId = new com.dochiri.tooltestlab.member.domain.model.MemberId("m1");
         var items = CartItems.empty();
         // when & then
-        assertThatThrownBy(() -> new Cart(null, memberId, items))
+        assertThatThrownBy(() -> Cart.restore(null, memberId, items))
                 .isInstanceOf(com.dochiri.tooltestlab.cart.domain.exception.InvalidCartIdException.class);
-        assertThatThrownBy(() -> new Cart(id, null, items))
-                .isInstanceOf(com.dochiri.tooltestlab.member.domain.exception.InvalidMemberIdException.class);
-        assertThatThrownBy(() -> new Cart(id, memberId, null))
+        assertThatThrownBy(() -> Cart.restore(id, null, items))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> Cart.restore(id, memberId, null))
                 .isInstanceOf(com.dochiri.tooltestlab.cart.domain.exception.InvalidCartException.class);
     }
 

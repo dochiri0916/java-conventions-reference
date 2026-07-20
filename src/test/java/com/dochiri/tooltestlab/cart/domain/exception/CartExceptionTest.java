@@ -8,99 +8,99 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CartExceptionTest {
 
     @Test
-    @DisplayName("InvalidCartIdException 정상 생성")
+    @DisplayName("CartDomainException - 장바구니 ID 오류")
     void invalidCartId() {
         // given
         var expectedCode = CartDomainErrorCode.INVALID_CART_ID;
 
         // when
-        var ex = InvalidCartIdException.invalidCartId();
+        var ex = CartDomainException.invalidCartId();
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.errorCode()).isEqualTo(expectedCode);
     }
 
     @Test
-    @DisplayName("InvalidCartIdException required 정상 생성")
+    @DisplayName("CartDomainException - 장바구니 ID 필수")
     void cartIdRequired() {
         // given
         var expectedCode = CartDomainErrorCode.CART_ID_REQUIRED;
 
         // when
-        var ex = InvalidCartIdException.required();
+        var ex = CartDomainException.cartIdRequired();
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.errorCode()).isEqualTo(expectedCode);
     }
 
     @Test
-    @DisplayName("InvalidCartItemException 정상 생성")
+    @DisplayName("CartDomainException - 장바구니 상품 오류")
     void invalidCartItem() {
         // given
         var detail = "detail";
         var expectedCode = CartDomainErrorCode.INVALID_CART_ITEM;
 
         // when
-        var ex = InvalidCartItemException.invalidCartItem(detail);
+        var ex = CartDomainException.invalidCartItem(detail);
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-        assertThat(ex.detail()).isEqualTo(detail);
+        assertThat(ex.errorCode()).isEqualTo(expectedCode);
+        assertThat(ex.extensions()).containsEntry("reason", detail);
     }
 
     @Test
-    @DisplayName("InvalidCartItemException required 정상 생성")
+    @DisplayName("CartDomainException - 장바구니 상품 필수")
     void cartItemRequired() {
         // given
         var expectedCode = CartDomainErrorCode.CART_ITEM_REQUIRED;
 
         // when
-        var ex = InvalidCartItemException.required();
+        var ex = CartDomainException.cartItemRequired();
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-        assertThat(ex.detail()).isNull();
+        assertThat(ex.errorCode()).isEqualTo(expectedCode);
+        assertThat(ex.extensions()).isEmpty();
     }
 
     @Test
-    @DisplayName("CartItemLimitExceededException 정상 생성")
+    @DisplayName("CartDomainException - 상품 개수 초과")
     void tooManyItems() {
         // given
         var actualSize = 150;
         var expectedCode = CartDomainErrorCode.TOO_MANY_ITEMS;
 
         // when
-        var ex = CartItemLimitExceededException.tooManyItems(actualSize);
+        var ex = CartDomainException.tooManyItems(actualSize);
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
-        assertThat(ex.actualSize()).isEqualTo(actualSize);
+        assertThat(ex.errorCode()).isEqualTo(expectedCode);
+        assertThat(ex.extensions()).containsEntry("actualSize", actualSize);
     }
 
     @Test
-    @DisplayName("InvalidCartException 정상 생성")
+    @DisplayName("CartDomainException - 장바구니 오류")
     void invalidCart() {
         // given
         var expectedCode = CartDomainErrorCode.INVALID_CART;
 
         // when
-        var ex = InvalidCartException.invalidCart();
+        var ex = CartDomainException.invalidCart();
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.errorCode()).isEqualTo(expectedCode);
     }
 
     @Test
-    @DisplayName("InvalidCartException required 정상 생성")
+    @DisplayName("CartDomainException - 장바구니 필수")
     void cartRequired() {
         // given
         var expectedCode = CartDomainErrorCode.CART_REQUIRED;
 
         // when
-        var ex = InvalidCartException.required();
+        var ex = CartDomainException.cartRequired();
 
         // then
-        assertThat(ex.code()).isEqualTo(expectedCode);
+        assertThat(ex.errorCode()).isEqualTo(expectedCode);
     }
 
     @Test

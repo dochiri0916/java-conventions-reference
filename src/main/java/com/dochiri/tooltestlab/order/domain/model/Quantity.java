@@ -1,12 +1,12 @@
 package com.dochiri.tooltestlab.order.domain.model;
 
-import com.dochiri.tooltestlab.order.domain.exception.InvalidQuantityException;
+import com.dochiri.tooltestlab.order.domain.exception.OrderDomainException;
 
 public record Quantity(int value) {
 
     public Quantity {
         if (value <= 0) {
-            throw InvalidQuantityException.invalidQuantity(value);
+            throw OrderDomainException.invalidQuantity(value);
         }
     }
 

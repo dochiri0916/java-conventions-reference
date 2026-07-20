@@ -27,6 +27,12 @@ public enum ProductApplicationErrorCode implements ErrorCode {
             "CATEGORY_NOT_ACTIVE",
             ErrorKind.INVALID_STATE,
             "활성화되지 않은 카테고리가 포함되어 있습니다."
+    ),
+
+    STOCK_INSUFFICIENT(
+            "STOCK_INSUFFICIENT",
+            ErrorKind.CONFLICT,
+            "상품 재고가 부족합니다."
     );
 
     private final String code;

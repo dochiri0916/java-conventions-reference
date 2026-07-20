@@ -33,9 +33,9 @@ class PersistenceAdapterIntegrationTest {
     @DisplayName("회원을 memberId로 조회할 수 있다")
     void findByMemberId() {
         // given
-        var member = Member.register(new Email("persist-test@example.com"),
+        var member = Member.create(new Email("persist-test@example.com"),
                 new EncodedPassword("password123"), new MemberName("테스터"));
-        var saved = memberRepositoryPort.save(member);
+        var saved = memberRepositoryPort.create(member);
 
             // when
         var found = memberRepositoryPort.findByMemberId(saved.id().value());

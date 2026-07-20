@@ -26,19 +26,19 @@ class SafeOrderPersistenceAdapter implements OrderRepositoryPort {
     private final OrderLineJpaRepository orderLineJpaRepository;
 
     @Override
-    public Order save(final Order order) {
-        final Optional<OrderEntity> existing = orderJpaRepository.findByOrderIdForUpdate(order.id().value());
-        if (existing.isPresent()) {
-            final OrderEntity entity = existing.get();
-            entity.apply(order);
-            final OrderEntity savedOrder = orderJpaRepository.save(entity);
-            orderLineJpaRepository.deleteByOrderId(savedOrder.getOrderId());
-            final List<OrderLineEntity> items = OrderMapper.toItemEntities(order, savedOrder.getOrderId());
-            orderLineJpaRepository.saveAll(items);
-            return OrderMapper.toDomain(savedOrder, items);
-        }
-
+    public Order create(final Order order) {
         final OrderEntity entity = OrderMapper.toEntity(order);
+        final OrderEntity savedOrder = orderJpaRepository.save(entity);
+        orderLineJpaRepository.deleteByOrderId(savedOrder.getOrderId());
+        final List<OrderLineEntity> items = OrderMapper.toItemEntities(order, savedOrder.getOrderId());
+        orderLineJpaRepository.saveAll(items);
+        return OrderMapper.toDomain(savedOrder, items);
+    }
+
+    @Override
+    public Order update(final Order order) {
+        final OrderEntity entity = orderJpaRepository.findByOrderIdForUpdate(order.id().value()).orElseThrow();
+        entity.apply(order);
         final OrderEntity savedOrder = orderJpaRepository.save(entity);
         orderLineJpaRepository.deleteByOrderId(savedOrder.getOrderId());
         final List<OrderLineEntity> items = OrderMapper.toItemEntities(order, savedOrder.getOrderId());

@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.order.application.service;
 
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.application.exception.ProductApplicationException;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import com.dochiri.tooltestlab.order.application.port.in.HandleOrderCancelledUseCase;
 import com.dochiri.tooltestlab.order.domain.event.OrderCancelled;
@@ -9,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,10 +28,10 @@ public final class HandleOrderCancelledService implements HandleOrderCancelledUs
                 event.items().values().size());
 
         for (var item : event.items().values()) {
-            final Product product = productRepositoryPort.findById(item.productId().value())
-                    .orElseThrow(() -> ProductNotFoundException.productNotFound(item.productId().value()));
+            final Product product = productRepositoryPort.findById(item.productId())
+                    .orElseThrow(() -> ProductApplicationException.notFound(item.productId().value()));
             final Product restored = product.increaseStock(item.quantity().value());
-            productRepositoryPort.save(restored, List.of());
+            productRepositoryPort.update(restored);
             LOG.debug("재고 복구 완료. productPublicId={}, quantity={}", item.productId().value(), item.quantity());
         }
     }

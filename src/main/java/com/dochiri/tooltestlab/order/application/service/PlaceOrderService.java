@@ -5,7 +5,8 @@ import com.dochiri.tooltestlab.cart.domain.model.Cart;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
-import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
+import com.dochiri.tooltestlab.catalog.product.application.exception.ProductApplicationException;
+import com.dochiri.tooltestlab.order.application.exception.OrderApplicationException;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderResult;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderUseCase;
@@ -36,19 +37,20 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
     @Transactional
     public PlaceOrderResult place(final PlaceOrderCommand command) {
         final Cart cart = cartRepositoryPort.findByMemberId(command.memberId().value())
-                .orElseThrow(EmptyCartException::emptyCart);
+                .orElseThrow(OrderApplicationException::emptyCart);
 
         if (cart.isEmpty()) {
-            throw EmptyCartException.emptyCart();
+            throw OrderApplicationException.emptyCart();
         }
 
         final List<OrderLine> orderLines = new ArrayList<>();
         for (var cartItem : cart.items().values()) {
             final Product product = productRepositoryPort.findById(cartItem.productId().value())
-                    .orElseThrow(() -> ProductNotFoundException.productNotFound(cartItem.productId().value()));
+                    .orElseThrow(() -> ProductApplicationException.notFound(cartItem.productId().value()));
 
             if (product.stock().value() < cartItem.quantity().value()) {
-                throw InsufficientStockException.lowStock(product.stock().value(), cartItem.quantity().value());
+                throw ProductApplicationException.insufficientStock(
+                        product.stock().value(), cartItem.quantity().value());
             }
 
             orderLines.add(new OrderLine(
@@ -57,7 +59,7 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
         }
 
         Order order = Order.create(command.memberId(), OrderLines.from(orderLines), command.shippingAddress());
-        Order saved = orderRepositoryPort.save(order);
+        Order saved = orderRepositoryPort.create(order);
 
         List<OrderPlaced.ItemDetail> itemDetails = orderLines.stream()
                 .map(ol -> new OrderPlaced.ItemDetail(ol.productId(), ol.productName(), ol.quantity(), ol.unitPrice()))

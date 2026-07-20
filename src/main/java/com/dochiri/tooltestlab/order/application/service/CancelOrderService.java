@@ -1,7 +1,6 @@
 package com.dochiri.tooltestlab.order.application.service;
 
-import com.dochiri.tooltestlab.order.application.exception.NotOrderOwnerException;
-import com.dochiri.tooltestlab.order.application.exception.OrderNotFoundException;
+import com.dochiri.tooltestlab.order.application.exception.OrderApplicationException;
 import com.dochiri.tooltestlab.order.application.port.in.CancelOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.out.OrderEventPort;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
@@ -25,14 +24,14 @@ public final class CancelOrderService implements CancelOrderUseCase {
     @Transactional
     public void cancel(final String memberPublicId, final String orderPublicId) {
         final Order order = orderRepositoryPort.findByPublicId(orderPublicId)
-                .orElseThrow(() -> OrderNotFoundException.orderNotFound(orderPublicId));
+                .orElseThrow(() -> OrderApplicationException.orderNotFound(orderPublicId));
 
         if (!order.memberId().value().equals(memberPublicId)) {
-            throw NotOrderOwnerException.notOrderOwner();
+            throw OrderApplicationException.notOrderOwner();
         }
 
         final Order cancelled = order.cancel();
-        orderRepositoryPort.save(cancelled);
+        orderRepositoryPort.update(cancelled);
 
         final List<OrderCancelled.ItemDetail> itemDetails = cancelled.items().values().stream()
                 .map(i -> new OrderCancelled.ItemDetail(i.productId(), i.quantity()))

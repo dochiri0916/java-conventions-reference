@@ -1,8 +1,7 @@
 package com.dochiri.tooltestlab.order.application.service;
 
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
-import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
-import com.dochiri.tooltestlab.order.application.exception.OrderNotFoundException;
+import com.dochiri.tooltestlab.order.application.exception.OrderApplicationException;
 import com.dochiri.tooltestlab.order.application.port.in.CancelOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.in.GetOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderUseCase;
@@ -34,7 +33,7 @@ class OrderServiceBranchTest {
 
         // when & then
         assertThatThrownBy(() -> getOrderUseCase.getOrder(memberId, nonExistentOrderId))
-                .isInstanceOf(OrderNotFoundException.class);
+                .isInstanceOf(OrderApplicationException.class);
     }
 
     @Test
@@ -46,7 +45,7 @@ class OrderServiceBranchTest {
 
         // when & then
         assertThatThrownBy(() -> cancelOrderUseCase.cancel(memberId, nonExistentOrderId))
-                .isInstanceOf(OrderNotFoundException.class);
+                .isInstanceOf(OrderApplicationException.class);
     }
 
     @Test
@@ -63,7 +62,7 @@ class OrderServiceBranchTest {
 
         // when & then
         assertThatThrownBy(() -> placeOrderUseCase.place(cmd))
-                .isInstanceOf(EmptyCartException.class);
+                .isInstanceOf(OrderApplicationException.class);
     }
 
     @Test

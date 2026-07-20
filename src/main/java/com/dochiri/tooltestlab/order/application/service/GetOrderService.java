@@ -1,7 +1,6 @@
 package com.dochiri.tooltestlab.order.application.service;
 
-import com.dochiri.tooltestlab.order.application.exception.NotOrderOwnerException;
-import com.dochiri.tooltestlab.order.application.exception.OrderNotFoundException;
+import com.dochiri.tooltestlab.order.application.exception.OrderApplicationException;
 import com.dochiri.tooltestlab.order.application.port.in.GetOrderResult;
 import com.dochiri.tooltestlab.order.application.port.in.GetOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
@@ -20,10 +19,10 @@ public final class GetOrderService implements GetOrderUseCase {
     @Transactional(readOnly = true)
     public GetOrderResult getOrder(final String memberPublicId, final String publicId) {
         final Order order = orderRepositoryPort.findByPublicId(publicId)
-                .orElseThrow(() -> OrderNotFoundException.orderNotFound(publicId));
+                .orElseThrow(() -> OrderApplicationException.orderNotFound(publicId));
 
         if (!order.memberId().value().equals(memberPublicId)) {
-            throw NotOrderOwnerException.notOrderOwner();
+            throw OrderApplicationException.notOrderOwner();
         }
 
         final var items = order.items().values().stream()

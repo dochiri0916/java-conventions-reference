@@ -51,6 +51,17 @@ public final class ProductApplicationException extends ApplicationException {
         );
     }
 
+    public static ProductApplicationException insufficientStock(
+            final int currentStock,
+            final int requestedQuantity
+    ) {
+        return new ProductApplicationException(
+                ProductApplicationErrorCode.STOCK_INSUFFICIENT,
+                ProductApplicationErrorCode.STOCK_INSUFFICIENT.detail(),
+                Map.of("currentStock", currentStock, "requestedQuantity", requestedQuantity)
+        );
+    }
+
     private ProductApplicationException(final ProductApplicationErrorCode errorCode) {
         super(errorCode);
     }

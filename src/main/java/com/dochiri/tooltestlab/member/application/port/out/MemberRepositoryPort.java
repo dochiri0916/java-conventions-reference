@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface MemberRepositoryPort {
 
-    Member save(Member member);
+    Member create(Member member);
 
     Optional<Member> findByMemberId(String memberId);
 

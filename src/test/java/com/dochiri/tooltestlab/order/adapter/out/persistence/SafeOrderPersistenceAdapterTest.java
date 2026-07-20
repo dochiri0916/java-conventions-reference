@@ -46,7 +46,7 @@ class SafeOrderPersistenceAdapterTest {
         when(orderLineJpaRepository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when - 안전 어댑터로 주문을 저장한다
-        Order saved = adapter.save(order);
+        Order saved = adapter.create(order);
 
         // then - 새 주문과 주문 라인이 저장된다
         assertThat(saved.id()).isEqualTo(order.id());
@@ -67,7 +67,7 @@ class SafeOrderPersistenceAdapterTest {
         when(orderLineJpaRepository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when - 변경된 주문 상태를 저장한다
-        Order saved = adapter.save(paidOrder);
+        Order saved = adapter.update(paidOrder);
 
         // then - 기존 엔티티에 변경된 상태가 반영된다
         assertThat(saved.id()).isEqualTo(paidOrder.id());

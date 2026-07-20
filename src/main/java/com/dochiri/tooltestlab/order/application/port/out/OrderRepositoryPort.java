@@ -9,7 +9,9 @@ import java.util.Optional;
  * 주문 저장소 Port (Application 소유).
  */
 public interface OrderRepositoryPort {
-    Order save(Order order);
+    Order create(Order order);
+
+    Order update(Order order);
 
     Optional<Order> findByPublicId(String publicId);
 

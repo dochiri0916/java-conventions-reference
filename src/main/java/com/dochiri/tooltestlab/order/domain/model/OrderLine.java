@@ -3,7 +3,7 @@ package com.dochiri.tooltestlab.order.domain.model;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
-import com.dochiri.tooltestlab.order.domain.exception.InvalidQuantityException;
+import com.dochiri.tooltestlab.order.domain.exception.OrderDomainException;
 
 public record OrderLine(
         ProductId productId,
@@ -14,16 +14,16 @@ public record OrderLine(
 
     public OrderLine {
         if (productId == null) {
-            throw InvalidProductIdException.required();
+            throw OrderDomainException.productIdRequired();
         }
         if (productName == null) {
-            throw InvalidProductNameException.required();
+            throw OrderDomainException.productNameRequired();
         }
         if (quantity == null) {
-            throw InvalidQuantityException.required();
+            throw OrderDomainException.quantityRequired();
         }
         if (unitPrice == null) {
-            throw InvalidMoneyException.required();
+            throw OrderDomainException.unitPriceRequired();
         }
     }
 

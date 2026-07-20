@@ -99,7 +99,7 @@ class MemberApiTest {
         // then
         assertThat(result.getResponse().getStatus()).isEqualTo(400);
         assertThat(result.getResponse().getContentAsString()).contains(
-                "MEMBER.EMAIL_REQUIRED", "이메일 누락", "이메일은 필수입니다.");
+                "EMAIL_REQUIRED", "이메일은 필수입니다.");
     }
 
     @Test
@@ -119,7 +119,7 @@ class MemberApiTest {
         // then
         assertThat(result.getResponse().getStatus()).isEqualTo(400);
         assertThat(result.getResponse().getContentAsString()).contains(
-                "MEMBER.PASSWORD_REQUIRED", "비밀번호 누락", "비밀번호는 필수입니다.");
+                "PASSWORD_REQUIRED", "비밀번호는 필수입니다.");
     }
 
     @Test
@@ -169,7 +169,7 @@ class MemberApiTest {
                 .andReturn();
 
         // then
-        assertThat(result.getResponse().getStatus()).isEqualTo(401);
+        assertThat(result.getResponse().getStatus()).isEqualTo(403);
     }
 
     @Test

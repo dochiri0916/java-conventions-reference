@@ -55,10 +55,10 @@ class SafeModeTest {
     @DisplayName("safe 모드에서 멤버 저장 및 조회")
     void safeMemberSave() {
         // given
-        var member = Member.register(new Email("safe@test.com"), new EncodedPassword("pw"), new MemberName("안전모드"));
+        var member = Member.create(new Email("safe@test.com"), new EncodedPassword("pw"), new MemberName("안전모드"));
 
         // when
-        var saved = memberRepositoryPort.save(member);
+        var saved = memberRepositoryPort.create(member);
         var found = memberRepositoryPort.findByMemberId(saved.id().value());
 
         // then
@@ -129,7 +129,7 @@ class SafeModeTest {
         );
 
         // when
-        var saved = orderRepositoryPort.save(order);
+        var saved = orderRepositoryPort.create(order);
         var found = orderRepositoryPort.findByPublicId(saved.id().value());
 
         // then
@@ -171,7 +171,7 @@ class SafeModeTest {
         );
 
         var order = Order.create(memberId, OrderLines.from(List.of(line)), address);
-        orderRepositoryPort.save(order);
+        orderRepositoryPort.create(order);
 
         // when
         var orders = orderRepositoryPort.findByMemberId(memberId.value());

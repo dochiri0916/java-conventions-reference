@@ -5,8 +5,7 @@ import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
 import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.domain.event.OrderPlaced;
-import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderLinesException;
-import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
+import com.dochiri.tooltestlab.order.domain.exception.OrderDomainException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,7 +52,7 @@ class OrderBranchTest {
         var paid = pending.pay();
 
         // when & then
-        assertThatThrownBy(paid::pay).isInstanceOf(InvalidOrderStatusException.class);
+        assertThatThrownBy(paid::pay).isInstanceOf(OrderDomainException.class);
     }
 
     @Test
@@ -76,7 +75,7 @@ class OrderBranchTest {
         var order = pending;
 
         // when & then
-        assertThatThrownBy(order::startShipping).isInstanceOf(InvalidOrderStatusException.class);
+        assertThatThrownBy(order::startShipping).isInstanceOf(OrderDomainException.class);
     }
 
     @Test
@@ -99,7 +98,7 @@ class OrderBranchTest {
         var order = pending;
 
         // when & then
-        assertThatThrownBy(order::deliver).isInstanceOf(InvalidOrderStatusException.class);
+        assertThatThrownBy(order::deliver).isInstanceOf(OrderDomainException.class);
     }
 
     @Test
@@ -135,7 +134,7 @@ class OrderBranchTest {
         var delivered = pending.pay().startShipping().deliver();
 
         // when & then
-        assertThatThrownBy(delivered::cancel).isInstanceOf(InvalidOrderStatusException.class);
+        assertThatThrownBy(delivered::cancel).isInstanceOf(OrderDomainException.class);
     }
 
     @Test
@@ -145,7 +144,7 @@ class OrderBranchTest {
         var cancelled = pending.cancel();
 
         // when & then
-        assertThatThrownBy(cancelled::cancel).isInstanceOf(InvalidOrderStatusException.class);
+        assertThatThrownBy(cancelled::cancel).isInstanceOf(OrderDomainException.class);
     }
 
     @Test
@@ -185,7 +184,7 @@ class OrderBranchTest {
                 new Money(1000));
         var address = new ShippingAddress(new RecipientName("홍길동"), new Phone("01012345678"),
                 new StreetAddress("서울시"), new ZipCode("12345"));
-        var other = new Order(
+        var other = Order.restore(
                 pending.id(),
                 new MemberId("other"),
                 OrderLines.from(List.of(line)),
@@ -229,7 +228,7 @@ class OrderBranchTest {
     @DisplayName("OrderLines - fromArray null 예외")
     void orderLinesFromArrayNull() {
         // given
-        var expectedException = InvalidOrderLinesException.class;
+        var expectedException = OrderDomainException.class;
 
         // when & then
         assertThatThrownBy(() -> OrderLines.fromArray((OrderLine[]) null))
@@ -266,7 +265,7 @@ class OrderBranchTest {
     @DisplayName("OrderLines - null 목록이면 InvalidOrderLinesException")
     void orderLinesNullValues() {
         // given
-        var expectedException = InvalidOrderLinesException.class;
+        var expectedException = OrderDomainException.class;
 
         // when & then
         assertThatThrownBy(() -> new OrderLines(null))
@@ -360,7 +359,7 @@ class OrderBranchTest {
     @DisplayName("OrderPlacedItems - null 목록이면 InvalidOrderLinesException")
     void orderPlacedItemsNullValues() {
         // given
-        var expectedException = InvalidOrderLinesException.class;
+        var expectedException = OrderDomainException.class;
 
         // when & then
         assertThatThrownBy(() -> new OrderPlacedItems(null))
@@ -392,7 +391,7 @@ class OrderBranchTest {
     @DisplayName("OrderCancelledItems - null 목록이면 InvalidOrderLinesException")
     void orderCancelledItemsNullValues() {
         // given
-        var expectedException = InvalidOrderLinesException.class;
+        var expectedException = OrderDomainException.class;
 
         // when & then
         assertThatThrownBy(() -> new OrderCancelledItems(null))
