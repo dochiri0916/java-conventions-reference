@@ -3,7 +3,6 @@ package com.dochiri.tooltestlab.product.domain.model;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductStatus;
 import com.dochiri.tooltestlab.catalog.product.domain.model.StockStatus;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDomainException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.junit.jupiter.api.DisplayName;

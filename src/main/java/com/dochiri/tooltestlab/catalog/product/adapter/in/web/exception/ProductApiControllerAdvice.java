@@ -188,4 +188,33 @@ public final class ProductApiControllerAdvice {
         );
     }
 
+    @ExceptionHandler(InvalidStockQuantityException.class)
+    public ProblemDetail handleInvalidStockQuantity(final InvalidStockQuantityException exception) {
+        log.warn(
+                "Invalid stock quantity: currentQuantity={}",
+                exception.quantity()
+        );
+
+        return ProblemDetails.create(
+                HttpStatus.CONFLICT,
+                "INVALID_STOCK_QUANTITY",
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler(StatusTransitionNotAllowedException.class)
+    public ProblemDetail handleStatusTransitionNotAllowed(final StatusTransitionNotAllowedException exception) {
+        log.warn(
+                "Status transition not allowed: currentStatus={}, targetStatus={}",
+                exception.currentStatus(),
+                exception.targetStatus()
+        );
+
+        return ProblemDetails.create(
+                HttpStatus.CONFLICT,
+                "STATUS_TRANSITION_NOT_ALLOWED",
+                exception.getMessage()
+        );
+    }
+
 }

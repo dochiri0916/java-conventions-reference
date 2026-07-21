@@ -1,9 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.domain.model;
 
-import com.dochiri.tooltestlab.catalog.product.domain.exception.InsufficientStockException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.NegativeMoneyException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDomainException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.StockOverflowException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.*;
 
 public record Stock(int value) {
 
@@ -47,7 +44,7 @@ public record Stock(int value) {
 
     private static void validatePositiveQuantity(final int quantity) {
         if (quantity <= 0) {
-            throw ProductDomainException.invalidStockQuantity(quantity);
+            throw new InvalidStockQuantityException(quantity);
         }
     }
 

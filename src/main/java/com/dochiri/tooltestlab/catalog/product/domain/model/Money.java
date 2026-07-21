@@ -3,7 +3,6 @@ package com.dochiri.tooltestlab.catalog.product.domain.model;
 import com.dochiri.tooltestlab.catalog.product.domain.exception.MoneyOverflowException;
 import com.dochiri.tooltestlab.catalog.product.domain.exception.NegativeMoneyException;
 import com.dochiri.tooltestlab.catalog.product.domain.exception.NegativeMoneyMultiplierException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDomainException;
 
 import static java.util.Objects.requireNonNull;
 
