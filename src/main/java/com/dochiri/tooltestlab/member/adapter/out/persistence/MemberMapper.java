@@ -1,6 +1,11 @@
 package com.dochiri.tooltestlab.member.adapter.out.persistence;
 
-import com.dochiri.tooltestlab.member.domain.model.*;
+import com.dochiri.tooltestlab.member.domain.Member;
+import com.dochiri.tooltestlab.member.domain.vo.MemberStatus;
+import com.dochiri.tooltestlab.member.domain.vo.Email;
+import com.dochiri.tooltestlab.member.domain.vo.EncodedPassword;
+import com.dochiri.tooltestlab.member.domain.vo.MemberId;
+import com.dochiri.tooltestlab.member.domain.vo.MemberName;
 
 final class MemberMapper {
 

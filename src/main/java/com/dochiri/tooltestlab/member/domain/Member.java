@@ -1,6 +1,15 @@
-package com.dochiri.tooltestlab.member.domain.model;
+package com.dochiri.tooltestlab.member.domain;
 
-import static java.util.Objects.requireNonNull;
+import com.dochiri.tooltestlab.member.domain.vo.Email;
+import com.dochiri.tooltestlab.member.domain.vo.EncodedPassword;
+import com.dochiri.tooltestlab.member.domain.vo.MemberId;
+import com.dochiri.tooltestlab.member.domain.vo.MemberName;
+import com.dochiri.tooltestlab.member.domain.vo.MemberStatus;
+import com.dochiri.tooltestlab.member.domain.exception.EmailRequiredException;
+import com.dochiri.tooltestlab.member.domain.exception.MemberIdRequiredException;
+import com.dochiri.tooltestlab.member.domain.exception.MemberNameRequiredException;
+import com.dochiri.tooltestlab.member.domain.exception.MemberStatusRequiredException;
+import com.dochiri.tooltestlab.member.domain.exception.PasswordRequiredException;
 
 public final class Member {
 
@@ -17,11 +26,11 @@ public final class Member {
             final MemberName name,
             final MemberStatus status
     ) {
-        this.id = requireNonNull(id, "회원 ID는 null일 수 없습니다.");
-        this.email = requireNonNull(email, "이메일은 null일 수 없습니다.");
-        this.encodedPassword = requireNonNull(encodedPassword, "비밀번호는 null일 수 없습니다.");
-        this.name = requireNonNull(name, "회원 이름은 null일 수 없습니다.");
-        this.status = requireNonNull(status, "회원 상태는 null일 수 없습니다.");
+        this.id = validated(id, new MemberIdRequiredException());
+        this.email = validated(email, new EmailRequiredException());
+        this.encodedPassword = validated(encodedPassword, new PasswordRequiredException());
+        this.name = validated(name, new MemberNameRequiredException());
+        this.status = validated(status, new MemberStatusRequiredException());
     }
 
     public static Member create(
@@ -64,6 +73,13 @@ public final class Member {
 
     public MemberStatus status() {
         return status;
+    }
+
+    private static <T> T validated(final T value, final RuntimeException exception) {
+        if (value == null) {
+            throw exception;
+        }
+        return value;
     }
 
     @Override

@@ -1,6 +1,7 @@
-package com.dochiri.tooltestlab.member.domain.model;
+package com.dochiri.tooltestlab.member.domain.vo;
 
-import com.dochiri.tooltestlab.member.domain.exception.MemberDomainException;
+import com.dochiri.tooltestlab.member.domain.exception.EmailRequiredException;
+import com.dochiri.tooltestlab.member.domain.exception.InvalidEmailException;
 
 import java.util.regex.Pattern;
 
@@ -10,14 +11,14 @@ public record Email(String value) {
 
     public Email {
         if (value == null) {
-            throw MemberDomainException.emailRequired();
+            throw new EmailRequiredException();
         }
         value = value.strip();
         if (value.isBlank()) {
-            throw MemberDomainException.invalidEmail(value);
+            throw new InvalidEmailException();
         }
         if (!EMAIL_PATTERN.matcher(value).matches()) {
-            throw MemberDomainException.invalidEmail(value);
+            throw new InvalidEmailException();
         }
     }
 }

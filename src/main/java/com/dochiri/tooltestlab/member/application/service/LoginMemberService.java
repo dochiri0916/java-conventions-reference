@@ -1,13 +1,13 @@
 package com.dochiri.tooltestlab.member.application.service;
 
-import com.dochiri.tooltestlab.member.application.exception.MemberApplicationException;
+import com.dochiri.tooltestlab.member.application.exception.LoginFailedException;
 import com.dochiri.tooltestlab.member.application.port.in.LoginMemberCommand;
 import com.dochiri.tooltestlab.member.application.port.in.LoginMemberResult;
 import com.dochiri.tooltestlab.member.application.port.in.LoginMemberUseCase;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
 import com.dochiri.tooltestlab.member.application.port.out.PasswordEncoderPort;
-import com.dochiri.tooltestlab.member.domain.model.Email;
-import com.dochiri.tooltestlab.member.domain.model.Member;
+import com.dochiri.tooltestlab.member.domain.vo.Email;
+import com.dochiri.tooltestlab.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,10 +24,10 @@ public final class LoginMemberService implements LoginMemberUseCase {
     public LoginMemberResult login(final LoginMemberCommand command) {
         final Email email = new Email(command.email());
         final Member member = memberRepositoryPort.findByEmail(email.value())
-                .orElseThrow(MemberApplicationException::loginFailed);
+                .orElseThrow(LoginFailedException::new);
 
         if (!passwordEncoderPort.matches(command.password(), member.encodedPassword())) {
-            throw MemberApplicationException.loginFailed();
+            throw new LoginFailedException();
         }
 
         return new LoginMemberResult(member.id().value(), member.email().value(), member.name().value());

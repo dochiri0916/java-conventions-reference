@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.member.adapter.out.security;
 
 import com.dochiri.tooltestlab.member.application.port.out.PasswordEncoderPort;
-import com.dochiri.tooltestlab.member.domain.model.EncodedPassword;
+import com.dochiri.tooltestlab.member.domain.vo.EncodedPassword;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 

@@ -6,7 +6,12 @@ import com.dochiri.tooltestlab.member.adapter.in.web.response.GetMyProfileRespon
 import com.dochiri.tooltestlab.member.adapter.in.web.response.LoginMemberResponse;
 import com.dochiri.tooltestlab.member.adapter.in.web.response.LogoutMemberResponse;
 import com.dochiri.tooltestlab.member.adapter.in.web.response.RegisterMemberResponse;
-import com.dochiri.tooltestlab.member.application.port.in.*;
+import com.dochiri.tooltestlab.member.application.port.in.LoginMemberCommand;
+import com.dochiri.tooltestlab.member.application.port.in.LoginMemberResult;
+import com.dochiri.tooltestlab.member.application.port.in.LoginMemberUseCase;
+import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberCommand;
+import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberResult;
+import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/members")
 public class MemberController {
+
+    private static final String MEMBER_ID_KEY = "memberId";
 
     private final RegisterMemberUseCase registerMemberUseCase;
     private final LoginMemberUseCase loginMemberUseCase;
@@ -52,7 +59,7 @@ public class MemberController {
             @Valid @RequestBody LoginMemberRequest request, final HttpSession session) {
         final LoginMemberCommand command = new LoginMemberCommand(request.email(), request.password());
         final LoginMemberResult result = loginMemberUseCase.login(command);
-        session.setAttribute(ApiAuthenticationInterceptor.MEMBER_ID_KEY, result.publicId());
+        session.setAttribute(MEMBER_ID_KEY, result.publicId());
         return ResponseEntity.ok(new LoginMemberResponse(result.publicId(), result.email(), result.name()));
     }
 

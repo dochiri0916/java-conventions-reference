@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.member.application.port.out;
 
-import com.dochiri.tooltestlab.member.domain.model.EncodedPassword;
+import com.dochiri.tooltestlab.member.domain.vo.EncodedPassword;
 
 public interface PasswordEncoderPort {
 

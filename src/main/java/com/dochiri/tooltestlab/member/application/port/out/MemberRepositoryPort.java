@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.member.application.port.out;
 
-import com.dochiri.tooltestlab.member.domain.model.Member;
+import com.dochiri.tooltestlab.member.domain.Member;
 
 import java.util.Optional;
 

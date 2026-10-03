@@ -1,6 +1,7 @@
-package com.dochiri.tooltestlab.member.domain.model;
+package com.dochiri.tooltestlab.member.domain.vo;
 
-import com.dochiri.tooltestlab.member.domain.exception.MemberDomainException;
+import com.dochiri.tooltestlab.member.domain.exception.InvalidMemberIdException;
+import com.dochiri.tooltestlab.member.domain.exception.MemberIdRequiredException;
 
 import java.util.UUID;
 
@@ -8,11 +9,11 @@ public record MemberId(String value) {
 
     public MemberId {
         if (value == null) {
-            throw MemberDomainException.memberIdRequired();
+            throw new MemberIdRequiredException();
         }
         final String stripped = value.strip();
         if (stripped.isBlank()) {
-            throw MemberDomainException.invalidMemberId(value);
+            throw new InvalidMemberIdException();
         }
         value = stripped;
     }
