@@ -20,7 +20,7 @@ public final class LoginMemberService implements LoginMemberUseCase {
     private final PasswordEncoderPort passwordEncoderPort;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public LoginMemberResult login(final LoginMemberCommand command) {
         final Email email = new Email(command.email());
         final Member member = memberRepositoryPort.findByEmail(email.value())
