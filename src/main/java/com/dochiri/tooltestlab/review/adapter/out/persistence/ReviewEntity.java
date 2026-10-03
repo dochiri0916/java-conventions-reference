@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.review.adapter.out.persistence;
 
+import com.dochiri.tooltestlab.global.persistence.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReviewEntity {
+public class ReviewEntity extends BaseEntity {
 
     @Getter(AccessLevel.NONE)
     @Id

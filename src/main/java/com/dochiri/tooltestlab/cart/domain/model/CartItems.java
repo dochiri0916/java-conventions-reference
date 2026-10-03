@@ -34,7 +34,7 @@ public record CartItems(List<CartItem> values) {
         return new CartItems(List.of());
     }
 
-    public static CartItems from(final List<CartItem> items) {
+    public static CartItems of(final List<CartItem> items) {
         return new CartItems(items);
     }
 

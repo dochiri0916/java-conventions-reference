@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.order.adapter.out.persistence;
 
+import com.dochiri.tooltestlab.global.persistence.BaseEntity;
 import com.dochiri.tooltestlab.order.domain.model.Order;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "orders")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderEntity {
+public class OrderEntity extends BaseEntity {
 
     @Getter(AccessLevel.NONE)
     @Id
@@ -66,7 +67,7 @@ public class OrderEntity {
         this.zipCode = zipCode;
     }
 
-    static OrderEntity from(final Order domain) {
+    static OrderEntity of(final Order domain) {
         return new OrderEntity(
                 null, domain.id().value(), domain.memberId().value(), domain.status().name(),
                 domain.totalAmount().amount(),

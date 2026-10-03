@@ -10,7 +10,7 @@ public record Quantity(int value) {
         }
     }
 
-    public static Quantity from(final int value) {
+    public static Quantity of(final int value) {
         return new Quantity(value);
     }
 }

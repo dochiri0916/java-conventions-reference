@@ -32,14 +32,14 @@ public record OrderLines(List<OrderLine> values) {
         values = List.copyOf(values);
     }
 
-    public static OrderLines fromArray(final OrderLine... lines) {
+    public static OrderLines of(final OrderLine... lines) {
         if (lines == null) {
             throw new OrderLinesRequiredException();
         }
         return new OrderLines(Arrays.asList(lines));
     }
 
-    public static OrderLines from(final List<OrderLine> lines) {
+    public static OrderLines of(final List<OrderLine> lines) {
         return new OrderLines(lines);
     }
 

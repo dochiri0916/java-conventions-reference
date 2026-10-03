@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.order.adapter.out.persistence;
 
+import com.dochiri.tooltestlab.global.persistence.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "order_lines")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderLineEntity {
+public class OrderLineEntity extends BaseEntity {
 
     @Getter(AccessLevel.NONE)
     @Id

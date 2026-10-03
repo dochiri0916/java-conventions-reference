@@ -37,12 +37,12 @@ final class OrderMapper {
                 new StreetAddress(entity.getAddress()), new ZipCode(entity.getZipCode()));
 
         return Order.restore(
-                new OrderId(entity.getOrderId()), new MemberReferenceId(entity.getMemberId()), OrderLines.from(domainItems),
+                new OrderId(entity.getOrderId()), new MemberReferenceId(entity.getMemberId()), OrderLines.of(domainItems),
                 OrderStatus.valueOf(entity.getStatus()), shippingAddress, new Money(entity.getTotalAmount()));
     }
 
     static OrderEntity toEntity(final Order domain) {
-        return OrderEntity.from(domain);
+        return OrderEntity.of(domain);
     }
 
     static List<OrderLineEntity> toItemEntities(final Order domain, final String orderId) {

@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.catalog.category.adapter.out.persistence;
 
+import com.dochiri.tooltestlab.global.persistence.BaseEntity;
 import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CategoryEntity {
+public class CategoryEntity extends BaseEntity {
 
     @Getter(AccessLevel.NONE)
     @Id

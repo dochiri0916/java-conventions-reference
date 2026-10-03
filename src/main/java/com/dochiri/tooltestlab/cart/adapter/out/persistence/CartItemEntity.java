@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.cart.adapter.out.persistence;
 
+import com.dochiri.tooltestlab.global.persistence.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "cart_items")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CartItemEntity {
+public class CartItemEntity extends BaseEntity {
 
     @Getter(AccessLevel.NONE)
     @Id

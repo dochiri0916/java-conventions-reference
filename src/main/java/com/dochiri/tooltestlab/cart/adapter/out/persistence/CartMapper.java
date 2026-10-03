@@ -27,7 +27,7 @@ final class CartMapper {
         return Cart.restore(
                 new CartId(entity.getCartId()),
                 new MemberReferenceId(entity.getMemberId()),
-                CartItems.from(domainItems));
+                CartItems.of(domainItems));
     }
 
     static CartEntity toEntity(final Cart domain) {

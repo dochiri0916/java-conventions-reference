@@ -54,7 +54,7 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
                 .toList();
 
         final Order saved = orderRepositoryPort.create(
-                Order.create(memberId, OrderLines.from(orderLines), shippingAddress));
+                Order.create(memberId, OrderLines.of(orderLines), shippingAddress));
         cartPort.clear(memberId);
 
         final var resultItems = saved.items().values().stream()
