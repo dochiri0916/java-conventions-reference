@@ -5,7 +5,7 @@ import com.dochiri.tooltestlab.order.application.exception.OrderNotFoundExceptio
 import com.dochiri.tooltestlab.order.application.port.in.CancelOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
 import com.dochiri.tooltestlab.order.application.port.out.ProductStockPort;
-import com.dochiri.tooltestlab.order.domain.model.Order;
+import com.dochiri.tooltestlab.order.domain.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

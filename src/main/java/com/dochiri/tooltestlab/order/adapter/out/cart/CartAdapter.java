@@ -2,12 +2,12 @@ package com.dochiri.tooltestlab.order.adapter.out.cart;
 
 import com.dochiri.tooltestlab.cart.application.port.in.ClearCartUseCase;
 import com.dochiri.tooltestlab.cart.application.port.in.GetCartUseCase;
-import com.dochiri.tooltestlab.global.domain.Money;
-import com.dochiri.tooltestlab.global.domain.Quantity;
+import com.dochiri.tooltestlab.global.domain.vo.Money;
+import com.dochiri.tooltestlab.global.domain.vo.Quantity;
 import com.dochiri.tooltestlab.order.application.port.out.CartPort;
-import com.dochiri.tooltestlab.order.domain.model.MemberReferenceId;
-import com.dochiri.tooltestlab.order.domain.model.ProductName;
-import com.dochiri.tooltestlab.order.domain.model.ProductReferenceId;
+import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
+import com.dochiri.tooltestlab.order.domain.vo.ProductName;
+import com.dochiri.tooltestlab.order.domain.vo.ProductReferenceId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +24,10 @@ public final class CartAdapter implements CartPort {
     public List<CartLine> findLines(final MemberReferenceId memberId) {
         return getCartUseCase.getCart(memberId.value()).items().stream()
                 .map(item -> new CartLine(
-                        new ProductReferenceId(item.productPublicId()),
-                        new ProductName(item.productName()),
-                        new Quantity(item.quantity()),
-                        new Money(item.unitPrice())))
+                        ProductReferenceId.parse(item.productPublicId()),
+                        ProductName.of(item.productName()),
+                        Quantity.of(item.quantity()),
+                        Money.of(item.unitPrice())))
                 .toList();
     }
 

@@ -1,13 +1,13 @@
-package com.dochiri.tooltestlab.order.domain.model;
+package com.dochiri.tooltestlab.order.domain;
 
-import com.dochiri.tooltestlab.global.domain.Money;
+import com.dochiri.tooltestlab.global.domain.vo.Money;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
-import com.dochiri.tooltestlab.order.domain.exception.MemberReferenceIdRequiredException;
-import com.dochiri.tooltestlab.order.domain.exception.OrderIdRequiredException;
-import com.dochiri.tooltestlab.order.domain.exception.OrderLinesRequiredException;
-import com.dochiri.tooltestlab.order.domain.exception.OrderStatusRequiredException;
-import com.dochiri.tooltestlab.order.domain.exception.ShippingAddressRequiredException;
-import com.dochiri.tooltestlab.order.domain.exception.TotalAmountRequiredException;
+import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
+import com.dochiri.tooltestlab.order.domain.vo.OrderId;
+import com.dochiri.tooltestlab.order.domain.vo.OrderLines;
+import com.dochiri.tooltestlab.order.domain.vo.ShippingAddress;
+
+import static java.util.Objects.requireNonNull;
 
 public final class Order {
 
@@ -26,12 +26,12 @@ public final class Order {
             final ShippingAddress shippingAddress,
             final Money totalAmount
     ) {
-        this.id = validated(id, new OrderIdRequiredException());
-        this.memberId = validated(memberId, new MemberReferenceIdRequiredException());
-        this.items = validated(items, new OrderLinesRequiredException());
-        this.status = validated(status, new OrderStatusRequiredException());
-        this.shippingAddress = validated(shippingAddress, new ShippingAddressRequiredException());
-        this.totalAmount = validated(totalAmount, new TotalAmountRequiredException());
+        this.id = requireNonNull(id);
+        this.memberId = requireNonNull(memberId);
+        this.items = requireNonNull(items);
+        this.status = requireNonNull(status);
+        this.shippingAddress = requireNonNull(shippingAddress);
+        this.totalAmount = requireNonNull(totalAmount);
     }
 
     public static Order create(
@@ -82,18 +82,28 @@ public final class Order {
         return restore(id, memberId, items, OrderStatus.CANCELLED, shippingAddress, totalAmount);
     }
 
-    public OrderId id() { return id; }
-    public MemberReferenceId memberId() { return memberId; }
-    public OrderLines items() { return items; }
-    public OrderStatus status() { return status; }
-    public ShippingAddress shippingAddress() { return shippingAddress; }
-    public Money totalAmount() { return totalAmount; }
+    public OrderId id() {
+        return id;
+    }
 
-    private static <T> T validated(final T value, final RuntimeException exception) {
-        if (value == null) {
-            throw exception;
-        }
-        return value;
+    public MemberReferenceId memberId() {
+        return memberId;
+    }
+
+    public OrderLines items() {
+        return items;
+    }
+
+    public OrderStatus status() {
+        return status;
+    }
+
+    public ShippingAddress shippingAddress() {
+        return shippingAddress;
+    }
+
+    public Money totalAmount() {
+        return totalAmount;
     }
 
     @Override
@@ -102,5 +112,7 @@ public final class Order {
     }
 
     @Override
-    public int hashCode() { return id.hashCode(); }
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

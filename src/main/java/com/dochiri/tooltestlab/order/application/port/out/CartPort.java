@@ -1,10 +1,10 @@
 package com.dochiri.tooltestlab.order.application.port.out;
 
-import com.dochiri.tooltestlab.global.domain.Money;
-import com.dochiri.tooltestlab.global.domain.Quantity;
-import com.dochiri.tooltestlab.order.domain.model.MemberReferenceId;
-import com.dochiri.tooltestlab.order.domain.model.ProductName;
-import com.dochiri.tooltestlab.order.domain.model.ProductReferenceId;
+import com.dochiri.tooltestlab.global.domain.vo.Money;
+import com.dochiri.tooltestlab.global.domain.vo.Quantity;
+import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
+import com.dochiri.tooltestlab.order.domain.vo.ProductName;
+import com.dochiri.tooltestlab.order.domain.vo.ProductReferenceId;
 
 import java.util.List;
 

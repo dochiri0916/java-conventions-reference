@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.order.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
-import com.dochiri.tooltestlab.order.domain.model.Order;
+import com.dochiri.tooltestlab.order.domain.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
@@ -37,7 +37,7 @@ class OrderPersistenceAdapter implements OrderRepositoryPort {
     public Order update(final Order order) {
         return execute(() -> {
             final OrderEntity entity = orderJpaRepository.findByOrderId(order.id().value()).orElseThrow();
-            entity.apply(order);
+            OrderMapper.updateEntity(entity, order);
             final OrderEntity savedOrder = orderJpaRepository.save(entity);
             orderLineJpaRepository.deleteByOrderId(order.id().value());
             final List<OrderLineEntity> items = OrderMapper.toItemEntities(order, order.id().value());

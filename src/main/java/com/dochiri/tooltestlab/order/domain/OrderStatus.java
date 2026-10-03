@@ -1,4 +1,4 @@
-package com.dochiri.tooltestlab.order.domain.model;
+package com.dochiri.tooltestlab.order.domain;
 
 public enum OrderStatus {
     PENDING,    // 주문 접수

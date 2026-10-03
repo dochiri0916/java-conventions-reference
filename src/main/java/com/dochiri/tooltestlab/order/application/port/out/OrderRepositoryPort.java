@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.order.application.port.out;
 
-import com.dochiri.tooltestlab.order.domain.model.Order;
+import com.dochiri.tooltestlab.order.domain.Order;
 import com.dochiri.tooltestlab.global.application.exception.RepositoryOperationException;
 
 import java.util.List;

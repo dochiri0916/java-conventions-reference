@@ -86,7 +86,7 @@ public class OrderController {
     @GetMapping("/{publicId}")
     public ResponseEntity<GetOrderResponse> get(
             @Parameter(hidden = true) String memberPublicId,
-            @Parameter(description = "주문 publicId", example = "a1b2c3d4e5f6")
+            @Parameter(description = "주문 publicId", example = "01900000-0000-7000-8000-000000000001")
             @PathVariable String publicId) {
         final GetOrderResult result = getOrderUseCase.getOrder(memberPublicId, publicId);
         final var items = result.items().stream()
@@ -116,7 +116,7 @@ public class OrderController {
     @PostMapping("/{publicId}/cancel")
     public ResponseEntity<CancelOrderResponse> cancel(
             @Parameter(hidden = true) String memberPublicId,
-            @Parameter(description = "주문 publicId", example = "a1b2c3d4e5f6")
+            @Parameter(description = "주문 publicId", example = "01900000-0000-7000-8000-000000000001")
             @PathVariable String publicId) {
         cancelOrderUseCase.cancel(memberPublicId, publicId);
         return ResponseEntity.ok(new CancelOrderResponse("주문이 취소되었습니다."));

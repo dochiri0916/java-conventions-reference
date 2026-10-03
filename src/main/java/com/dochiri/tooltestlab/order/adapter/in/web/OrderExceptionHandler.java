@@ -1,5 +1,7 @@
 package com.dochiri.tooltestlab.order.adapter.in.web;
 
+import com.dochiri.tooltestlab.order.domain.exception.InvalidProductReferenceIdException;
+import com.dochiri.tooltestlab.order.domain.exception.InvalidMemberReferenceIdException;
 import com.dochiri.tooltestlab.global.exception.ProblemDetails;
 import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
 import com.dochiri.tooltestlab.order.application.exception.NotOrderOwnerException;
@@ -40,6 +42,8 @@ public final class OrderExceptionHandler {
     @ExceptionHandler(OrderDomainException.class)
     public ProblemDetail handle(final OrderDomainException exception) {
         return switch (exception) {
+            case InvalidProductReferenceIdException e -> respond(e, HttpStatus.BAD_REQUEST, "PRODUCT_ID_INVALID");
+            case InvalidMemberReferenceIdException e -> respond(e, HttpStatus.BAD_REQUEST, "MEMBER_ID_INVALID");
             case InvalidOrderIdException e -> respond(e, HttpStatus.BAD_REQUEST, "ORDER_ID_INVALID");
             case OrderIdRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "ORDER_ID_REQUIRED");
             case QuantityRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "QUANTITY_REQUIRED");

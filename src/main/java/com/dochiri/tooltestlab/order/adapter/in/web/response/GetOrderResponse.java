@@ -6,8 +6,8 @@ import java.util.List;
 
 @Schema(description = "주문 조회 응답")
 public record GetOrderResponse(
-        @Schema(description = "주문 publicId", example = "a1b2c3d4e5f6") String publicId,
-        @Schema(description = "회원 publicId", example = "u1v2w3x4y5z6") String memberPublicId,
+        @Schema(description = "주문 publicId", example = "01900000-0000-7000-8000-000000000001") String publicId,
+        @Schema(description = "회원 publicId", example = "01900000-0000-7000-8000-000000000001") String memberPublicId,
         @Schema(description = "주문 상태", example = "PLACED") String status,
         @Schema(description = "총 주문 금액 (원 단위)", example = "7380000") long totalAmount,
         @Schema(description = "수령인 이름", example = "홍길동") String recipientName,
@@ -22,7 +22,7 @@ public record GetOrderResponse(
 
     @Schema(description = "주문 상품")
     public record Item(
-            @Schema(description = "상품 publicId", example = "p1r2o3d4u5c6") String productPublicId,
+            @Schema(description = "상품 publicId", example = "01900000-0000-7000-8000-000000000001") String productPublicId,
             @Schema(description = "상품명", example = "맥북 프로 16인치") String productName,
             @Schema(description = "수량", example = "2") int quantity,
             @Schema(description = "단가 (원 단위)", example = "3690000") long unitPrice,

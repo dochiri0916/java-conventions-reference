@@ -1,7 +1,9 @@
 package com.dochiri.tooltestlab.order.domain.exception;
 
 public abstract sealed class OrderDomainException extends RuntimeException
-        permits InvalidOrderIdException,
+        permits InvalidProductReferenceIdException,
+        InvalidMemberReferenceIdException,
+        InvalidOrderIdException,
         OrderIdRequiredException,
         QuantityRequiredException,
         InvalidShippingAddressException,

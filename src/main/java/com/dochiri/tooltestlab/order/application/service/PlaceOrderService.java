@@ -7,15 +7,15 @@ import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.out.CartPort;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
 import com.dochiri.tooltestlab.order.application.port.out.ProductStockPort;
-import com.dochiri.tooltestlab.order.domain.model.MemberReferenceId;
-import com.dochiri.tooltestlab.order.domain.model.Order;
-import com.dochiri.tooltestlab.order.domain.model.OrderLine;
-import com.dochiri.tooltestlab.order.domain.model.OrderLines;
-import com.dochiri.tooltestlab.order.domain.model.Phone;
-import com.dochiri.tooltestlab.order.domain.model.RecipientName;
-import com.dochiri.tooltestlab.order.domain.model.ShippingAddress;
-import com.dochiri.tooltestlab.order.domain.model.StreetAddress;
-import com.dochiri.tooltestlab.order.domain.model.ZipCode;
+import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
+import com.dochiri.tooltestlab.order.domain.Order;
+import com.dochiri.tooltestlab.order.domain.vo.OrderLine;
+import com.dochiri.tooltestlab.order.domain.vo.OrderLines;
+import com.dochiri.tooltestlab.order.domain.vo.Phone;
+import com.dochiri.tooltestlab.order.domain.vo.RecipientName;
+import com.dochiri.tooltestlab.order.domain.vo.ShippingAddress;
+import com.dochiri.tooltestlab.order.domain.vo.StreetAddress;
+import com.dochiri.tooltestlab.order.domain.vo.ZipCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,10 +34,10 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
     @Override
     @Transactional
     public PlaceOrderResult place(final PlaceOrderCommand command) {
-        final MemberReferenceId memberId = new MemberReferenceId(command.memberPublicId());
-        final ShippingAddress shippingAddress = new ShippingAddress(
-                new RecipientName(command.recipientName()), new Phone(command.phone()),
-                new StreetAddress(command.address()), new ZipCode(command.zipCode()));
+        final MemberReferenceId memberId = MemberReferenceId.parse(command.memberPublicId());
+        final ShippingAddress shippingAddress = ShippingAddress.of(
+                RecipientName.of(command.recipientName()), Phone.of(command.phone()),
+                StreetAddress.of(command.address()), ZipCode.of(command.zipCode()));
 
         final List<CartPort.CartLine> cartLines = cartPort.findLines(memberId);
         if (cartLines.isEmpty()) {
@@ -50,7 +50,7 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
                 .forEach(line -> productStockPort.decrease(line.productId(), line.quantity()));
 
         final List<OrderLine> orderLines = cartLines.stream()
-                .map(line -> new OrderLine(line.productId(), line.productName(), line.quantity(), line.unitPrice()))
+                .map(line -> OrderLine.of(line.productId(), line.productName(), line.quantity(), line.unitPrice()))
                 .toList();
 
         final Order saved = orderRepositoryPort.create(

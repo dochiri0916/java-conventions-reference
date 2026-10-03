@@ -1,7 +1,6 @@
 package com.dochiri.tooltestlab.order.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.global.persistence.BaseEntity;
-import com.dochiri.tooltestlab.order.domain.model.Order;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,13 +17,14 @@ public class OrderEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter(AccessLevel.NONE)
     @Version
     private Long version;
 
-    @Column(nullable = false, unique = true, length = 32)
+    @Column(nullable = false, unique = true, length = 36)
     private String orderId;
 
-    @Column(nullable = false, length = 32)
+    @Column(nullable = false, length = 36)
     private String memberId;
 
     @Column(nullable = false, length = 20)
@@ -46,17 +46,15 @@ public class OrderEntity extends BaseEntity {
     private String zipCode;
 
     private OrderEntity(
-            final Long id,
             final String orderId,
             final String memberId,
             final String status,
             final long totalAmount,
-            String recipientName,
+            final String recipientName,
             final String phone,
             final String address,
             final String zipCode
     ) {
-        this.id = id;
         this.orderId = orderId;
         this.memberId = memberId;
         this.status = status;
@@ -67,20 +65,33 @@ public class OrderEntity extends BaseEntity {
         this.zipCode = zipCode;
     }
 
-    static OrderEntity of(final Order domain) {
+    static OrderEntity create(
+            final String orderId,
+            final String memberId,
+            final String status,
+            final long totalAmount,
+            final String recipientName,
+            final String phone,
+            final String address,
+            final String zipCode
+    ) {
         return new OrderEntity(
-                null, domain.id().value(), domain.memberId().value(), domain.status().name(),
-                domain.totalAmount().amount(),
-                domain.shippingAddress().recipientName().value(), domain.shippingAddress().phone().value(),
-                domain.shippingAddress().address().value(), domain.shippingAddress().zipCode().value());
+                orderId, memberId, status, totalAmount, recipientName, phone, address, zipCode);
     }
 
-    void apply(final Order domain) {
-        this.status = domain.status().name();
-        this.totalAmount = domain.totalAmount().amount();
-        this.recipientName = domain.shippingAddress().recipientName().value();
-        this.phone = domain.shippingAddress().phone().value();
-        this.address = domain.shippingAddress().address().value();
-        this.zipCode = domain.shippingAddress().zipCode().value();
+    void update(
+            final String status,
+            final long totalAmount,
+            final String recipientName,
+            final String phone,
+            final String address,
+            final String zipCode
+    ) {
+        this.status = status;
+        this.totalAmount = totalAmount;
+        this.recipientName = recipientName;
+        this.phone = phone;
+        this.address = address;
+        this.zipCode = zipCode;
     }
 }

@@ -1,6 +1,6 @@
-package com.dochiri.tooltestlab.order.domain.model;
+package com.dochiri.tooltestlab.order.domain.vo;
 
-import com.dochiri.tooltestlab.global.domain.Money;
+import com.dochiri.tooltestlab.global.domain.vo.Money;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderLinesException;
 import com.dochiri.tooltestlab.order.domain.exception.OrderLinesRequiredException;
 import com.dochiri.tooltestlab.order.domain.exception.ProductReferenceIdRequiredException;
@@ -9,11 +9,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public record OrderLines(List<OrderLine> values) {
+public final class OrderLines {
 
     private static final int MAX_LINE_COUNT = 100;
 
-    public OrderLines {
+    private final List<OrderLine> values;
+
+    private OrderLines(final List<OrderLine> values) {
         if (values == null) {
             throw new OrderLinesRequiredException();
         }
@@ -29,7 +31,7 @@ public record OrderLines(List<OrderLine> values) {
             throw new InvalidOrderLinesException();
         }
 
-        values = List.copyOf(values);
+        this.values = List.copyOf(values);
     }
 
     public static OrderLines of(final OrderLine... lines) {
@@ -59,4 +61,30 @@ public record OrderLines(List<OrderLine> values) {
         }
         return values.stream().anyMatch(line -> line.productId().equals(productId));
     }
+
+    public List<OrderLine> values() {
+        return values;
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof final OrderLines other)) {
+            return false;
+        }
+        return values.equals(other.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return values.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "OrderLines[values=" + values + "]";
+    }
+
 }

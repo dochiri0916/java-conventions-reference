@@ -2,9 +2,9 @@ package com.dochiri.tooltestlab.order.adapter.out.product;
 
 import com.dochiri.tooltestlab.catalog.product.application.port.in.DecreaseProductStockUseCase;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.IncreaseProductStockUseCase;
-import com.dochiri.tooltestlab.global.domain.Quantity;
+import com.dochiri.tooltestlab.global.domain.vo.Quantity;
 import com.dochiri.tooltestlab.order.application.port.out.ProductStockPort;
-import com.dochiri.tooltestlab.order.domain.model.ProductReferenceId;
+import com.dochiri.tooltestlab.order.domain.vo.ProductReferenceId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
