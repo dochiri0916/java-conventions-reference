@@ -1,7 +1,9 @@
 package com.dochiri.tooltestlab.review.domain.exception;
 
 public abstract sealed class ReviewDomainException extends RuntimeException
-        permits ReviewIdRequiredException,
+        permits InvalidProductReferenceIdException,
+        InvalidMemberReferenceIdException,
+        ReviewIdRequiredException,
         InvalidReviewIdException,
         InvalidRatingException,
         RatingRequiredException,

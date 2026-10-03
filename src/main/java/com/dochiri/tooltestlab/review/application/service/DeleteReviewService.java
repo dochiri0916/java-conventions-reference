@@ -4,7 +4,7 @@ import com.dochiri.tooltestlab.review.application.exception.NotReviewOwnerExcept
 import com.dochiri.tooltestlab.review.application.exception.ReviewNotFoundException;
 import com.dochiri.tooltestlab.review.application.port.in.DeleteReviewUseCase;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
-import com.dochiri.tooltestlab.review.domain.model.Review;
+import com.dochiri.tooltestlab.review.domain.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

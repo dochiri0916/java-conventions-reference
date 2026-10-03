@@ -3,7 +3,7 @@ package com.dochiri.tooltestlab.review.application.service;
 import com.dochiri.tooltestlab.review.application.port.in.GetProductReviewsResult;
 import com.dochiri.tooltestlab.review.application.port.in.GetProductReviewsUseCase;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
-import com.dochiri.tooltestlab.review.domain.model.Review;
+import com.dochiri.tooltestlab.review.domain.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

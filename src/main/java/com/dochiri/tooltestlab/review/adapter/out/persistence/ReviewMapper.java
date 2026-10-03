@@ -1,11 +1,11 @@
 package com.dochiri.tooltestlab.review.adapter.out.persistence;
 
-import com.dochiri.tooltestlab.review.domain.model.ProductReferenceId;
-import com.dochiri.tooltestlab.review.domain.model.MemberReferenceId;
-import com.dochiri.tooltestlab.review.domain.model.Rating;
-import com.dochiri.tooltestlab.review.domain.model.Review;
-import com.dochiri.tooltestlab.review.domain.model.ReviewContent;
-import com.dochiri.tooltestlab.review.domain.model.ReviewId;
+import com.dochiri.tooltestlab.review.domain.vo.ProductReferenceId;
+import com.dochiri.tooltestlab.review.domain.vo.MemberReferenceId;
+import com.dochiri.tooltestlab.review.domain.vo.Rating;
+import com.dochiri.tooltestlab.review.domain.Review;
+import com.dochiri.tooltestlab.review.domain.vo.ReviewContent;
+import com.dochiri.tooltestlab.review.domain.vo.ReviewId;
 
 final class ReviewMapper {
 
@@ -15,11 +15,11 @@ final class ReviewMapper {
 
     static Review toDomain(final ReviewEntity entity) {
         return Review.restore(
-                new ReviewId(entity.getReviewId()),
-                new MemberReferenceId(entity.getMemberId()),
-                new ProductReferenceId(entity.getProductId()),
-                new Rating(entity.getRating()),
-                new ReviewContent(entity.getContent()));
+                ReviewId.parse(entity.getReviewId()),
+                MemberReferenceId.parse(entity.getMemberId()),
+                ProductReferenceId.parse(entity.getProductId()),
+                Rating.of(entity.getRating()),
+                ReviewContent.of(entity.getContent()));
     }
 
     static ReviewEntity toEntity(final Review domain) {

@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.review.application.port.out;
 
-import com.dochiri.tooltestlab.review.domain.model.Review;
+import com.dochiri.tooltestlab.review.domain.Review;
 import com.dochiri.tooltestlab.global.application.exception.RepositoryOperationException;
 
 import java.util.List;

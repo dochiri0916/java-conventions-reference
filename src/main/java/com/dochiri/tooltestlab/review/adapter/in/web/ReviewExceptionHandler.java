@@ -1,5 +1,7 @@
 package com.dochiri.tooltestlab.review.adapter.in.web;
 
+import com.dochiri.tooltestlab.review.domain.exception.InvalidProductReferenceIdException;
+import com.dochiri.tooltestlab.review.domain.exception.InvalidMemberReferenceIdException;
 import com.dochiri.tooltestlab.global.exception.ProblemDetails;
 import com.dochiri.tooltestlab.review.application.exception.DuplicateReviewException;
 import com.dochiri.tooltestlab.review.application.exception.InvalidCommandException;
@@ -36,6 +38,8 @@ public final class ReviewExceptionHandler {
     @ExceptionHandler(ReviewDomainException.class)
     public ProblemDetail handle(final ReviewDomainException exception) {
         return switch (exception) {
+            case InvalidProductReferenceIdException e -> respond(e, HttpStatus.BAD_REQUEST, "PRODUCT_ID_INVALID");
+            case InvalidMemberReferenceIdException e -> respond(e, HttpStatus.BAD_REQUEST, "MEMBER_ID_INVALID");
             case ReviewIdRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "REVIEW_ID_REQUIRED");
             case InvalidReviewIdException e -> respond(e, HttpStatus.BAD_REQUEST, "REVIEW_ID_INVALID");
             case InvalidRatingException e -> respond(e, HttpStatus.BAD_REQUEST, "RATING_INVALID");

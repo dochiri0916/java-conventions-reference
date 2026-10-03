@@ -52,7 +52,7 @@ public class ReviewController {
     })
     @GetMapping("/product/{productPublicId}")
     public ResponseEntity<GetProductReviewsResponse> getByProduct(
-            @Parameter(description = "상품 publicId", example = "p1r2o3d4u5c6")
+            @Parameter(description = "상품 publicId", example = "01900000-0000-7000-8000-000000000001")
             @PathVariable String productPublicId) {
         final GetProductReviewsResult result = getProductReviewsUseCase.getByProduct(productPublicId);
         final var data = result.reviews().stream()
@@ -72,7 +72,7 @@ public class ReviewController {
     @DeleteMapping("/{publicId}")
     public ResponseEntity<DeleteReviewResponse> delete(
             @Parameter(hidden = true) String memberPublicId,
-            @Parameter(description = "리뷰 publicId", example = "r1e2v3i4e5w6")
+            @Parameter(description = "리뷰 publicId", example = "01900000-0000-7000-8000-000000000001")
             @PathVariable String publicId) {
         deleteReviewUseCase.delete(publicId, memberPublicId);
         return ResponseEntity.ok(new DeleteReviewResponse("리뷰가 삭제되었습니다."));

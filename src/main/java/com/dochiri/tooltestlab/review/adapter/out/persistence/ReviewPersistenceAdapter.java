@@ -2,7 +2,7 @@ package com.dochiri.tooltestlab.review.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.review.application.exception.DuplicateReviewException;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
-import com.dochiri.tooltestlab.review.domain.model.Review;
+import com.dochiri.tooltestlab.review.domain.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DataIntegrityViolationException;
