@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTranslator.execute;
+
 /**
  * 동시성 안전 모드용 CartPersistenceAdapter.
  * {@code tool-test-lab.concurrency.safe=true}일 때 활성화.
@@ -32,16 +34,18 @@ class SafeCartPersistenceAdapter implements CartRepositoryPort {
 
     @Override
     public Cart save(final Cart cart) {
-        try {
-            return doSave(cart);
-        } catch (DataIntegrityViolationException e) {
-            // PESSIMISTIC_WRITE 락은 기존 row에만 적용되므로
-            // 동시에 최초 생성되는 경우 UNIQUE 제약 위반이 발생할 수 있다.
-            // 재시도: 이제는 상대 트랜잭션이 생성한 장바구니가 존재하므로
-            // PESSIMISTIC_WRITE 락을 잡고 재조회할 수 있다.
-            LOG.debug("장바구니 동시 생성 감지, 재시도합니다. memberId={}", cart.memberId().value());
-            return doSave(cart);
-        }
+        return execute(() -> {
+            try {
+                return doSave(cart);
+            } catch (final DataIntegrityViolationException exception) {
+                // PESSIMISTIC_WRITE 락은 기존 row에만 적용되므로
+                // 동시에 최초 생성되는 경우 UNIQUE 제약 위반이 발생할 수 있다.
+                // 재시도: 이제는 상대 트랜잭션이 생성한 장바구니가 존재하므로
+                // PESSIMISTIC_WRITE 락을 잡고 재조회할 수 있다.
+                LOG.debug("장바구니 동시 생성 감지, 재시도합니다. memberId={}", cart.memberId().value());
+                return doSave(cart);
+            }
+        });
     }
 
     private Cart doSave(final Cart cart) {
@@ -65,9 +69,9 @@ class SafeCartPersistenceAdapter implements CartRepositoryPort {
 
     @Override
     public Optional<Cart> findByMemberId(final String memberPublicId) {
-        return cartJpaRepository.findByMemberId(memberPublicId).flatMap(cartEntity -> {
+        return execute(() -> cartJpaRepository.findByMemberId(memberPublicId).flatMap(cartEntity -> {
             final List<CartItemEntity> items = cartItemJpaRepository.findByCartId(cartEntity.getCartId());
             return Optional.of(CartMapper.toDomain(cartEntity, items));
-        });
+        }));
     }
 }

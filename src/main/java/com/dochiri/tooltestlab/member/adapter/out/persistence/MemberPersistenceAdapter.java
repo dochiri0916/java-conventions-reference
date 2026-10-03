@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTranslator.execute;
+
 @Repository
 @RequiredArgsConstructor
 class MemberPersistenceAdapter implements MemberRepositoryPort {
@@ -17,27 +19,29 @@ class MemberPersistenceAdapter implements MemberRepositoryPort {
 
     @Override
     public Member create(final Member member) {
-        try {
-            final MemberEntity entity = MemberMapper.toEntity(member);
-            final MemberEntity saved = jpaRepository.saveAndFlush(entity);
-            return MemberMapper.toDomain(saved);
-        } catch (DataIntegrityViolationException exception) {
-            throw new DuplicateEmailException();
-        }
+        return execute(() -> {
+            try {
+                final MemberEntity entity = MemberMapper.toEntity(member);
+                final MemberEntity saved = jpaRepository.saveAndFlush(entity);
+                return MemberMapper.toDomain(saved);
+            } catch (final DataIntegrityViolationException exception) {
+                throw new DuplicateEmailException();
+            }
+        });
     }
 
     @Override
     public Optional<Member> findByMemberId(final String memberId) {
-        return jpaRepository.findByMemberId(memberId).map(MemberMapper::toDomain);
+        return execute(() -> jpaRepository.findByMemberId(memberId).map(MemberMapper::toDomain));
     }
 
     @Override
     public Optional<Member> findByEmail(final String email) {
-        return jpaRepository.findByEmail(email).map(MemberMapper::toDomain);
+        return execute(() -> jpaRepository.findByEmail(email).map(MemberMapper::toDomain));
     }
 
     @Override
     public boolean existsByEmail(final String email) {
-        return jpaRepository.existsByEmail(email);
+        return execute(() -> jpaRepository.existsByEmail(email));
     }
 }

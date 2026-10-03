@@ -5,10 +5,13 @@ import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductPage;
 import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+
+import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTranslator.execute;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,46 +21,52 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
 
     @Override
     public Product create(final Product product) {
-        final ProductEntity entity = ProductMapper.toEntity(product);
+        return execute(() -> {
+            final ProductEntity entity = ProductMapper.toEntity(product);
 
-        final ProductEntity saved = productJpaRepository.save(entity);
+            final ProductEntity saved = productJpaRepository.save(entity);
 
-        return ProductMapper.toDomain(saved);
+            return ProductMapper.toDomain(saved);
+        });
     }
 
     @Override
     public Product update(final Product product) {
-        final ProductEntity entity = productJpaRepository.findByPublicId(product.id().value())
-                .orElseThrow(() -> new IllegalArgumentException(product.id().value()));
+        return execute(() -> {
+            final ProductEntity entity = productJpaRepository.findByPublicId(product.id().value())
+                    .orElseThrow(() -> new IllegalArgumentException(product.id().value()));
 
-        ProductMapper.updateEntity(entity, product);
+            ProductMapper.updateEntity(entity, product);
 
-        return ProductMapper.toDomain(entity);
+            return ProductMapper.toDomain(entity);
+        });
     }
 
     @Override
     public Optional<Product> findById(final ProductId productId) {
-        return productJpaRepository
+        return execute(() -> productJpaRepository
                 .findByPublicId(productId.value())
-                .map(ProductMapper::toDomain);
+                .map(ProductMapper::toDomain));
     }
 
     @Override
     public Optional<Product> findByIdForUpdate(final ProductId productId) {
-        return productJpaRepository
+        return execute(() -> productJpaRepository
                 .findWithLockByPublicId(productId.value())
-                .map(ProductMapper::toDomain);
+                .map(ProductMapper::toDomain));
     }
 
     @Override
     public ProductPage findAll(final int page, final int size) {
-        final org.springframework.data.domain.Page<ProductEntity> productPage =
-                productJpaRepository.findAll(PageRequest.of(page, size));
+        return execute(() -> {
+            final Page<ProductEntity> productPage =
+                    productJpaRepository.findAll(PageRequest.of(page, size));
 
-        return new ProductPage(
-                productPage.getContent().stream().map(ProductMapper::toDomain).toList(),
-                productPage.getTotalElements()
-        );
+            return new ProductPage(
+                    productPage.getContent().stream().map(ProductMapper::toDomain).toList(),
+                    productPage.getTotalElements()
+            );
+        });
     }
 
 }

@@ -11,6 +11,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTranslator.execute;
+import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTranslator.run;
+
 @Repository
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "tool-test-lab.concurrency.safe", havingValue = "true")
@@ -20,33 +23,35 @@ class SafeReviewPersistenceAdapter implements ReviewRepositoryPort {
 
     @Override
     public Review save(final Review review) {
-        try {
-            final ReviewEntity entity = ReviewMapper.toEntity(review);
-            final ReviewEntity saved = reviewJpaRepository.saveAndFlush(entity);
-            return ReviewMapper.toDomain(saved);
-        } catch (DataIntegrityViolationException e) {
-            throw new DuplicateReviewException();
-        }
+        return execute(() -> {
+            try {
+                final ReviewEntity entity = ReviewMapper.toEntity(review);
+                final ReviewEntity saved = reviewJpaRepository.saveAndFlush(entity);
+                return ReviewMapper.toDomain(saved);
+            } catch (final DataIntegrityViolationException exception) {
+                throw new DuplicateReviewException();
+            }
+        });
     }
 
     @Override
     public Optional<Review> findByPublicId(final String publicId) {
-        return reviewJpaRepository.findByReviewId(publicId).map(ReviewMapper::toDomain);
+        return execute(() -> reviewJpaRepository.findByReviewId(publicId).map(ReviewMapper::toDomain));
     }
 
     @Override
     public List<Review> findByProductId(final String productPublicId) {
-        return reviewJpaRepository.findByProductIdOrderByIdDesc(productPublicId).stream()
-                .map(ReviewMapper::toDomain).toList();
+        return execute(() -> reviewJpaRepository.findByProductIdOrderByIdDesc(productPublicId).stream()
+                .map(ReviewMapper::toDomain).toList());
     }
 
     @Override
     public boolean existsByMemberIdAndProductId(final String memberPublicId, final String productPublicId) {
-        return reviewJpaRepository.existsByMemberIdAndProductId(memberPublicId, productPublicId);
+        return execute(() -> reviewJpaRepository.existsByMemberIdAndProductId(memberPublicId, productPublicId));
     }
 
     @Override
     public void deleteByPublicId(final String publicId) {
-        reviewJpaRepository.deleteByReviewId(publicId);
+        run(() -> reviewJpaRepository.deleteByReviewId(publicId));
     }
 }

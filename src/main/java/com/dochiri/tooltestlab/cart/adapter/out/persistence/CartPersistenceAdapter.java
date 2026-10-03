@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTranslator.execute;
+
 @Repository
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "tool-test-lab.concurrency.safe", havingValue = "false", matchIfMissing = true)
@@ -24,14 +26,16 @@ class CartPersistenceAdapter implements CartRepositoryPort {
 
     @Override
     public Cart save(final Cart cart) {
-        try {
-            return doSave(cart);
-        } catch (DataIntegrityViolationException e) {
-            // 동시에 같은 회원의 장바구니가 처음 생성된 경우 UNIQUE 제약 위반 발생.
-            // 재시도: 이제는 상대 트랜잭션이 생성한 장바구니가 존재하므로 재조회하여 반영한다.
-            LOG.debug("장바구니 동시 생성 감지, 재시도합니다. memberId={}", cart.memberId().value());
-            return doSave(cart);
-        }
+        return execute(() -> {
+            try {
+                return doSave(cart);
+            } catch (final DataIntegrityViolationException exception) {
+                // 동시에 같은 회원의 장바구니가 처음 생성된 경우 UNIQUE 제약 위반 발생.
+                // 재시도: 이제는 상대 트랜잭션이 생성한 장바구니가 존재하므로 재조회하여 반영한다.
+                LOG.debug("장바구니 동시 생성 감지, 재시도합니다. memberId={}", cart.memberId().value());
+                return doSave(cart);
+            }
+        });
     }
 
     private Cart doSave(final Cart cart) {
@@ -55,9 +59,9 @@ class CartPersistenceAdapter implements CartRepositoryPort {
 
     @Override
     public Optional<Cart> findByMemberId(final String memberPublicId) {
-        return cartJpaRepository.findByMemberId(memberPublicId).flatMap(cartEntity -> {
+        return execute(() -> cartJpaRepository.findByMemberId(memberPublicId).flatMap(cartEntity -> {
             final List<CartItemEntity> items = cartItemJpaRepository.findByCartId(cartEntity.getCartId());
             return Optional.of(CartMapper.toDomain(cartEntity, items));
-        });
+        }));
     }
 }

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTranslator.execute;
+
 @Repository
 @RequiredArgsConstructor
 class CategoryPersistenceAdapter implements CategoryRepositoryPort {
@@ -17,55 +19,63 @@ class CategoryPersistenceAdapter implements CategoryRepositoryPort {
     private final CategoryJpaRepository categoryJpaRepository;
 
     @Override
-    public Set<Category> findAllByIds(Set<CategoryId> categoryIds) {
-        if (categoryIds.isEmpty()) {
-            return Set.of();
-        }
+    public Set<Category> findAllByIds(final Set<CategoryId> categoryIds) {
+        return execute(() -> {
+            if (categoryIds.isEmpty()) {
+                return Set.of();
+            }
 
-        return categoryJpaRepository.findAllByPublicIdIn(
-                        categoryIds.stream().map(CategoryId::value).toList()
-                ).stream()
-                .map(CategoryMapper::toDomain)
-                .collect(Collectors.toUnmodifiableSet());
+            return categoryJpaRepository.findAllByPublicIdIn(
+                            categoryIds.stream().map(CategoryId::value).toList()
+                    ).stream()
+                    .map(CategoryMapper::toDomain)
+                    .collect(Collectors.toUnmodifiableSet());
+        });
     }
 
     @Override
-    public Set<Category> findAllByNames(Set<CategoryName> categoryNames) {
-        if (categoryNames.isEmpty()) {
-            return Set.of();
-        }
+    public Set<Category> findAllByNames(final Set<CategoryName> categoryNames) {
+        return execute(() -> {
+            if (categoryNames.isEmpty()) {
+                return Set.of();
+            }
 
-        return categoryJpaRepository.findAllByNameIn(
-                        categoryNames.stream().map(CategoryName::value).toList()
-                ).stream()
-                .map(CategoryMapper::toDomain)
-                .collect(Collectors.toUnmodifiableSet());
+            return categoryJpaRepository.findAllByNameIn(
+                            categoryNames.stream().map(CategoryName::value).toList()
+                    ).stream()
+                    .map(CategoryMapper::toDomain)
+                    .collect(Collectors.toUnmodifiableSet());
+        });
     }
 
     @Override
     public Set<Category> findAll() {
-        return categoryJpaRepository.findAll().stream()
+        return execute(() -> categoryJpaRepository.findAll().stream()
                 .map(CategoryMapper::toDomain)
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(Collectors.toUnmodifiableSet()));
     }
 
     @Override
     public Category create(final Category category) {
-        final CategoryEntity saved = categoryJpaRepository.save(CategoryMapper.toEntity(category));
+        return execute(() -> {
+            final CategoryEntity saved = categoryJpaRepository.save(CategoryMapper.toEntity(category));
 
-        return CategoryMapper.toDomain(saved);
+            return CategoryMapper.toDomain(saved);
+        });
     }
 
     @Override
-    public Set<Category> createAll(Set<Category> categories) {
-        if (categories.isEmpty()) {
-            return Set.of();
-        }
+    public Set<Category> createAll(final Set<Category> categories) {
+        return execute(() -> {
+            if (categories.isEmpty()) {
+                return Set.of();
+            }
 
-        return categoryJpaRepository.saveAll(
-                        categories.stream().map(CategoryMapper::toEntity).toList()
-                ).stream()
-                .map(CategoryMapper::toDomain)
-                .collect(Collectors.toUnmodifiableSet());
+            return categoryJpaRepository.saveAll(
+                            categories.stream().map(CategoryMapper::toEntity).toList()
+                    ).stream()
+                    .map(CategoryMapper::toDomain)
+                    .collect(Collectors.toUnmodifiableSet());
+        });
     }
 }
