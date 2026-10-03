@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.catalog.product.application.port.out;
 
-import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.Product;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductId;
 import com.dochiri.tooltestlab.global.application.exception.RepositoryOperationException;
 
 import java.util.Optional;

@@ -5,8 +5,8 @@ import com.dochiri.tooltestlab.catalog.product.application.exception.ProductStoc
 import com.dochiri.tooltestlab.catalog.product.application.port.in.IncreaseProductStockUseCase;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.catalog.product.domain.exception.StockOverflowException;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.Product;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +20,7 @@ public final class IncreaseProductStockService implements IncreaseProductStockUs
     @Override
     @Transactional
     public void increase(final String productPublicId, final int quantity) {
-        final Product product = productRepositoryPort.findByIdForUpdate(new ProductId(productPublicId))
+        final Product product = productRepositoryPort.findByIdForUpdate(ProductId.parse(productPublicId))
                 .orElseThrow(ProductNotFoundException::new);
         try {
             productRepositoryPort.update(product.increaseStock(quantity));

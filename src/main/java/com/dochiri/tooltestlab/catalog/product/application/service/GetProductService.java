@@ -1,13 +1,13 @@
 package com.dochiri.tooltestlab.catalog.product.application.service;
 
 import com.dochiri.tooltestlab.catalog.category.application.port.out.CategoryRepositoryPort;
-import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
+import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
 import com.dochiri.tooltestlab.catalog.product.application.exception.ProductNotFoundException;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.GetProductUseCase;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.result.GetProductResult;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.Product;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +25,7 @@ public final class GetProductService implements GetProductUseCase {
     @Override
     @Transactional(readOnly = true)
     public GetProductResult getProduct(final String publicId) {
-        final Product product = productRepositoryPort.findById(new ProductId(publicId))
+        final Product product = productRepositoryPort.findById(ProductId.parse(publicId))
                 .orElseThrow(() -> new ProductNotFoundException());
 
         final List<String> categoryNames = findCategoryNames(product.categoryIds());

@@ -1,16 +1,15 @@
-package com.dochiri.tooltestlab.catalog.product.domain.model;
+package com.dochiri.tooltestlab.catalog.product.domain;
 
-import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
-import com.dochiri.tooltestlab.global.domain.Money;
+import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductDescription;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductName;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.Stock;
+import com.dochiri.tooltestlab.global.domain.vo.Money;
 
 import java.util.Set;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductCategoryIdsRequiredException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDescriptionRequiredException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductIdRequiredException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductNameRequiredException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductPriceRequiredException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductStatusRequiredException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductStockRequiredException;
+
+import static java.util.Objects.requireNonNull;
 
 public final class Product {
 
@@ -31,13 +30,13 @@ public final class Product {
             final ProductStatus status,
             final Set<CategoryId> categoryIds
     ) {
-        this.id = validated(id, new ProductIdRequiredException());
-        this.name = validated(name, new ProductNameRequiredException());
-        this.description = validated(description, new ProductDescriptionRequiredException());
-        this.price = validated(price, new ProductPriceRequiredException());
-        this.stock = validated(stock, new ProductStockRequiredException());
-        this.status = validated(status, new ProductStatusRequiredException());
-        this.categoryIds = Set.copyOf(validated(categoryIds, new ProductCategoryIdsRequiredException()));
+        this.id = requireNonNull(id);
+        this.name = requireNonNull(name);
+        this.description = requireNonNull(description);
+        this.price = requireNonNull(price);
+        this.stock = requireNonNull(stock);
+        this.status = requireNonNull(status);
+        this.categoryIds = Set.copyOf(requireNonNull(categoryIds));
     }
 
     public static Product create(
@@ -49,10 +48,10 @@ public final class Product {
     ) {
         return new Product(
                 ProductId.generate(),
-                new ProductName(name),
-                new ProductDescription(description),
-                new Money(price),
-                new Stock(stock),
+                ProductName.of(name),
+                ProductDescription.of(description),
+                Money.of(price),
+                Stock.of(stock),
                 ProductStatus.PREPARING,
                 categoryIds
         );
@@ -198,13 +197,6 @@ public final class Product {
                 changedStatus,
                 categoryIds
         );
-    }
-
-    private static <T> T validated(final T value, final RuntimeException exception) {
-        if (value == null) {
-            throw exception;
-        }
-        return value;
     }
 
     @Override

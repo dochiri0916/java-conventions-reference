@@ -1,8 +1,9 @@
-package com.dochiri.tooltestlab.catalog.category.domain.model;
+package com.dochiri.tooltestlab.catalog.category.domain;
 
-import com.dochiri.tooltestlab.catalog.category.domain.exception.CategoryIdRequiredException;
-import com.dochiri.tooltestlab.catalog.category.domain.exception.CategoryNameRequiredException;
-import com.dochiri.tooltestlab.catalog.category.domain.exception.CategoryStatusRequiredException;
+import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
+import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryName;
+
+import static java.util.Objects.requireNonNull;
 
 public final class Category {
 
@@ -15,15 +16,15 @@ public final class Category {
             final CategoryName name,
             final CategoryStatus status
     ) {
-        this.id = validated(id, new CategoryIdRequiredException());
-        this.name = validated(name, new CategoryNameRequiredException());
-        this.status = validated(status, new CategoryStatusRequiredException());
+        this.id = requireNonNull(id);
+        this.name = requireNonNull(name);
+        this.status = requireNonNull(status);
     }
 
     public static Category create(final String name) {
         return new Category(
                 CategoryId.generate(),
-                new CategoryName(name),
+                CategoryName.of(name),
                 CategoryStatus.ACTIVE
         );
     }
@@ -39,7 +40,7 @@ public final class Category {
     public Category rename(final String name) {
         return new Category(
                 id,
-                new CategoryName(name),
+                CategoryName.of(name),
                 status
         );
     }
@@ -70,13 +71,6 @@ public final class Category {
 
     public CategoryStatus state() {
         return status;
-    }
-
-    private static <T> T validated(final T value, final RuntimeException exception) {
-        if (value == null) {
-            throw exception;
-        }
-        return value;
     }
 
     @Override

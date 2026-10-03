@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.domain.exception;
 
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductStatus;
+import com.dochiri.tooltestlab.catalog.product.domain.ProductStatus;
 
 public final class StatusTransitionNotAllowedException extends RuntimeException {
 

@@ -1,8 +1,8 @@
 package com.dochiri.tooltestlab.catalog.category.application.port.out;
 
-import com.dochiri.tooltestlab.catalog.category.domain.model.Category;
-import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
-import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryName;
+import com.dochiri.tooltestlab.catalog.category.domain.Category;
+import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
+import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryName;
 import com.dochiri.tooltestlab.global.application.exception.RepositoryOperationException;
 
 import java.util.Set;

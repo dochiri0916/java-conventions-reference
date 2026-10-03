@@ -1,9 +1,9 @@
 package com.dochiri.tooltestlab.catalog.category.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.catalog.category.application.port.out.CategoryRepositoryPort;
-import com.dochiri.tooltestlab.catalog.category.domain.model.Category;
-import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
-import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryName;
+import com.dochiri.tooltestlab.catalog.category.domain.Category;
+import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
+import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryName;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

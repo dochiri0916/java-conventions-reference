@@ -1,4 +1,4 @@
-package com.dochiri.tooltestlab.catalog.category.domain.model;
+package com.dochiri.tooltestlab.catalog.category.domain;
 
 public enum CategoryStatus {
     ACTIVE("활성"),

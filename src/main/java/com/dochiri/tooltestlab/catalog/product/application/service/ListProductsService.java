@@ -5,7 +5,6 @@ import com.dochiri.tooltestlab.catalog.product.application.port.in.ListProductsU
 import com.dochiri.tooltestlab.catalog.product.application.port.in.result.ListProductsResult;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductPage;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

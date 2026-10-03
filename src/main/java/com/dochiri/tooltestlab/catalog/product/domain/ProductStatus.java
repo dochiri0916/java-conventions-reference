@@ -1,4 +1,4 @@
-package com.dochiri.tooltestlab.catalog.product.domain.model;
+package com.dochiri.tooltestlab.catalog.product.domain;
 
 import com.dochiri.tooltestlab.catalog.product.domain.exception.StatusTransitionNotAllowedException;
 

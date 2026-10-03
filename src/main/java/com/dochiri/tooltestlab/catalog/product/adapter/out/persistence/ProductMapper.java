@@ -1,12 +1,12 @@
 package com.dochiri.tooltestlab.catalog.product.adapter.out.persistence;
 
-import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
-import com.dochiri.tooltestlab.global.domain.Money;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductDescription;
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Stock;
+import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
+import com.dochiri.tooltestlab.global.domain.vo.Money;
+import com.dochiri.tooltestlab.catalog.product.domain.Product;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductDescription;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductName;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.Stock;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,11 +18,11 @@ final class ProductMapper {
 
     static Product toDomain(final ProductEntity entity) {
         return Product.restore(
-                new ProductId(entity.getPublicId()),
-                new ProductName(entity.getName()),
-                new ProductDescription(entity.getDescription()),
-                new Money(entity.getPriceAmount()),
-                new Stock(entity.getStock()),
+                ProductId.parse(entity.getPublicId()),
+                ProductName.of(entity.getName()),
+                ProductDescription.of(entity.getDescription()),
+                Money.of(entity.getPriceAmount()),
+                Stock.of(entity.getStock()),
                 entity.getStatus(),
                 toCategoryIds(entity.categoryPublicIds())
         );
@@ -56,7 +56,7 @@ final class ProductMapper {
 
     private static Set<CategoryId> toCategoryIds(final Set<String> categoryPublicIds) {
         return categoryPublicIds.stream()
-                .map(CategoryId::new)
+                .map(CategoryId::parse)
                 .collect(Collectors.toUnmodifiableSet());
     }
 

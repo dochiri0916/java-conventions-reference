@@ -1,15 +1,15 @@
 package com.dochiri.tooltestlab.catalog.product.application.service;
 
 import com.dochiri.tooltestlab.catalog.category.application.port.out.CategoryRepositoryPort;
-import com.dochiri.tooltestlab.catalog.category.domain.model.Category;
-import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
+import com.dochiri.tooltestlab.catalog.category.domain.Category;
+import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
 import com.dochiri.tooltestlab.catalog.product.application.exception.CategoriesNotActiveException;
 import com.dochiri.tooltestlab.catalog.product.application.exception.CategoriesNotFoundException;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.RegisterProductUseCase;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.command.RegisterProductCommand;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.result.RegisterProductResult;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
+import com.dochiri.tooltestlab.catalog.product.domain.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +28,7 @@ public final class RegisterProductService implements RegisterProductUseCase {
     @Transactional
     public RegisterProductResult register(final RegisterProductCommand command) {
         final Set<CategoryId> categoryIds = command.categoryIds().stream()
-                .map(CategoryId::new)
+                .map(CategoryId::parse)
                 .collect(Collectors.toUnmodifiableSet());
         final Set<Category> categories = categoryIds.isEmpty()
                 ? Set.of()

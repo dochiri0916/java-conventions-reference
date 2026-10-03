@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.catalog.category.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.global.persistence.BaseEntity;
-import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryStatus;
+import com.dochiri.tooltestlab.catalog.category.domain.CategoryStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,7 +33,7 @@ public class CategoryEntity extends BaseEntity {
     @Version
     private Long version;
 
-    @Column(name = "public_id", nullable = false, unique = true, length = 32)
+    @Column(name = "public_id", nullable = false, unique = true, length = 36)
     private String publicId;
 
     @Column(name = "name", nullable = false)

@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.catalog.product.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.global.persistence.BaseEntity;
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductStatus;
+import com.dochiri.tooltestlab.catalog.product.domain.ProductStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,14 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "products",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_products_public_id",
-                        columnNames = "public_id"
-                )
-        }
-)
+@Table(name = "products")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductEntity extends BaseEntity {
@@ -32,7 +25,7 @@ public class ProductEntity extends BaseEntity {
     @Version
     private Long version;
 
-    @Column(name = "public_id", nullable = false, updatable = false, length = 32)
+    @Column(name = "public_id", nullable = false, updatable = false, length = 36)
     private String publicId;
 
     @Column(name = "name", nullable = false)
@@ -72,7 +65,7 @@ public class ProductEntity extends BaseEntity {
     @Column(
             name = "category_public_id",
             nullable = false,
-            length = 32
+            length = 36
     )
     private Set<String> categoryPublicIds = new HashSet<>();
 

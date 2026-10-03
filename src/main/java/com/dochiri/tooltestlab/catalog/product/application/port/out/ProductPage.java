@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.application.port.out;
 
-import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
+import com.dochiri.tooltestlab.catalog.product.domain.Product;
 
 import java.util.List;
 

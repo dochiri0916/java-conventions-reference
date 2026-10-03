@@ -2,8 +2,8 @@ package com.dochiri.tooltestlab.catalog.product.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductPage;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.catalog.product.domain.Product;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

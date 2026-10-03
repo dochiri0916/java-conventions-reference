@@ -73,7 +73,7 @@ public final class ProductController {
     })
     @GetMapping("/{publicId}")
     public ResponseEntity<GetProductResponse> get(
-            @Parameter(description = "상품 publicId", example = "a1b2c3d4e5f6")
+            @Parameter(description = "상품 publicId", example = "01900000-0000-7000-8000-000000000001")
             @PathVariable String publicId) {
         final GetProductResult result = getProductUseCase.getProduct(publicId);
         return ResponseEntity.ok(new GetProductResponse(
