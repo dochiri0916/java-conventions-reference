@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.review.domain.model;
 
-import com.dochiri.tooltestlab.review.domain.exception.ReviewDomainException;
+import com.dochiri.tooltestlab.review.domain.exception.InvalidReviewIdException;
+import com.dochiri.tooltestlab.review.domain.exception.ReviewIdRequiredException;
 
 import java.util.UUID;
 
@@ -8,11 +9,11 @@ public record ReviewId(String value) {
 
     public ReviewId {
         if (value == null) {
-            throw ReviewDomainException.reviewIdRequired();
+            throw new ReviewIdRequiredException();
         }
         value = value.strip();
         if (value.isBlank()) {
-            throw ReviewDomainException.invalidReviewId();
+            throw new InvalidReviewIdException();
         }
     }
 

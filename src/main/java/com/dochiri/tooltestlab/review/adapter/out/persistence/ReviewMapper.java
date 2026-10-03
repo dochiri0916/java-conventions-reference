@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.review.adapter.out.persistence;
 
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.member.domain.model.MemberId;
+import com.dochiri.tooltestlab.review.domain.model.ProductReferenceId;
+import com.dochiri.tooltestlab.review.domain.model.MemberReferenceId;
 import com.dochiri.tooltestlab.review.domain.model.Rating;
 import com.dochiri.tooltestlab.review.domain.model.Review;
 import com.dochiri.tooltestlab.review.domain.model.ReviewContent;
@@ -16,8 +16,8 @@ final class ReviewMapper {
     static Review toDomain(final ReviewEntity entity) {
         return Review.restore(
                 new ReviewId(entity.getReviewId()),
-                new MemberId(entity.getMemberId()),
-                new ProductId(entity.getProductId()),
+                new MemberReferenceId(entity.getMemberId()),
+                new ProductReferenceId(entity.getProductId()),
                 new Rating(entity.getRating()),
                 new ReviewContent(entity.getContent()));
     }

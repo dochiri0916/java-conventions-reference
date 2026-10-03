@@ -2,19 +2,20 @@ package com.dochiri.tooltestlab.review.application.port.in;
 
 import com.dochiri.tooltestlab.review.application.exception.InvalidCommandException;
 
+
 public record WriteReviewCommand(String memberPublicId, String productPublicId, int rating, String content) {
     public WriteReviewCommand {
         if (memberPublicId == null || memberPublicId.isBlank()) {
-            throw InvalidCommandException.invalidInput("회원 ID는 빈 값일 수 없습니다.");
+            throw new InvalidCommandException("회원 ID는 빈 값일 수 없습니다.");
         }
         if (productPublicId == null || productPublicId.isBlank()) {
-            throw InvalidCommandException.invalidInput("상품 ID는 빈 값일 수 없습니다.");
+            throw new InvalidCommandException("상품 ID는 빈 값일 수 없습니다.");
         }
         if (rating < 1 || rating > 5) {
-            throw InvalidCommandException.invalidInput("평점은 1~5 사이여야 합니다. 입력값: " + rating);
+            throw new InvalidCommandException("평점은 1~5 사이여야 합니다. 입력값: " + rating);
         }
         if (content == null || content.isBlank()) {
-            throw InvalidCommandException.invalidInput("리뷰 내용은 빈 값일 수 없습니다.");
+            throw new InvalidCommandException("리뷰 내용은 빈 값일 수 없습니다.");
         }
     }
 }

@@ -25,7 +25,7 @@ class SafeReviewPersistenceAdapter implements ReviewRepositoryPort {
             final ReviewEntity saved = reviewJpaRepository.saveAndFlush(entity);
             return ReviewMapper.toDomain(saved);
         } catch (DataIntegrityViolationException e) {
-            throw DuplicateReviewException.duplicateReview();
+            throw new DuplicateReviewException();
         }
     }
 

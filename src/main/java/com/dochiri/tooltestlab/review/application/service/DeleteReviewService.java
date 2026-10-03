@@ -19,10 +19,10 @@ public final class DeleteReviewService implements DeleteReviewUseCase {
     @Transactional
     public void delete(final String reviewPublicId, final String memberPublicId) {
         final Review review = reviewRepositoryPort.findByPublicId(reviewPublicId)
-                .orElseThrow(() -> ReviewNotFoundException.reviewNotFound(reviewPublicId));
+                .orElseThrow(() -> new ReviewNotFoundException());
 
         if (!review.memberId().value().equals(memberPublicId)) {
-            throw NotReviewOwnerException.notReviewOwner();
+            throw new NotReviewOwnerException();
         }
 
         reviewRepositoryPort.deleteByPublicId(reviewPublicId);

@@ -1,16 +1,17 @@
 package com.dochiri.tooltestlab.review.domain.model;
 
-import com.dochiri.tooltestlab.review.domain.exception.ReviewDomainException;
+import com.dochiri.tooltestlab.review.domain.exception.InvalidReviewContentException;
+import com.dochiri.tooltestlab.review.domain.exception.ReviewContentRequiredException;
 
 public record ReviewContent(String value) {
 
     public ReviewContent {
         if (value == null) {
-            throw ReviewDomainException.reviewContentRequired();
+            throw new ReviewContentRequiredException();
         }
         value = value.strip();
         if (value.isBlank()) {
-            throw ReviewDomainException.badReviewContent();
+            throw new InvalidReviewContentException();
         }
     }
 }

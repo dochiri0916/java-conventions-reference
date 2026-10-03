@@ -1,8 +1,8 @@
 package com.dochiri.tooltestlab.review.application.service;
 
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.review.application.exception.DuplicateReviewException;
+import com.dochiri.tooltestlab.review.domain.model.ProductReferenceId;
+import com.dochiri.tooltestlab.review.domain.model.MemberReferenceId;
 import com.dochiri.tooltestlab.review.application.port.in.WriteReviewCommand;
 import com.dochiri.tooltestlab.review.application.port.in.WriteReviewResult;
 import com.dochiri.tooltestlab.review.application.port.in.WriteReviewUseCase;
@@ -24,12 +24,12 @@ public final class WriteReviewService implements WriteReviewUseCase {
     @Transactional
     public WriteReviewResult write(final WriteReviewCommand command) {
         if (reviewRepositoryPort.existsByMemberIdAndProductId(command.memberPublicId(), command.productPublicId())) {
-            throw DuplicateReviewException.duplicateReview();
+            throw new DuplicateReviewException();
         }
 
         final Review review = Review.create(
-                new MemberId(command.memberPublicId()),
-                new ProductId(command.productPublicId()),
+                new MemberReferenceId(command.memberPublicId()),
+                new ProductReferenceId(command.productPublicId()),
                 new Rating(command.rating()),
                 new ReviewContent(command.content()));
         final Review saved = reviewRepositoryPort.save(review);
