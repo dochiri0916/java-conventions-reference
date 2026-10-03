@@ -1,25 +1,27 @@
 package com.dochiri.tooltestlab.cart.domain.model;
 
-import com.dochiri.tooltestlab.cart.domain.exception.CartDomainException;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductName;
-import com.dochiri.tooltestlab.order.domain.model.Quantity;
+import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException;
+import com.dochiri.tooltestlab.cart.domain.exception.ProductReferenceIdRequiredException;
+import com.dochiri.tooltestlab.cart.domain.exception.ProductNameRequiredException;
+import com.dochiri.tooltestlab.cart.domain.exception.QuantityRequiredException;
+import com.dochiri.tooltestlab.cart.domain.exception.UnitPriceRequiredException;
+import com.dochiri.tooltestlab.global.domain.Money;
+import com.dochiri.tooltestlab.global.domain.Quantity;
 
-public record CartItem(ProductId productId, ProductName productName, Quantity quantity, Money unitPrice) {
+public record CartItem(ProductReferenceId productId, ProductName productName, Quantity quantity, Money unitPrice) {
 
     public CartItem {
         if (productId == null) {
-            throw CartDomainException.productIdRequired();
+            throw new ProductReferenceIdRequiredException();
         }
         if (productName == null) {
-            throw CartDomainException.productNameRequired();
+            throw new ProductNameRequiredException();
         }
         if (quantity == null) {
-            throw CartDomainException.quantityRequired();
+            throw new QuantityRequiredException();
         }
         if (unitPrice == null) {
-            throw CartDomainException.unitPriceRequired();
+            throw new UnitPriceRequiredException();
         }
     }
 
@@ -29,7 +31,7 @@ public record CartItem(ProductId productId, ProductName productName, Quantity qu
 
     public CartItem increaseQuantity(final int delta) {
         if (delta <= 0) {
-            throw CartDomainException.invalidCartItem("증가 수량은 1 이상이어야 합니다. 입력값: " + delta);
+            throw new InvalidCartItemException();
         }
         return new CartItem(productId, productName, new Quantity(quantity.value() + delta), unitPrice);
     }

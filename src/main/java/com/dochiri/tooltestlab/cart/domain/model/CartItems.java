@@ -1,8 +1,10 @@
 package com.dochiri.tooltestlab.cart.domain.model;
 
-import com.dochiri.tooltestlab.cart.domain.exception.CartDomainException;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductId;
+import com.dochiri.tooltestlab.cart.domain.exception.CartItemRequiredException;
+import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException;
+import com.dochiri.tooltestlab.cart.domain.exception.ProductReferenceIdRequiredException;
+import com.dochiri.tooltestlab.cart.domain.exception.TooManyCartItemsException;
+import com.dochiri.tooltestlab.global.domain.Money;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +16,15 @@ public record CartItems(List<CartItem> values) {
 
     public CartItems {
         if (values == null) {
-            throw CartDomainException.cartItemRequired();
+            throw new CartItemRequiredException();
         }
 
         if (values.size() > MAX_ITEM_COUNT) {
-            throw CartDomainException.tooManyItems(values.size());
+            throw new TooManyCartItemsException();
         }
 
         if (values.stream().anyMatch(v -> v == null)) {
-            throw CartDomainException.invalidCartItem("장바구니 상품은 null일 수 없습니다.");
+            throw new InvalidCartItemException();
         }
 
         values = List.copyOf(values);
@@ -50,16 +52,16 @@ public record CartItems(List<CartItem> values) {
         return values.isEmpty();
     }
 
-    public boolean containsProduct(final ProductId productId) {
+    public boolean containsProduct(final ProductReferenceId productId) {
         if (productId == null) {
-            throw CartDomainException.productIdRequired();
+            throw new ProductReferenceIdRequiredException();
         }
         return values.stream().anyMatch(item -> item.productId().equals(productId));
     }
 
-    public Optional<CartItem> findByProductId(final ProductId productId) {
+    public Optional<CartItem> findByProductId(final ProductReferenceId productId) {
         if (productId == null) {
-            throw CartDomainException.productIdRequired();
+            throw new ProductReferenceIdRequiredException();
         }
         return values.stream()
                 .filter(item -> item.productId().equals(productId))
@@ -68,7 +70,7 @@ public record CartItems(List<CartItem> values) {
 
     public CartItems add(final CartItem item) {
         if (item == null) {
-            throw CartDomainException.cartItemRequired();
+            throw new CartItemRequiredException();
         }
         final List<CartItem> changed = new ArrayList<>(values);
         changed.add(item);
@@ -77,27 +79,26 @@ public record CartItems(List<CartItem> values) {
 
     public CartItems replace(final CartItem oldItem, final CartItem newItem) {
         if (oldItem == null || newItem == null) {
-            throw CartDomainException.cartItemRequired();
+            throw new CartItemRequiredException();
         }
         final List<CartItem> changed = new ArrayList<>(values);
         final int idx = changed.indexOf(oldItem);
         if (idx < 0) {
-            throw CartDomainException.invalidCartItem("교체 대상 상품이 장바구니에 존재하지 않습니다.");
+            throw new InvalidCartItemException();
         }
         changed.set(idx, newItem);
         return new CartItems(changed);
     }
 
-    public CartItems remove(final ProductId productId) {
+    public CartItems remove(final ProductReferenceId productId) {
         if (productId == null) {
-            throw CartDomainException.productIdRequired();
+            throw new ProductReferenceIdRequiredException();
         }
 
         final boolean exists = values.stream()
                 .anyMatch(item -> item.productId().equals(productId));
         if (!exists) {
-            throw CartDomainException.invalidCartItem(
-                    "해당 상품이 장바구니에 존재하지 않습니다. productId=" + productId.value());
+            throw new InvalidCartItemException();
         }
 
         final List<CartItem> changed = values.stream()
