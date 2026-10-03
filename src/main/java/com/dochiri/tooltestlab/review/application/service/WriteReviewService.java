@@ -23,13 +23,15 @@ public final class WriteReviewService implements WriteReviewUseCase {
     @Override
     @Transactional
     public WriteReviewResult write(final WriteReviewCommand command) {
-        if (reviewRepositoryPort.existsByMemberIdAndProductId(command.memberPublicId(), command.productPublicId())) {
+        final MemberReferenceId memberId = new MemberReferenceId(command.memberPublicId());
+        final ProductReferenceId productId = new ProductReferenceId(command.productPublicId());
+        if (reviewRepositoryPort.existsByMemberIdAndProductId(memberId.value(), productId.value())) {
             throw new DuplicateReviewException();
         }
 
         final Review review = Review.create(
-                new MemberReferenceId(command.memberPublicId()),
-                new ProductReferenceId(command.productPublicId()),
+                memberId,
+                productId,
                 new Rating(command.rating()),
                 new ReviewContent(command.content()));
         final Review saved = reviewRepositoryPort.save(review);
