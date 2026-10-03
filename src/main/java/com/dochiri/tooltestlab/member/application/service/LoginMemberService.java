@@ -22,7 +22,7 @@ public final class LoginMemberService implements LoginMemberUseCase {
     @Override
     @Transactional(readOnly = true)
     public LoginMemberResult login(final LoginMemberCommand command) {
-        final Email email = new Email(command.email());
+        final Email email = Email.of(command.email());
         final Member member = memberRepositoryPort.findByEmail(email.value())
                 .orElseThrow(LoginFailedException::new);
 

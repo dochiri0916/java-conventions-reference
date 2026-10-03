@@ -10,7 +10,7 @@ class BCryptPasswordEncoderAdapter implements PasswordEncoderPort {
 
     @Override
     public EncodedPassword encode(final String rawPassword) {
-        return new EncodedPassword(new BCryptPasswordEncoder().encode(rawPassword));
+        return EncodedPassword.of(new BCryptPasswordEncoder().encode(rawPassword));
     }
 
     @Override

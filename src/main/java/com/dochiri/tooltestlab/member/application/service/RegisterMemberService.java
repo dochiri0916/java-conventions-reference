@@ -23,7 +23,7 @@ public final class RegisterMemberService implements RegisterMemberUseCase {
     @Override
     @Transactional
     public RegisterMemberResult register(final RegisterMemberCommand command) {
-        final Email email = new Email(command.email());
+        final Email email = Email.of(command.email());
         if (memberRepositoryPort.existsByEmail(email.value())) {
             throw new DuplicateEmailException();
         }
@@ -31,7 +31,7 @@ public final class RegisterMemberService implements RegisterMemberUseCase {
         final Member member = Member.create(
                 email,
                 passwordEncoderPort.encode(command.password()),
-                new MemberName(command.name()));
+                MemberName.of(command.name()));
 
         final Member saved = memberRepositoryPort.create(member);
 

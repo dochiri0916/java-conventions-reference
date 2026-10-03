@@ -1,0 +1,82 @@
+package com.dochiri.tooltestlab.member.domain.vo;
+
+import com.dochiri.tooltestlab.member.domain.exception.PasswordRequiredException;
+import com.dochiri.tooltestlab.member.domain.exception.InvalidPasswordException;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Modifier;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class EncodedPasswordTest {
+
+    @Test
+    @DisplayName("암호화된 비밀번호이 null이면 필수 예외가 발생한다")
+    void rejectsNull() {
+        // given
+        final String value = null;
+
+        // when
+        // then
+        assertThrows(PasswordRequiredException.class, () -> EncodedPassword.of(value));
+    }
+
+    @Test
+    @DisplayName("암호화된 비밀번호이 비어 있거나 공백뿐이면 유효성 예외가 발생한다")
+    void rejectsBlankValues() {
+        // given
+        final String[] values = {"", " ", "\t\n", "\u2003"};
+
+        // when
+        // then
+        for (final String value : values) {
+            assertThrows(InvalidPasswordException.class, () -> EncodedPassword.of(value));
+        }
+    }
+
+    @Test
+    @DisplayName("암호화된 비밀번호의 양끝 공백을 제거하고 값 기준 동등성을 유지한다")
+    void normalizesAndComparesValues() {
+        // given
+        final EncodedPassword value = EncodedPassword.of("\u2003 encoded-password \t");
+        final EncodedPassword same = EncodedPassword.of("encoded-password");
+        final EncodedPassword different = EncodedPassword.of("other-encoded-password");
+
+        // when
+        final String stored = value.value();
+
+        // then
+        assertEquals("encoded-password", stored);
+        assertEquals(value, value);
+        assertEquals(value, same);
+        assertEquals(same, value);
+        assertEquals(value.hashCode(), same.hashCode());
+        assertNotEquals(value, different);
+        assertNotEquals(value, null);
+        assertNotEquals(value, stored);
+        assertEquals("EncodedPassword[value=encoded-password]", value.toString());
+    }
+
+    @Test
+    @DisplayName("암호화된 비밀번호은 상속과 외부 생성자 호출을 차단하고 상태를 불변으로 유지한다")
+    void restrictsConstructionAndMutation() {
+        // given
+        final Class<EncodedPassword> type = EncodedPassword.class;
+
+        // when
+        final var constructors = type.getDeclaredConstructors();
+        final var fields = type.getDeclaredFields();
+
+        // then
+        assertTrue(Modifier.isFinal(type.getModifiers()));
+        assertEquals(1, constructors.length);
+        assertTrue(Modifier.isPrivate(constructors[0].getModifiers()));
+        for (final var field : fields) {
+            if (!Modifier.isStatic(field.getModifiers())) {
+                assertTrue(Modifier.isPrivate(field.getModifiers()));
+                assertTrue(Modifier.isFinal(field.getModifiers()));
+            }
+        }
+    }
+}

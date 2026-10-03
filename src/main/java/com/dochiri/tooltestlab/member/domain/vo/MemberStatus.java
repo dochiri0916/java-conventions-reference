@@ -10,7 +10,7 @@ public enum MemberStatus {
         this.description = description;
     }
 
-    public String getDescription() {
+    public String description() {
         return description;
     }
 }

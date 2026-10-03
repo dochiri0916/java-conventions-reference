@@ -15,10 +15,10 @@ final class MemberMapper {
 
     static Member toDomain(final MemberEntity entity) {
         return Member.restore(
-                new MemberId(entity.getMemberId()),
-                new Email(entity.getEmail()),
-                new EncodedPassword(entity.getEncodedPassword()),
-                new MemberName(entity.getName()),
+                MemberId.parse(entity.getMemberId()),
+                Email.of(entity.getEmail()),
+                EncodedPassword.of(entity.getEncodedPassword()),
+                MemberName.of(entity.getName()),
                 MemberStatus.valueOf(entity.getStatus()));
     }
 

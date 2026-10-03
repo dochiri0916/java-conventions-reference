@@ -7,20 +7,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "members", uniqueConstraints = {
-        @UniqueConstraint(name = "uk_members_member_id", columnNames = "memberId"),
-        @UniqueConstraint(name = "uk_members_email", columnNames = "email")
-})
+@Table(name = "members")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberEntity extends BaseEntity {
+public final class MemberEntity extends BaseEntity {
 
     @Getter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 32)
+    @Column(nullable = false, unique = true, length = 36)
     private String memberId;
 
     @Column(nullable = false)
