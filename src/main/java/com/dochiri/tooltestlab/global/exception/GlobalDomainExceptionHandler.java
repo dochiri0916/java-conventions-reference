@@ -4,8 +4,8 @@ import com.dochiri.tooltestlab.global.domain.exception.InvalidQuantityException;
 import com.dochiri.tooltestlab.global.domain.exception.MoneyOverflowException;
 import com.dochiri.tooltestlab.global.domain.exception.NegativeMoneyException;
 import com.dochiri.tooltestlab.global.domain.exception.NegativeMoneyMultiplierException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -13,13 +13,17 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@Slf4j
-@RequiredArgsConstructor
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public final class GlobalDomainExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalDomainExceptionHandler.class);
+
     private final ProblemDetails problemDetails;
+
+    public GlobalDomainExceptionHandler(final ProblemDetails problemDetails) {
+        this.problemDetails = problemDetails;
+    }
 
     @ExceptionHandler(NegativeMoneyException.class)
     public ProblemDetail handleNegativeMoney(final NegativeMoneyException exception) {
