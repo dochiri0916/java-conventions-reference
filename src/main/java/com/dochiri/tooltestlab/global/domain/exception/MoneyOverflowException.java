@@ -1,4 +1,4 @@
-package com.dochiri.tooltestlab.catalog.product.domain.exception;
+package com.dochiri.tooltestlab.global.domain.exception;
 
 public final class MoneyOverflowException extends RuntimeException {
 

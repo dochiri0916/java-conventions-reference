@@ -1,8 +1,8 @@
-package com.dochiri.tooltestlab.catalog.product.domain.model;
+package com.dochiri.tooltestlab.global.domain;
 
-import com.dochiri.tooltestlab.catalog.product.domain.exception.MoneyOverflowException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.NegativeMoneyException;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.NegativeMoneyMultiplierException;
+import com.dochiri.tooltestlab.global.domain.exception.MoneyOverflowException;
+import com.dochiri.tooltestlab.global.domain.exception.NegativeMoneyException;
+import com.dochiri.tooltestlab.global.domain.exception.NegativeMoneyMultiplierException;
 
 import static java.util.Objects.requireNonNull;
 

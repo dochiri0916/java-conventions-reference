@@ -1,4 +1,4 @@
-package com.dochiri.tooltestlab.global.config.swagger;
+package com.dochiri.tooltestlab.global.configuration;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
-public class OpenApiConfig {
+public class OpenApiConfiguration {
 
     @Bean
     public OpenAPI openAPI() {
