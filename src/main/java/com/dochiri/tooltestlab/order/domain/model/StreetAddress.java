@@ -1,16 +1,17 @@
 package com.dochiri.tooltestlab.order.domain.model;
 
-import com.dochiri.tooltestlab.order.domain.exception.OrderDomainException;
+import com.dochiri.tooltestlab.order.domain.exception.InvalidShippingAddressException;
+import com.dochiri.tooltestlab.order.domain.exception.ShippingAddressRequiredException;
 
 public record StreetAddress(String value) {
 
     public StreetAddress {
         if (value == null) {
-            throw OrderDomainException.shippingAddressRequired();
+            throw new ShippingAddressRequiredException();
         }
         value = value.strip();
         if (value.isBlank()) {
-            throw OrderDomainException.badShippingAddress("주소는 빈 값일 수 없습니다.");
+            throw new InvalidShippingAddressException();
         }
     }
 }

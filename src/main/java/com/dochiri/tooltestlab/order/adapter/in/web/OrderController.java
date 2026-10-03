@@ -1,13 +1,19 @@
 package com.dochiri.tooltestlab.order.adapter.in.web;
 
-import com.dochiri.tooltestlab.member.domain.model.MemberId;
 import com.dochiri.tooltestlab.order.adapter.in.web.request.PlaceOrderRequest;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.CancelOrderResponse;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.GetOrderResponse;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.OrderSummaryResponse;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.PlaceOrderResponse;
-import com.dochiri.tooltestlab.order.application.port.in.*;
-import com.dochiri.tooltestlab.order.domain.model.*;
+import com.dochiri.tooltestlab.order.application.port.in.CancelOrderUseCase;
+import com.dochiri.tooltestlab.order.application.port.in.GetOrderResult;
+import com.dochiri.tooltestlab.order.application.port.in.GetOrderUseCase;
+import com.dochiri.tooltestlab.order.application.port.in.ListOrdersResult;
+import com.dochiri.tooltestlab.order.application.port.in.ListOrdersUseCase;
+import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
+import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderResult;
+import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderUseCase;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,11 +48,9 @@ public class OrderController {
     public ResponseEntity<PlaceOrderResponse> place(
             @Parameter(hidden = true) String memberPublicId,
             @Valid @RequestBody PlaceOrderRequest request) {
-        final ShippingAddress shippingAddress = new ShippingAddress(
-                new RecipientName(request.recipientName()), new Phone(request.phone()),
-                new StreetAddress(request.address()), new ZipCode(request.zipCode()));
         final PlaceOrderResult result = placeOrderUseCase.place(
-                new PlaceOrderCommand(new MemberId(memberPublicId), shippingAddress));
+                new PlaceOrderCommand(
+                        memberPublicId, request.recipientName(), request.phone(), request.address(), request.zipCode()));
 
         final var items = result.items().stream()
                 .map(i -> new PlaceOrderResponse.Item(

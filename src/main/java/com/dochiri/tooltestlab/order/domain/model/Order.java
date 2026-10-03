@@ -1,15 +1,18 @@
 package com.dochiri.tooltestlab.order.domain.model;
 
-import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
-import com.dochiri.tooltestlab.member.domain.model.MemberId;
-import com.dochiri.tooltestlab.order.domain.exception.OrderDomainException;
-
-import static java.util.Objects.requireNonNull;
+import com.dochiri.tooltestlab.global.domain.Money;
+import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
+import com.dochiri.tooltestlab.order.domain.exception.MemberReferenceIdRequiredException;
+import com.dochiri.tooltestlab.order.domain.exception.OrderIdRequiredException;
+import com.dochiri.tooltestlab.order.domain.exception.OrderLinesRequiredException;
+import com.dochiri.tooltestlab.order.domain.exception.OrderStatusRequiredException;
+import com.dochiri.tooltestlab.order.domain.exception.ShippingAddressRequiredException;
+import com.dochiri.tooltestlab.order.domain.exception.TotalAmountRequiredException;
 
 public final class Order {
 
     private final OrderId id;
-    private final MemberId memberId;
+    private final MemberReferenceId memberId;
     private final OrderLines items;
     private final OrderStatus status;
     private final ShippingAddress shippingAddress;
@@ -17,22 +20,22 @@ public final class Order {
 
     private Order(
             final OrderId id,
-            final MemberId memberId,
+            final MemberReferenceId memberId,
             final OrderLines items,
             final OrderStatus status,
             final ShippingAddress shippingAddress,
             final Money totalAmount
     ) {
-        this.id = requireNonNull(id, "주문 ID는 null일 수 없습니다.");
-        this.memberId = requireNonNull(memberId, "회원 ID는 null일 수 없습니다.");
-        this.items = requireNonNull(items, "주문 상품 목록은 null일 수 없습니다.");
-        this.status = requireNonNull(status, "주문 상태는 null일 수 없습니다.");
-        this.shippingAddress = requireNonNull(shippingAddress, "배송지는 null일 수 없습니다.");
-        this.totalAmount = requireNonNull(totalAmount, "총 금액은 null일 수 없습니다.");
+        this.id = validated(id, new OrderIdRequiredException());
+        this.memberId = validated(memberId, new MemberReferenceIdRequiredException());
+        this.items = validated(items, new OrderLinesRequiredException());
+        this.status = validated(status, new OrderStatusRequiredException());
+        this.shippingAddress = validated(shippingAddress, new ShippingAddressRequiredException());
+        this.totalAmount = validated(totalAmount, new TotalAmountRequiredException());
     }
 
     public static Order create(
-            final MemberId memberId,
+            final MemberReferenceId memberId,
             final OrderLines items,
             final ShippingAddress shippingAddress
     ) {
@@ -42,7 +45,7 @@ public final class Order {
 
     public static Order restore(
             final OrderId id,
-            final MemberId memberId,
+            final MemberReferenceId memberId,
             final OrderLines items,
             final OrderStatus status,
             final ShippingAddress shippingAddress,
@@ -53,38 +56,45 @@ public final class Order {
 
     public Order pay() {
         if (status != OrderStatus.PENDING) {
-            throw OrderDomainException.badOrderStatus(id, OrderStatus.PENDING.toString(), status.toString());
+            throw new InvalidOrderStatusException();
         }
         return restore(id, memberId, items, OrderStatus.PAID, shippingAddress, totalAmount);
     }
 
     public Order startShipping() {
         if (status != OrderStatus.PAID) {
-            throw OrderDomainException.badOrderStatus(id, OrderStatus.PAID.toString(), status.toString());
+            throw new InvalidOrderStatusException();
         }
         return restore(id, memberId, items, OrderStatus.SHIPPING, shippingAddress, totalAmount);
     }
 
     public Order deliver() {
         if (status != OrderStatus.SHIPPING) {
-            throw OrderDomainException.badOrderStatus(id, OrderStatus.SHIPPING.toString(), status.toString());
+            throw new InvalidOrderStatusException();
         }
         return restore(id, memberId, items, OrderStatus.DELIVERED, shippingAddress, totalAmount);
     }
 
     public Order cancel() {
         if (status == OrderStatus.DELIVERED || status == OrderStatus.CANCELLED) {
-            throw OrderDomainException.badOrderStatus(id, "PENDING / PAID / SHIPPING", status.toString());
+            throw new InvalidOrderStatusException();
         }
         return restore(id, memberId, items, OrderStatus.CANCELLED, shippingAddress, totalAmount);
     }
 
     public OrderId id() { return id; }
-    public MemberId memberId() { return memberId; }
+    public MemberReferenceId memberId() { return memberId; }
     public OrderLines items() { return items; }
     public OrderStatus status() { return status; }
     public ShippingAddress shippingAddress() { return shippingAddress; }
     public Money totalAmount() { return totalAmount; }
+
+    private static <T> T validated(final T value, final RuntimeException exception) {
+        if (value == null) {
+            throw exception;
+        }
+        return value;
+    }
 
     @Override
     public boolean equals(final Object other) {

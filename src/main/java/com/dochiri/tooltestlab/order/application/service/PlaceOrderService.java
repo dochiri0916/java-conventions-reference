@@ -1,27 +1,26 @@
 package com.dochiri.tooltestlab.order.application.service;
 
-import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
-import com.dochiri.tooltestlab.cart.domain.model.Cart;
-import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Money;
-import com.dochiri.tooltestlab.catalog.product.domain.model.Product;
-import com.dochiri.tooltestlab.catalog.product.application.exception.ProductApplicationException;
-import com.dochiri.tooltestlab.order.application.exception.OrderApplicationException;
+import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderResult;
 import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderUseCase;
-import com.dochiri.tooltestlab.order.application.port.out.OrderEventPort;
+import com.dochiri.tooltestlab.order.application.port.out.CartPort;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
-import com.dochiri.tooltestlab.order.domain.event.OrderPlaced;
+import com.dochiri.tooltestlab.order.application.port.out.ProductStockPort;
+import com.dochiri.tooltestlab.order.domain.model.MemberReferenceId;
 import com.dochiri.tooltestlab.order.domain.model.Order;
 import com.dochiri.tooltestlab.order.domain.model.OrderLine;
 import com.dochiri.tooltestlab.order.domain.model.OrderLines;
-import com.dochiri.tooltestlab.order.domain.model.OrderPlacedItems;
+import com.dochiri.tooltestlab.order.domain.model.Phone;
+import com.dochiri.tooltestlab.order.domain.model.RecipientName;
+import com.dochiri.tooltestlab.order.domain.model.ShippingAddress;
+import com.dochiri.tooltestlab.order.domain.model.StreetAddress;
+import com.dochiri.tooltestlab.order.domain.model.ZipCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -29,45 +28,34 @@ import java.util.List;
 public final class PlaceOrderService implements PlaceOrderUseCase {
 
     private final OrderRepositoryPort orderRepositoryPort;
-    private final CartRepositoryPort cartRepositoryPort;
-    private final ProductRepositoryPort productRepositoryPort;
-    private final OrderEventPort orderEventPort;
+    private final CartPort cartPort;
+    private final ProductStockPort productStockPort;
 
     @Override
     @Transactional
     public PlaceOrderResult place(final PlaceOrderCommand command) {
-        final Cart cart = cartRepositoryPort.findByMemberId(command.memberId().value())
-                .orElseThrow(OrderApplicationException::emptyCart);
+        final MemberReferenceId memberId = new MemberReferenceId(command.memberPublicId());
+        final ShippingAddress shippingAddress = new ShippingAddress(
+                new RecipientName(command.recipientName()), new Phone(command.phone()),
+                new StreetAddress(command.address()), new ZipCode(command.zipCode()));
 
-        if (cart.isEmpty()) {
-            throw OrderApplicationException.emptyCart();
+        final List<CartPort.CartLine> cartLines = cartPort.findLines(memberId);
+        if (cartLines.isEmpty()) {
+            throw new EmptyCartException();
         }
 
-        final List<OrderLine> orderLines = new ArrayList<>();
-        for (var cartItem : cart.items().values()) {
-            final Product product = productRepositoryPort.findById(cartItem.productId().value())
-                    .orElseThrow(() -> ProductApplicationException.notFound(cartItem.productId().value()));
+        // 데드락 방지를 위해 상품 ID 순으로 재고를 잠그고 차감한다. 재고 부족 시 트랜잭션 전체가 롤백된다.
+        cartLines.stream()
+                .sorted(Comparator.comparing(line -> line.productId().value()))
+                .forEach(line -> productStockPort.decrease(line.productId(), line.quantity()));
 
-            if (product.stock().value() < cartItem.quantity().value()) {
-                throw ProductApplicationException.insufficientStock(
-                        product.stock().value(), cartItem.quantity().value());
-            }
-
-            orderLines.add(new OrderLine(
-                    cartItem.productId(), cartItem.productName(),
-                    cartItem.quantity(), new Money(cartItem.unitPrice().amount())));
-        }
-
-        Order order = Order.create(command.memberId(), OrderLines.from(orderLines), command.shippingAddress());
-        Order saved = orderRepositoryPort.create(order);
-
-        List<OrderPlaced.ItemDetail> itemDetails = orderLines.stream()
-                .map(ol -> new OrderPlaced.ItemDetail(ol.productId(), ol.productName(), ol.quantity(), ol.unitPrice()))
+        final List<OrderLine> orderLines = cartLines.stream()
+                .map(line -> new OrderLine(line.productId(), line.productName(), line.quantity(), line.unitPrice()))
                 .toList();
-        orderEventPort.publishAfterCommit(new OrderPlaced(
-                saved.id(),
-                command.memberId(),
-                new OrderPlacedItems(itemDetails)));
+
+        final Order saved = orderRepositoryPort.create(
+                Order.create(memberId, OrderLines.from(orderLines), shippingAddress));
+        cartPort.clear(memberId);
 
         final var resultItems = saved.items().values().stream()
                 .map(i -> new PlaceOrderResult.OrderItemResult(
