@@ -3,8 +3,8 @@ package com.dochiri.tooltestlab.cart.application.service;
 import com.dochiri.tooltestlab.cart.application.port.in.GetCartResult;
 import com.dochiri.tooltestlab.cart.application.port.in.GetCartUseCase;
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
-import com.dochiri.tooltestlab.cart.domain.model.Cart;
-import com.dochiri.tooltestlab.cart.domain.model.MemberReferenceId;
+import com.dochiri.tooltestlab.cart.domain.Cart;
+import com.dochiri.tooltestlab.cart.domain.vo.MemberReferenceId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ public final class GetCartService implements GetCartUseCase {
     @Override
     @Transactional(readOnly = true)
     public GetCartResult getCart(final String memberPublicId) {
-        final MemberReferenceId memberId = new MemberReferenceId(memberPublicId);
+        final MemberReferenceId memberId = MemberReferenceId.parse(memberPublicId);
         final Cart cart = cartRepositoryPort.findByMemberId(memberPublicId)
                 .orElseGet(() -> Cart.create(memberId));
 

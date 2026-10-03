@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @Schema(description = "장바구니 추가 요청")
 public record AddToCartRequest(
-        @Schema(description = "상품 publicId", example = "p1r2o3d4u5c6")
+        @Schema(description = "상품 publicId", example = "01900000-0000-7000-8000-000000000001")
         @NotBlank(message = "상품 ID는 필수입니다.")
         String productPublicId,
 

@@ -1,5 +1,7 @@
 package com.dochiri.tooltestlab.cart.adapter.in.web;
 
+import com.dochiri.tooltestlab.cart.domain.exception.InvalidProductReferenceIdException;
+import com.dochiri.tooltestlab.cart.domain.exception.InvalidMemberReferenceIdException;
 import com.dochiri.tooltestlab.global.exception.ProblemDetails;
 import com.dochiri.tooltestlab.cart.application.exception.CartApplicationException;
 import com.dochiri.tooltestlab.cart.application.exception.CartNotFoundException;
@@ -37,6 +39,8 @@ public final class CartExceptionHandler {
     @ExceptionHandler(CartDomainException.class)
     public ProblemDetail handle(final CartDomainException exception) {
         return switch (exception) {
+            case InvalidProductReferenceIdException e -> respond(e, HttpStatus.BAD_REQUEST, "PRODUCT_ID_INVALID");
+            case InvalidMemberReferenceIdException e -> respond(e, HttpStatus.BAD_REQUEST, "MEMBER_ID_INVALID");
             case CartIdRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "CART_ID_REQUIRED");
             case InvalidCartIdException e -> respond(e, HttpStatus.BAD_REQUEST, "CART_ID_INVALID");
             case CartItemRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "CART_ITEM_REQUIRED");

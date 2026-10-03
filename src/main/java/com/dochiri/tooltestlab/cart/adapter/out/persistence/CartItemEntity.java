@@ -17,13 +17,13 @@ public class CartItemEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 32)
+    @Column(nullable = false, unique = true, length = 36)
     private String cartItemId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 36)
     private String cartId;
 
-    @Column(nullable = false, length = 32)
+    @Column(nullable = false, length = 36)
     private String productId;
 
     @Column(nullable = false)
@@ -35,9 +35,8 @@ public class CartItemEntity extends BaseEntity {
     @Column(nullable = false)
     private long unitPrice;
 
-    private CartItemEntity(final Long id, final String cartItemId, final String cartId, final String productId,
+    private CartItemEntity(final String cartItemId, final String cartId, final String productId,
                           final String productName, final int quantity, final long unitPrice) {
-        this.id = id;
         this.cartItemId = cartItemId;
         this.cartId = cartId;
         this.productId = productId;
@@ -48,6 +47,6 @@ public class CartItemEntity extends BaseEntity {
 
     static CartItemEntity create(final String cartItemId, final String cartId, final String productId,
                                  final String productName, final int quantity, final long unitPrice) {
-        return new CartItemEntity(null, cartItemId, cartId, productId, productName, quantity, unitPrice);
+        return new CartItemEntity(cartItemId, cartId, productId, productName, quantity, unitPrice);
     }
 }

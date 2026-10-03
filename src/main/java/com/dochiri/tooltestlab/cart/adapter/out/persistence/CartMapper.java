@@ -1,17 +1,17 @@
 package com.dochiri.tooltestlab.cart.adapter.out.persistence;
 
-import com.dochiri.tooltestlab.cart.domain.model.Cart;
-import com.dochiri.tooltestlab.cart.domain.model.CartId;
-import com.dochiri.tooltestlab.cart.domain.model.CartItem;
-import com.dochiri.tooltestlab.cart.domain.model.CartItems;
-import com.dochiri.tooltestlab.global.domain.Money;
-import com.dochiri.tooltestlab.cart.domain.model.ProductReferenceId;
-import com.dochiri.tooltestlab.cart.domain.model.ProductName;
-import com.dochiri.tooltestlab.cart.domain.model.MemberReferenceId;
-import com.dochiri.tooltestlab.global.domain.Quantity;
+import com.dochiri.tooltestlab.cart.domain.Cart;
+import com.dochiri.tooltestlab.cart.domain.vo.CartId;
+import com.dochiri.tooltestlab.cart.domain.vo.CartItem;
+import com.dochiri.tooltestlab.cart.domain.vo.CartItems;
+import com.dochiri.tooltestlab.global.domain.vo.Money;
+import com.dochiri.tooltestlab.cart.domain.vo.ProductReferenceId;
+import com.dochiri.tooltestlab.cart.domain.vo.ProductName;
+import com.dochiri.tooltestlab.cart.domain.vo.MemberReferenceId;
+import com.dochiri.tooltestlab.global.domain.vo.Quantity;
 
 import java.util.List;
-import java.util.UUID;
+import com.github.f4b6a3.uuid.UuidCreator;
 
 final class CartMapper {
 
@@ -21,12 +21,12 @@ final class CartMapper {
 
     static Cart toDomain(final CartEntity entity, final List<CartItemEntity> itemEntities) {
         final List<CartItem> domainItems = itemEntities.stream()
-                .map(e -> new CartItem(new ProductReferenceId(e.getProductId()),
-                        new ProductName(e.getProductName()), new Quantity(e.getQuantity()), new Money(e.getUnitPrice())))
+                .map(e -> CartItem.of(ProductReferenceId.parse(e.getProductId()),
+                        ProductName.of(e.getProductName()), Quantity.of(e.getQuantity()), Money.of(e.getUnitPrice())))
                 .toList();
         return Cart.restore(
-                new CartId(entity.getCartId()),
-                new MemberReferenceId(entity.getMemberId()),
+                CartId.parse(entity.getCartId()),
+                MemberReferenceId.parse(entity.getMemberId()),
                 CartItems.of(domainItems));
     }
 
@@ -37,7 +37,7 @@ final class CartMapper {
     static List<CartItemEntity> toItemEntities(final Cart domain, final String cartId) {
         return domain.items().values().stream()
                 .map(i -> CartItemEntity.create(
-                        UUID.randomUUID().toString().replace("-", ""),
+                        UuidCreator.getTimeOrderedEpoch().toString(),
                         cartId,
                         i.productId().value(),
                         i.productName().value(),

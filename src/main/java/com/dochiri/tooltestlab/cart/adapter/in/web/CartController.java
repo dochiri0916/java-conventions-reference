@@ -73,7 +73,7 @@ public class CartController {
     @DeleteMapping("/items/{productPublicId}")
     public ResponseEntity<RemoveFromCartResponse> remove(
             @Parameter(hidden = true) String memberPublicId,
-            @Parameter(description = "상품 publicId", example = "p1r2o3d4u5c6")
+            @Parameter(description = "상품 publicId", example = "01900000-0000-7000-8000-000000000001")
             @PathVariable String productPublicId) {
         removeFromCartUseCase.remove(new RemoveFromCartCommand(memberPublicId, productPublicId));
         return ResponseEntity.ok(new RemoveFromCartResponse("장바구니에서 제거되었습니다."));

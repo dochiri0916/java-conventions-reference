@@ -1,7 +1,9 @@
 package com.dochiri.tooltestlab.cart.domain.exception;
 
 public abstract sealed class CartDomainException extends RuntimeException
-        permits CartIdRequiredException,
+        permits InvalidProductReferenceIdException,
+        InvalidMemberReferenceIdException,
+        CartIdRequiredException,
         InvalidCartIdException,
         CartItemRequiredException,
         InvalidCartItemException,

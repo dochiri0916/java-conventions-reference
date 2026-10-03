@@ -1,20 +1,22 @@
-package com.dochiri.tooltestlab.cart.domain.model;
+package com.dochiri.tooltestlab.cart.domain.vo;
 
 import com.dochiri.tooltestlab.cart.domain.exception.CartItemRequiredException;
 import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException;
 import com.dochiri.tooltestlab.cart.domain.exception.ProductReferenceIdRequiredException;
 import com.dochiri.tooltestlab.cart.domain.exception.TooManyCartItemsException;
-import com.dochiri.tooltestlab.global.domain.Money;
+import com.dochiri.tooltestlab.global.domain.vo.Money;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public record CartItems(List<CartItem> values) {
+public final class CartItems {
 
     private static final int MAX_ITEM_COUNT = 100;
 
-    public CartItems {
+    private final List<CartItem> values;
+
+    private CartItems(final List<CartItem> values) {
         if (values == null) {
             throw new CartItemRequiredException();
         }
@@ -27,7 +29,7 @@ public record CartItems(List<CartItem> values) {
             throw new InvalidCartItemException();
         }
 
-        values = List.copyOf(values);
+        this.values = List.copyOf(values);
     }
 
     public static CartItems empty() {
@@ -106,4 +108,30 @@ public record CartItems(List<CartItem> values) {
                 .toList();
         return new CartItems(changed);
     }
+
+    public List<CartItem> values() {
+        return values;
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof final CartItems other)) {
+            return false;
+        }
+        return values.equals(other.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return values.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "CartItems[values=" + values + "]";
+    }
+
 }

@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.cart.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
-import com.dochiri.tooltestlab.cart.domain.model.Cart;
+import com.dochiri.tooltestlab.cart.domain.Cart;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

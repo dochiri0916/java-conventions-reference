@@ -1,8 +1,8 @@
 package com.dochiri.tooltestlab.cart.application.port.out;
 
-import com.dochiri.tooltestlab.cart.domain.model.ProductName;
-import com.dochiri.tooltestlab.cart.domain.model.ProductReferenceId;
-import com.dochiri.tooltestlab.global.domain.Money;
+import com.dochiri.tooltestlab.cart.domain.vo.ProductName;
+import com.dochiri.tooltestlab.cart.domain.vo.ProductReferenceId;
+import com.dochiri.tooltestlab.global.domain.vo.Money;
 
 /**
  * 상품 정보 조회 Port (Application 소유). 구현은 Adapter가 담당한다.

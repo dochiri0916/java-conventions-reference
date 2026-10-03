@@ -17,22 +17,22 @@ public class CartEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter(AccessLevel.NONE)
     @Version
     private Long version;
 
-    @Column(nullable = false, unique = true, length = 32)
+    @Column(nullable = false, unique = true, length = 36)
     private String cartId;
 
-    @Column(nullable = false, unique = true, length = 32)
+    @Column(nullable = false, unique = true, length = 36)
     private String memberId;
 
-    private CartEntity(final Long id, final String cartId, final String memberId) {
-        this.id = id;
+    private CartEntity(final String cartId, final String memberId) {
         this.cartId = cartId;
         this.memberId = memberId;
     }
 
     static CartEntity create(final String cartId, final String memberId) {
-        return new CartEntity(null, cartId, memberId);
+        return new CartEntity(cartId, memberId);
     }
 }

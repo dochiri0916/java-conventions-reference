@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.cart.application.port.out;
 
-import com.dochiri.tooltestlab.cart.domain.model.Cart;
+import com.dochiri.tooltestlab.cart.domain.Cart;
 import com.dochiri.tooltestlab.global.application.exception.RepositoryOperationException;
 
 import java.util.Optional;
