@@ -45,7 +45,7 @@ public final class ProductController {
                         request.stock(), request.categoryIds().stream().collect(Collectors.toUnmodifiableSet())));
         return ResponseEntity.ok(new RegisterProductResponse(
                 result.publicId(), result.name(), null, result.priceAmount(),
-                result.stock(), result.status().name(), result.categoryNames()));
+                result.stock(), result.status(), result.categoryNames()));
     }
 
     @Operation(summary = "상품 목록 조회", description = "상품 목록을 페이지네이션으로 조회합니다.")
@@ -61,7 +61,7 @@ public final class ProductController {
         final ListProductsResult result = listProductsUseCase.list(page, size);
         final var summaries = result.products().stream()
                 .map(p -> new ProductListResponse.ProductSummary(
-                        p.publicId(), p.name(), p.priceAmount(), p.stock(), p.status().name(), p.categoryNames()))
+                        p.publicId(), p.name(), p.priceAmount(), p.stock(), p.status(), p.categoryNames()))
                 .toList();
         return ResponseEntity.ok(new ProductListResponse(summaries, result.page(), result.size(), result.totalCount()));
     }
@@ -78,6 +78,6 @@ public final class ProductController {
         final GetProductResult result = getProductUseCase.getProduct(publicId);
         return ResponseEntity.ok(new GetProductResponse(
                 result.publicId(), result.name(), result.description(), result.priceAmount(),
-                result.stock(), result.status().name(), result.categoryNames()));
+                result.stock(), result.status(), result.categoryNames()));
     }
 }

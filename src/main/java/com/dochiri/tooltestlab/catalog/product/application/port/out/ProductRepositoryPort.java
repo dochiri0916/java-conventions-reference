@@ -12,6 +12,8 @@ public interface ProductRepositoryPort {
 
     Optional<Product> findById(ProductId productId);
 
+    Optional<Product> findByIdForUpdate(ProductId productId);
+
     ProductPage findAll(int page, int size);
 
 }

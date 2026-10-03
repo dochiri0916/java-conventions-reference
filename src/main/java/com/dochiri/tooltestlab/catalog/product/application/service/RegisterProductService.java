@@ -3,7 +3,8 @@ package com.dochiri.tooltestlab.catalog.product.application.service;
 import com.dochiri.tooltestlab.catalog.category.application.port.out.CategoryRepositoryPort;
 import com.dochiri.tooltestlab.catalog.category.domain.model.Category;
 import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
-import com.dochiri.tooltestlab.catalog.product.application.exception.ProductApplicationException;
+import com.dochiri.tooltestlab.catalog.product.application.exception.CategoriesNotActiveException;
+import com.dochiri.tooltestlab.catalog.product.application.exception.CategoriesNotFoundException;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.RegisterProductUseCase;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.command.RegisterProductCommand;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.result.RegisterProductResult;
@@ -49,7 +50,7 @@ public final class RegisterProductService implements RegisterProductUseCase {
                 created.name().value(),
                 created.price().amount(),
                 created.stock().value(),
-                created.status(),
+                created.status().name(),
                 categories.stream().map(category -> category.name().value()).sorted().toList()
         );
     }
@@ -68,7 +69,7 @@ public final class RegisterProductService implements RegisterProductUseCase {
                 .collect(Collectors.toUnmodifiableSet());
 
         if (!missingCategoryIds.isEmpty()) {
-            throw ProductApplicationException.categoriesNotFound(missingCategoryIds);
+            throw new CategoriesNotFoundException();
         }
     }
 
@@ -79,7 +80,7 @@ public final class RegisterProductService implements RegisterProductUseCase {
                 .collect(Collectors.toUnmodifiableSet());
 
         if (!unavailableCategoryIds.isEmpty()) {
-            throw ProductApplicationException.categoriesNotActive(unavailableCategoryIds);
+            throw new CategoriesNotActiveException();
         }
     }
 

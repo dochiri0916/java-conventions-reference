@@ -1,7 +1,5 @@
 package com.dochiri.tooltestlab.catalog.product.application.port.in.result;
 
-import com.dochiri.tooltestlab.catalog.product.domain.model.ProductStatus;
-
 import java.util.List;
 
 public record RegisterProductResult(
@@ -9,7 +7,7 @@ public record RegisterProductResult(
         String name,
         long priceAmount,
         int stock,
-        ProductStatus status,
+        String status,
         List<String> categoryNames
 ) {
     public RegisterProductResult {

@@ -1,6 +1,9 @@
 package com.dochiri.tooltestlab.catalog.product.domain.model;
 
-import com.dochiri.tooltestlab.catalog.product.domain.exception.*;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.InsufficientStockException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.InvalidStockQuantityException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.StockOverflowException;
+import com.dochiri.tooltestlab.global.domain.exception.NegativeMoneyException;
 
 public record Stock(int value) {
 

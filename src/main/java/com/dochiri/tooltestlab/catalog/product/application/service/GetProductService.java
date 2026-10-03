@@ -2,7 +2,7 @@ package com.dochiri.tooltestlab.catalog.product.application.service;
 
 import com.dochiri.tooltestlab.catalog.category.application.port.out.CategoryRepositoryPort;
 import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
-import com.dochiri.tooltestlab.catalog.product.application.exception.ProductApplicationException;
+import com.dochiri.tooltestlab.catalog.product.application.exception.ProductNotFoundException;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.GetProductUseCase;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.result.GetProductResult;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
@@ -26,7 +26,7 @@ public final class GetProductService implements GetProductUseCase {
     @Transactional(readOnly = true)
     public GetProductResult getProduct(final String publicId) {
         final Product product = productRepositoryPort.findById(new ProductId(publicId))
-                .orElseThrow(() -> ProductApplicationException.notFound(publicId));
+                .orElseThrow(() -> new ProductNotFoundException());
 
         final List<String> categoryNames = findCategoryNames(product.categoryIds());
 
@@ -36,7 +36,7 @@ public final class GetProductService implements GetProductUseCase {
                 product.description().value(),
                 product.price().amount(),
                 product.stock().value(),
-                product.status(),
+                product.status().name(),
                 categoryNames
         );
     }

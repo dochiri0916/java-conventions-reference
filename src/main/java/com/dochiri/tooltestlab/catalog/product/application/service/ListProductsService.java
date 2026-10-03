@@ -35,7 +35,7 @@ public final class ListProductsService implements ListProductsUseCase {
                             .toList();
                     return new ListProductsResult.ProductSummary(
                             product.id().value(), product.name().value(), product.price().amount(),
-                            product.stock().value(), product.status(), categoryNames);
+                            product.stock().value(), product.status().name(), categoryNames);
                 })
                 .toList();
 

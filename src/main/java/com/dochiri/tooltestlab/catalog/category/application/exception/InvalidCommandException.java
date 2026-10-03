@@ -1,16 +1,9 @@
 package com.dochiri.tooltestlab.catalog.category.application.exception;
 
-import com.dochiri.tooltestlab.global.exception.ApplicationException;
+public final class InvalidCommandException extends CategoryApplicationException {
 
-import java.util.Map;
-
-public final class InvalidCommandException extends ApplicationException {
-
-    private InvalidCommandException(final String detail) {
-        super(CategoryErrorCode.INVALID_INPUT, detail, Map.of());
+    public InvalidCommandException(final String detail) {
+        super(detail);
     }
 
-    public static InvalidCommandException invalidInput(final String detail) {
-        return new InvalidCommandException(detail);
-    }
 }

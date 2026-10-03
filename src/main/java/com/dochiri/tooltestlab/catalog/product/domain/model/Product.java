@@ -1,10 +1,16 @@
 package com.dochiri.tooltestlab.catalog.product.domain.model;
 
 import com.dochiri.tooltestlab.catalog.category.domain.model.CategoryId;
+import com.dochiri.tooltestlab.global.domain.Money;
 
 import java.util.Set;
-
-import static java.util.Objects.requireNonNull;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductCategoryIdsRequiredException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDescriptionRequiredException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductIdRequiredException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductNameRequiredException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductPriceRequiredException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductStatusRequiredException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductStockRequiredException;
 
 public final class Product {
 
@@ -25,13 +31,13 @@ public final class Product {
             final ProductStatus status,
             final Set<CategoryId> categoryIds
     ) {
-        this.id = requireNonNull(id, "상품 ID는 null일 수 없습니다.");
-        this.name = requireNonNull(name, "상품명은 null일 수 없습니다.");
-        this.description = requireNonNull(description, "상품 설명은 null일 수 없습니다.");
-        this.price = requireNonNull(price, "상품 가격은 null일 수 없습니다.");
-        this.stock = requireNonNull(stock, "상품 재고는 null일 수 없습니다.");
-        this.status = requireNonNull(status, "상품 상태는 null일 수 없습니다.");
-        this.categoryIds = Set.copyOf(requireNonNull(categoryIds, "카테고리 ID 목록은 null일 수 없습니다."));
+        this.id = validated(id, new ProductIdRequiredException());
+        this.name = validated(name, new ProductNameRequiredException());
+        this.description = validated(description, new ProductDescriptionRequiredException());
+        this.price = validated(price, new ProductPriceRequiredException());
+        this.stock = validated(stock, new ProductStockRequiredException());
+        this.status = validated(status, new ProductStatusRequiredException());
+        this.categoryIds = Set.copyOf(validated(categoryIds, new ProductCategoryIdsRequiredException()));
     }
 
     public static Product create(
@@ -192,6 +198,13 @@ public final class Product {
                 changedStatus,
                 categoryIds
         );
+    }
+
+    private static <T> T validated(final T value, final RuntimeException exception) {
+        if (value == null) {
+            throw exception;
+        }
+        return value;
     }
 
     @Override

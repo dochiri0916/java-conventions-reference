@@ -27,7 +27,7 @@ public final class RegisterCategoryService implements RegisterCategoryUseCase {
                 .stream()
                 .anyMatch(category -> category.name().equals(categoryName));
         if (exists) {
-            throw DuplicateCategoryNameException.duplicateCategoryName(categoryName);
+            throw new DuplicateCategoryNameException();
         }
 
         final Category saved = categoryRepositoryPort.create(Category.create(categoryName.value()));

@@ -1,6 +1,8 @@
 package com.dochiri.tooltestlab.catalog.category.domain.model;
 
-import static java.util.Objects.requireNonNull;
+import com.dochiri.tooltestlab.catalog.category.domain.exception.CategoryIdRequiredException;
+import com.dochiri.tooltestlab.catalog.category.domain.exception.CategoryNameRequiredException;
+import com.dochiri.tooltestlab.catalog.category.domain.exception.CategoryStatusRequiredException;
 
 public final class Category {
 
@@ -13,9 +15,9 @@ public final class Category {
             final CategoryName name,
             final CategoryStatus status
     ) {
-        this.id = requireNonNull(id, "카테고리 ID는 null일 수 없습니다.");
-        this.name = requireNonNull(name, "카테고리명은 null일 수 없습니다.");
-        this.status = requireNonNull(status, "카테고리 상태는 null일 수 없습니다.");
+        this.id = validated(id, new CategoryIdRequiredException());
+        this.name = validated(name, new CategoryNameRequiredException());
+        this.status = validated(status, new CategoryStatusRequiredException());
     }
 
     public static Category create(final String name) {
@@ -68,6 +70,13 @@ public final class Category {
 
     public CategoryStatus state() {
         return status;
+    }
+
+    private static <T> T validated(final T value, final RuntimeException exception) {
+        if (value == null) {
+            throw exception;
+        }
+        return value;
     }
 
     @Override

@@ -1,8 +1,23 @@
 package com.dochiri.tooltestlab.catalog.product.adapter.in.web.exception;
 
 import com.dochiri.tooltestlab.catalog.product.adapter.in.web.ProductWebAdapter;
-import com.dochiri.tooltestlab.catalog.product.domain.exception.*;
-import com.dochiri.tooltestlab.global.adapter.in.web.exception.ProblemDetails;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.InsufficientStockException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.InvalidProductIdException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.InvalidProductNameException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.InvalidStockQuantityException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDescriptionRequiredException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDescriptionTooLongException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDescriptionTooShortException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductIdRequiredException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductNameRequiredException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductPriceRequiredException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductStockRequiredException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductStatusRequiredException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductCategoryIdsRequiredException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.StatusTransitionNotAllowedException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.StockOverflowException;
+import com.dochiri.tooltestlab.global.exception.ProblemDetails;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -12,11 +27,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
+@RequiredArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice(
         basePackageClasses = ProductWebAdapter.class
 )
 public final class ProductApiControllerAdvice {
+
+    private final ProblemDetails problemDetails;
 
     @ExceptionHandler(ProductIdRequiredException.class)
     public ProblemDetail handleProductIdRequired(final ProductIdRequiredException exception) {
@@ -25,7 +43,7 @@ public final class ProductApiControllerAdvice {
                 exception.getMessage()
         );
 
-        return ProblemDetails.create(
+        return problemDetails.create(
                 HttpStatus.BAD_REQUEST,
                 "PRODUCT_ID_REQUIRED",
                 exception.getMessage()
@@ -39,7 +57,7 @@ public final class ProductApiControllerAdvice {
                 exception.productId()
         );
 
-        return ProblemDetails.create(
+        return problemDetails.create(
                 HttpStatus.BAD_REQUEST,
                 "INVALID_PRODUCT_ID",
                 exception.getMessage()
@@ -53,7 +71,7 @@ public final class ProductApiControllerAdvice {
                 exception.getMessage()
         );
 
-        return ProblemDetails.create(
+        return problemDetails.create(
                 HttpStatus.BAD_REQUEST,
                 "PRODUCT_NAME_REQUIRED",
                 exception.getMessage()
@@ -67,9 +85,65 @@ public final class ProductApiControllerAdvice {
                 exception.productName()
         );
 
-        return ProblemDetails.create(
+        return problemDetails.create(
                 HttpStatus.BAD_REQUEST,
                 "INVALID_PRODUCT_NAME",
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler(ProductPriceRequiredException.class)
+    public ProblemDetail handleProductPriceRequired(final ProductPriceRequiredException exception) {
+        log.warn(
+                "Product price required: message={}",
+                exception.getMessage()
+        );
+
+        return problemDetails.create(
+                HttpStatus.BAD_REQUEST,
+                "PRODUCT_PRICE_REQUIRED",
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler(ProductStockRequiredException.class)
+    public ProblemDetail handleProductStockRequired(final ProductStockRequiredException exception) {
+        log.warn(
+                "Product stock required: message={}",
+                exception.getMessage()
+        );
+
+        return problemDetails.create(
+                HttpStatus.BAD_REQUEST,
+                "PRODUCT_STOCK_REQUIRED",
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler(ProductStatusRequiredException.class)
+    public ProblemDetail handleProductStatusRequired(final ProductStatusRequiredException exception) {
+        log.warn(
+                "Product status required: message={}",
+                exception.getMessage()
+        );
+
+        return problemDetails.create(
+                HttpStatus.BAD_REQUEST,
+                "PRODUCT_STATUS_REQUIRED",
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler(ProductCategoryIdsRequiredException.class)
+    public ProblemDetail handleProductCategoryIdsRequired(final ProductCategoryIdsRequiredException exception) {
+        log.warn(
+                "Product category ids required: message={}",
+                exception.getMessage()
+        );
+
+        return problemDetails.create(
+                HttpStatus.BAD_REQUEST,
+                "PRODUCT_CATEGORY_IDS_REQUIRED",
                 exception.getMessage()
         );
     }
@@ -81,7 +155,7 @@ public final class ProductApiControllerAdvice {
                 exception.getMessage()
         );
 
-        return ProblemDetails.create(
+        return problemDetails.create(
                 HttpStatus.BAD_REQUEST,
                 "PRODUCT_DESCRIPTION_REQUIRED",
                 exception.getMessage()
@@ -95,7 +169,7 @@ public final class ProductApiControllerAdvice {
                 exception.minLength()
         );
 
-        return ProblemDetails.create(
+        return problemDetails.create(
                 HttpStatus.BAD_REQUEST,
                 "PRODUCT_DESCRIPTION_TOO_SHORT",
                 exception.getMessage()
@@ -109,23 +183,9 @@ public final class ProductApiControllerAdvice {
                 exception.maxLength()
         );
 
-        return ProblemDetails.create(
+        return problemDetails.create(
                 HttpStatus.BAD_REQUEST,
                 "PRODUCT_DESCRIPTION_TOO_LONG",
-                exception.getMessage()
-        );
-    }
-
-    @ExceptionHandler(NegativeMoneyException.class)
-    public ProblemDetail handleNegativeMoney(final NegativeMoneyException exception) {
-        log.warn(
-                "Money negative: amount={}",
-                exception.amount()
-        );
-
-        return ProblemDetails.create(
-                HttpStatus.BAD_REQUEST,
-                "MONEY_NEGATIVE",
                 exception.getMessage()
         );
     }
@@ -138,7 +198,7 @@ public final class ProductApiControllerAdvice {
                 exception.requestedQuantity()
         );
 
-        return ProblemDetails.create(
+        return problemDetails.create(
                 HttpStatus.CONFLICT,
                 "PRODUCT_STOCK_INSUFFICIENT",
                 exception.getMessage()
@@ -153,37 +213,9 @@ public final class ProductApiControllerAdvice {
                 exception.requestedQuantity()
         );
 
-        return ProblemDetails.create(
+        return problemDetails.create(
                 HttpStatus.CONFLICT,
                 "PRODUCT_STOCK_OVERFLOW",
-                exception.getMessage()
-        );
-    }
-
-    @ExceptionHandler(MoneyOverflowException.class)
-    public ProblemDetail handleMoneyOverflow(final MoneyOverflowException exception) {
-        log.warn(
-                "Money overflow: message={}",
-                exception.getMessage()
-        );
-
-        return ProblemDetails.create(
-                HttpStatus.CONFLICT,
-                "MONEY_OVERFLOW",
-                exception.getMessage()
-        );
-    }
-
-    @ExceptionHandler(NegativeMoneyMultiplierException.class)
-    public ProblemDetail handleNegativeMoneyMultiplier(final NegativeMoneyMultiplierException exception) {
-        log.warn(
-                "Negative money multiplier: quantity={}",
-                exception.quantity()
-        );
-
-        return ProblemDetails.create(
-                HttpStatus.CONFLICT,
-                "MONEY_MULTIPLIER_NEGATIVE",
                 exception.getMessage()
         );
     }
@@ -195,7 +227,7 @@ public final class ProductApiControllerAdvice {
                 exception.quantity()
         );
 
-        return ProblemDetails.create(
+        return problemDetails.create(
                 HttpStatus.CONFLICT,
                 "INVALID_STOCK_QUANTITY",
                 exception.getMessage()
@@ -210,7 +242,7 @@ public final class ProductApiControllerAdvice {
                 exception.targetStatus()
         );
 
-        return ProblemDetails.create(
+        return problemDetails.create(
                 HttpStatus.CONFLICT,
                 "STATUS_TRANSITION_NOT_ALLOWED",
                 exception.getMessage()

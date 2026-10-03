@@ -43,6 +43,13 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
     }
 
     @Override
+    public Optional<Product> findByIdForUpdate(final ProductId productId) {
+        return productJpaRepository
+                .findWithLockByPublicId(productId.value())
+                .map(ProductMapper::toDomain);
+    }
+
+    @Override
     public ProductPage findAll(final int page, final int size) {
         final org.springframework.data.domain.Page<ProductEntity> productPage =
                 productJpaRepository.findAll(PageRequest.of(page, size));

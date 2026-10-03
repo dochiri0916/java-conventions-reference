@@ -1,15 +1,9 @@
 package com.dochiri.tooltestlab.catalog.category.domain.exception;
 
-import com.dochiri.tooltestlab.global.exception.DomainException;
+public final class CategoryNameRequiredException extends CategoryDomainException {
 
-public final class CategoryNameRequiredException extends DomainException {
-
-    private CategoryNameRequiredException() {
-        super(CategoryDomainErrorCode.CATEGORY_NAME_REQUIRED);
-    }
-
-    public static CategoryNameRequiredException required() {
-        return new CategoryNameRequiredException();
+    public CategoryNameRequiredException() {
+        super("카테고리명은 필수입니다.");
     }
 
 }
