@@ -2,9 +2,6 @@ package com.dochiri.tooltestlab.order.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.global.domain.Money;
 import com.dochiri.tooltestlab.global.domain.Quantity;
-import com.dochiri.tooltestlab.order.domain.model.ProductReferenceId;
-import com.dochiri.tooltestlab.order.domain.model.ProductName;
-import com.dochiri.tooltestlab.order.domain.model.MemberReferenceId;
 import com.dochiri.tooltestlab.order.domain.model.MemberReferenceId;
 import com.dochiri.tooltestlab.order.domain.model.Order;
 import com.dochiri.tooltestlab.order.domain.model.OrderId;
