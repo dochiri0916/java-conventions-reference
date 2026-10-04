@@ -5,6 +5,7 @@ import com.dochiri.tooltestlab.global.domain.vo.Quantity;
 import com.dochiri.tooltestlab.order.domain.Order;
 import com.dochiri.tooltestlab.order.domain.OrderStatus;
 import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
+import com.dochiri.tooltestlab.order.domain.vo.CartReferenceId;
 import com.dochiri.tooltestlab.order.domain.vo.OrderLine;
 import com.dochiri.tooltestlab.order.domain.vo.OrderLines;
 import com.dochiri.tooltestlab.order.domain.vo.Phone;
@@ -29,6 +30,7 @@ class OrderMapperTest {
         // given
         final Order order = Order.create(
                 MemberReferenceId.parse("01900000-0000-7000-8000-000000000001"),
+                CartReferenceId.parse("01900000-0000-7000-8000-000000000003"), 1,
                 OrderLines.of(OrderLine.of(ProductReferenceId.parse("01900000-0000-7000-8000-000000000002"),
                         ProductName.of("상품"), Quantity.of(2), Money.of(100))),
                 ShippingAddress.of(RecipientName.of("홍길동"), Phone.of("010-1234-5678"),
@@ -38,7 +40,7 @@ class OrderMapperTest {
         final OrderEntity entity = OrderMapper.toEntity(order);
         final var itemEntities = OrderMapper.toItemEntities(order, order.id().value());
         final Order restored = OrderMapper.toDomain(entity, itemEntities);
-        OrderMapper.updateEntity(entity, order.pay());
+        OrderMapper.updateEntity(entity, order.confirmStock().pay());
         final Order updated = OrderMapper.toDomain(entity, itemEntities);
 
         // then
@@ -48,11 +50,13 @@ class OrderMapperTest {
         assertEquals(order.items(), restored.items());
         assertEquals(order.shippingAddress(), restored.shippingAddress());
         assertEquals(Money.of(200), restored.totalAmount());
-        assertEquals(OrderStatus.PENDING, restored.status());
+        assertEquals(OrderStatus.STOCK_PENDING, restored.status());
+        assertEquals(order.cartId(), restored.cartId());
+        assertEquals(order.cartRevision(), restored.cartRevision());
         assertEquals(OrderStatus.PAID, updated.status());
         assertEquals(order.id(), updated.id());
         assertEquals(order.shippingAddress(), updated.shippingAddress());
-        assertEquals(OrderStatus.PENDING, order.status());
+        assertEquals(OrderStatus.STOCK_PENDING, order.status());
         assertEquals(36, entity.getOrderId().length());
         assertEquals(7, UUID.fromString(itemEntities.getFirst().getOrderLineId()).version());
     }

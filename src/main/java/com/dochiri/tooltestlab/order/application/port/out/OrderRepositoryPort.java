@@ -18,5 +18,7 @@ public interface OrderRepositoryPort {
 
     Optional<Order> findByPublicId(String publicId);
 
+    Optional<Order> findByPublicIdForUpdate(String publicId);
+
     List<Order> findByMemberId(String memberPublicId);
 }

@@ -6,6 +6,7 @@ import com.dochiri.tooltestlab.global.exception.ProblemDetails;
 import com.dochiri.tooltestlab.cart.application.exception.CartApplicationException;
 import com.dochiri.tooltestlab.cart.application.exception.CartNotFoundException;
 import com.dochiri.tooltestlab.cart.application.exception.InvalidCommandException;
+import com.dochiri.tooltestlab.cart.application.exception.ProductSnapshotNotReadyException;
 import com.dochiri.tooltestlab.cart.domain.exception.CartDomainException;
 import com.dochiri.tooltestlab.cart.domain.exception.CartIdRequiredException;
 import com.dochiri.tooltestlab.cart.domain.exception.CartItemRequiredException;
@@ -60,6 +61,7 @@ public final class CartExceptionHandler {
     public ProblemDetail handle(final CartApplicationException exception) {
         return switch (exception) {
             case CartNotFoundException e -> respond(e, HttpStatus.NOT_FOUND, "CART_NOT_FOUND");
+            case ProductSnapshotNotReadyException e -> respond(e, HttpStatus.CONFLICT, "PRODUCT_SNAPSHOT_NOT_READY");
             case InvalidCommandException e -> respond(e, HttpStatus.BAD_REQUEST, "INVALID_INPUT");
         };
     }

@@ -10,6 +10,8 @@ import com.dochiri.tooltestlab.catalog.product.application.port.in.command.Regis
 import com.dochiri.tooltestlab.catalog.product.application.port.in.result.RegisterProductResult;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.catalog.product.domain.Product;
+import com.dochiri.tooltestlab.catalog.application.CatalogEventMapper;
+import com.dochiri.tooltestlab.catalog.application.port.out.IntegrationEventPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ public final class RegisterProductService implements RegisterProductUseCase {
 
     private final ProductRepositoryPort productRepositoryPort;
     private final CategoryRepositoryPort categoryRepositoryPort;
+    private final IntegrationEventPort integrationEventPort;
 
     @Override
     @Transactional
@@ -44,6 +47,7 @@ public final class RegisterProductService implements RegisterProductUseCase {
                 categoryIds
         );
         final Product created = productRepositoryPort.create(product);
+        integrationEventPort.publish(CatalogEventMapper.toIntegration(created.changedEvent()));
 
         return new RegisterProductResult(
                 created.id().value(),

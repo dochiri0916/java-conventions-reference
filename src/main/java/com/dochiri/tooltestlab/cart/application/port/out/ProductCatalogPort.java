@@ -5,11 +5,13 @@ import com.dochiri.tooltestlab.cart.domain.vo.ProductReferenceId;
 import com.dochiri.tooltestlab.global.domain.vo.Money;
 
 /**
- * 상품 정보 조회 Port (Application 소유). 구현은 Adapter가 담당한다.
+ * Catalog 이벤트로 유지하는 Cart BC의 로컬 상품 조회 모델.
  */
 public interface ProductCatalogPort {
 
     ProductSnapshot findProduct(ProductReferenceId productId);
+
+    void save(ProductSnapshot snapshot, long sequence);
 
     record ProductSnapshot(ProductReferenceId id, ProductName name, Money price) {
     }

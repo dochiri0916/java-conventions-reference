@@ -27,6 +27,17 @@ public class OrderEntity extends BaseEntity {
     @Column(nullable = false, length = 36)
     private String memberId;
 
+    @Column(nullable = false, length = 36, updatable = false)
+    private String cartId;
+
+    @Column(nullable = false, updatable = false)
+    private long cartRevision;
+
+    void setCheckout(final String cartId, final long cartRevision) {
+        this.cartId = cartId;
+        this.cartRevision = cartRevision;
+    }
+
     @Column(nullable = false, length = 20)
     private String status;
 

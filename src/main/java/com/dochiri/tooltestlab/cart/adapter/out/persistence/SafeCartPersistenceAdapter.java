@@ -3,6 +3,7 @@ package com.dochiri.tooltestlab.cart.adapter.out.persistence;
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.Cart;
 import lombok.RequiredArgsConstructor;
+import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.PageRequest;
 
 import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTranslator.execute;
 
@@ -31,6 +33,7 @@ class SafeCartPersistenceAdapter implements CartRepositoryPort {
 
     private final CartJpaRepository cartJpaRepository;
     private final CartItemJpaRepository cartItemJpaRepository;
+    private final EntityManager entityManager;
 
     @Override
     public Cart save(final Cart cart) {
@@ -52,6 +55,7 @@ class SafeCartPersistenceAdapter implements CartRepositoryPort {
         final Optional<CartEntity> existing = cartJpaRepository.findByMemberIdForUpdate(cart.memberId().value());
         if (existing.isPresent()) {
             final CartEntity cartEntity = existing.get();
+            cartEntity.updateRevision(cart.revision());
             final CartEntity savedCart = cartJpaRepository.save(cartEntity);
             cartItemJpaRepository.deleteByCartId(cart.id().value());
             final List<CartItemEntity> itemEntities = CartMapper.toItemEntities(cart, cart.id().value());
@@ -65,6 +69,21 @@ class SafeCartPersistenceAdapter implements CartRepositoryPort {
         final List<CartItemEntity> itemEntities = CartMapper.toItemEntities(cart, cart.id().value());
         final List<CartItemEntity> savedItems = cartItemJpaRepository.saveAll(itemEntities);
         return CartMapper.toDomain(savedCart, savedItems);
+    }
+
+    @Override
+    public List<Cart> findPage(final int page, final int size) {
+        return execute(() -> cartJpaRepository.findAll(PageRequest.of(page, size)).getContent().stream()
+                .map(entity -> CartMapper.toDomain(entity, cartItemJpaRepository.findByCartId(entity.getCartId())))
+                .toList());
+    }
+
+    @Override
+    public Optional<Cart> findByMemberIdForUpdate(final String memberPublicId) {
+        return execute(() -> cartJpaRepository.findByMemberIdForUpdate(memberPublicId).map(cartEntity -> {
+            entityManager.refresh(cartEntity);
+            return CartMapper.toDomain(cartEntity, cartItemJpaRepository.findByCartId(cartEntity.getCartId()));
+        }));
     }
 
     @Override

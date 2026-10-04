@@ -27,6 +27,13 @@ public class CartEntity extends BaseEntity {
     @Column(nullable = false, unique = true, length = 36)
     private String memberId;
 
+    @Column(nullable = false)
+    private long revision;
+
+    void updateRevision(final long revision) {
+        this.revision = revision;
+    }
+
     private CartEntity(final String cartId, final String memberId) {
         this.cartId = cartId;
         this.memberId = memberId;

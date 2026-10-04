@@ -1,6 +1,8 @@
 package com.dochiri.tooltestlab.review.domain;
 
 import com.dochiri.tooltestlab.review.domain.vo.MemberReferenceId;
+import com.dochiri.tooltestlab.review.domain.event.ReviewWritten;
+import com.dochiri.tooltestlab.review.domain.event.ReviewDeleted;
 import com.dochiri.tooltestlab.review.domain.vo.ProductReferenceId;
 import com.dochiri.tooltestlab.review.domain.vo.Rating;
 import com.dochiri.tooltestlab.review.domain.vo.ReviewContent;
@@ -51,6 +53,14 @@ public final class Review {
 
     public ReviewId id() {
         return id;
+    }
+
+    public ReviewWritten writtenEvent() {
+        return new ReviewWritten(this);
+    }
+
+    public ReviewDeleted deletedEvent() {
+        return new ReviewDeleted(id, productId);
     }
 
     public MemberReferenceId memberId() {

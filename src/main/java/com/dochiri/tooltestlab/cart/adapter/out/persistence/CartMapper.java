@@ -27,11 +27,13 @@ final class CartMapper {
         return Cart.restore(
                 CartId.parse(entity.getCartId()),
                 MemberReferenceId.parse(entity.getMemberId()),
-                CartItems.of(domainItems));
+                CartItems.of(domainItems), entity.getRevision());
     }
 
     static CartEntity toEntity(final Cart domain) {
-        return CartEntity.create(domain.id().value(), domain.memberId().value());
+        final CartEntity entity = CartEntity.create(domain.id().value(), domain.memberId().value());
+        entity.updateRevision(domain.revision());
+        return entity;
     }
 
     static List<CartItemEntity> toItemEntities(final Cart domain, final String cartId) {

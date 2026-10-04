@@ -3,6 +3,8 @@ package com.dochiri.tooltestlab.order.domain;
 import com.dochiri.tooltestlab.global.domain.vo.Money;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
 import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
+import com.dochiri.tooltestlab.order.domain.vo.CartReferenceId;
+import com.dochiri.tooltestlab.order.domain.event.*;
 import com.dochiri.tooltestlab.order.domain.vo.OrderId;
 import com.dochiri.tooltestlab.order.domain.vo.OrderLines;
 import com.dochiri.tooltestlab.order.domain.vo.ShippingAddress;
@@ -13,6 +15,8 @@ public final class Order {
 
     private final OrderId id;
     private final MemberReferenceId memberId;
+    private final CartReferenceId cartId;
+    private final long cartRevision;
     private final OrderLines items;
     private final OrderStatus status;
     private final ShippingAddress shippingAddress;
@@ -21,6 +25,8 @@ public final class Order {
     private Order(
             final OrderId id,
             final MemberReferenceId memberId,
+            final CartReferenceId cartId,
+            final long cartRevision,
             final OrderLines items,
             final OrderStatus status,
             final ShippingAddress shippingAddress,
@@ -28,6 +34,11 @@ public final class Order {
     ) {
         this.id = requireNonNull(id);
         this.memberId = requireNonNull(memberId);
+        this.cartId = requireNonNull(cartId);
+        if (cartRevision < 0) {
+            throw new IllegalArgumentException("장바구니 revision은 음수일 수 없습니다.");
+        }
+        this.cartRevision = cartRevision;
         this.items = requireNonNull(items);
         this.status = requireNonNull(status);
         this.shippingAddress = requireNonNull(shippingAddress);
@@ -36,50 +47,96 @@ public final class Order {
 
     public static Order create(
             final MemberReferenceId memberId,
+            final CartReferenceId cartId,
+            final long cartRevision,
             final OrderLines items,
             final ShippingAddress shippingAddress
     ) {
         return new Order(
-                OrderId.generate(), memberId, items, OrderStatus.PENDING, shippingAddress, items.totalAmount());
+                OrderId.generate(), memberId, cartId, cartRevision, items, OrderStatus.STOCK_PENDING, shippingAddress, items.totalAmount());
     }
 
     public static Order restore(
             final OrderId id,
             final MemberReferenceId memberId,
+            final CartReferenceId cartId,
+            final long cartRevision,
             final OrderLines items,
             final OrderStatus status,
             final ShippingAddress shippingAddress,
             final Money totalAmount
     ) {
-        return new Order(id, memberId, items, status, shippingAddress, totalAmount);
+        return new Order(id, memberId, cartId, cartRevision, items, status, shippingAddress, totalAmount);
+    }
+
+    public Order confirmStock() {
+        if (status != OrderStatus.STOCK_PENDING) {
+            throw new InvalidOrderStatusException();
+        }
+        return withStatus(OrderStatus.PENDING);
+    }
+
+    public Order rejectStock() {
+        if (status != OrderStatus.STOCK_PENDING) {
+            throw new InvalidOrderStatusException();
+        }
+        return withStatus(OrderStatus.REJECTED);
+    }
+
+    private Order withStatus(final OrderStatus changed) {
+        return restore(id, memberId, cartId, cartRevision, items, changed, shippingAddress, totalAmount);
     }
 
     public Order pay() {
         if (status != OrderStatus.PENDING) {
             throw new InvalidOrderStatusException();
         }
-        return restore(id, memberId, items, OrderStatus.PAID, shippingAddress, totalAmount);
+        return withStatus(OrderStatus.PAID);
     }
 
     public Order startShipping() {
         if (status != OrderStatus.PAID) {
             throw new InvalidOrderStatusException();
         }
-        return restore(id, memberId, items, OrderStatus.SHIPPING, shippingAddress, totalAmount);
+        return withStatus(OrderStatus.SHIPPING);
     }
 
     public Order deliver() {
         if (status != OrderStatus.SHIPPING) {
             throw new InvalidOrderStatusException();
         }
-        return restore(id, memberId, items, OrderStatus.DELIVERED, shippingAddress, totalAmount);
+        return withStatus(OrderStatus.DELIVERED);
     }
 
     public Order cancel() {
-        if (status == OrderStatus.DELIVERED || status == OrderStatus.CANCELLED) {
+        if (status == OrderStatus.DELIVERED || status == OrderStatus.CANCELLED || status == OrderStatus.REJECTED) {
             throw new InvalidOrderStatusException();
         }
-        return restore(id, memberId, items, OrderStatus.CANCELLED, shippingAddress, totalAmount);
+        return withStatus(OrderStatus.CANCELLED);
+    }
+
+    public CartReferenceId cartId() {
+        return cartId;
+    }
+
+    public long cartRevision() {
+        return cartRevision;
+    }
+
+    public OrderPlaced placedEvent() {
+        return new OrderPlaced(this);
+    }
+
+    public OrderConfirmed confirmedEvent() {
+        return new OrderConfirmed(this);
+    }
+
+    public OrderCancelled cancelledEvent() {
+        return new OrderCancelled(this);
+    }
+
+    public OrderRejected rejectedEvent(final String reason) {
+        return new OrderRejected(id, reason);
     }
 
     public OrderId id() {

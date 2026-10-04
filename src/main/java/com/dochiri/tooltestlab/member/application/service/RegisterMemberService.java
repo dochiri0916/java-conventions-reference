@@ -8,6 +8,8 @@ import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
 import com.dochiri.tooltestlab.member.application.port.out.PasswordEncoderPort;
 import com.dochiri.tooltestlab.member.domain.vo.Email;
 import com.dochiri.tooltestlab.member.domain.Member;
+import com.dochiri.tooltestlab.member.application.MemberEventMapper;
+import com.dochiri.tooltestlab.member.application.port.out.IntegrationEventPort;
 import com.dochiri.tooltestlab.member.domain.vo.MemberName;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ public final class RegisterMemberService implements RegisterMemberUseCase {
 
     private final MemberRepositoryPort memberRepositoryPort;
     private final PasswordEncoderPort passwordEncoderPort;
+    private final IntegrationEventPort integrationEventPort;
 
     @Override
     @Transactional
@@ -34,6 +37,7 @@ public final class RegisterMemberService implements RegisterMemberUseCase {
                 MemberName.of(command.name()));
 
         final Member saved = memberRepositoryPort.create(member);
+        integrationEventPort.publish(MemberEventMapper.toIntegration(saved.registeredEvent()));
 
         return new RegisterMemberResult(saved.id().value(), saved.email().value(), saved.name().value());
     }

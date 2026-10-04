@@ -3,6 +3,8 @@ package com.dochiri.tooltestlab.cart.application.service;
 import com.dochiri.tooltestlab.cart.application.port.in.AddToCartCommand;
 import com.dochiri.tooltestlab.cart.application.port.in.AddToCartUseCase;
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
+import com.dochiri.tooltestlab.cart.application.port.out.IntegrationEventPort;
+import com.dochiri.tooltestlab.cart.application.CartEventMapper;
 import com.dochiri.tooltestlab.cart.application.port.out.ProductCatalogPort;
 import com.dochiri.tooltestlab.cart.application.port.out.ProductCatalogPort.ProductSnapshot;
 import com.dochiri.tooltestlab.cart.domain.Cart;
@@ -19,6 +21,7 @@ public final class AddToCartService implements AddToCartUseCase {
 
     private final CartRepositoryPort cartRepositoryPort;
     private final ProductCatalogPort productCatalogPort;
+    private final IntegrationEventPort integrationEventPort;
 
     @Override
     @Transactional
@@ -27,10 +30,11 @@ public final class AddToCartService implements AddToCartUseCase {
         final ProductSnapshot product = productCatalogPort.findProduct(
                 ProductReferenceId.parse(command.productPublicId()));
 
-        Cart cart = cartRepositoryPort.findByMemberId(memberId.value())
+        Cart cart = cartRepositoryPort.findByMemberIdForUpdate(memberId.value())
                 .orElseGet(() -> Cart.create(memberId));
 
         cart = cart.addItem(product.id(), product.name(), Quantity.of(command.quantity()), product.price());
-        cartRepositoryPort.save(cart);
+        final Cart saved = cartRepositoryPort.save(cart);
+        integrationEventPort.publish(CartEventMapper.toIntegration(saved.changedEvent()));
     }
 }

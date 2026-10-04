@@ -33,6 +33,8 @@ class ValueObjectConventionTest {
                 com.dochiri.tooltestlab.member.domain.vo.MemberName.class,
                 com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId.class,
                 com.dochiri.tooltestlab.order.domain.vo.OrderId.class,
+                com.dochiri.tooltestlab.order.domain.vo.CartReferenceId.class,
+                com.dochiri.tooltestlab.catalog.domain.vo.OrderReferenceId.class,
                 com.dochiri.tooltestlab.order.domain.vo.OrderLine.class,
                 com.dochiri.tooltestlab.order.domain.vo.OrderLines.class,
                 com.dochiri.tooltestlab.order.domain.vo.Phone.class,

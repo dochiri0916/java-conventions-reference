@@ -5,6 +5,8 @@ import com.dochiri.tooltestlab.review.application.exception.ReviewNotFoundExcept
 import com.dochiri.tooltestlab.review.application.port.in.DeleteReviewUseCase;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
 import com.dochiri.tooltestlab.review.domain.Review;
+import com.dochiri.tooltestlab.review.application.ReviewEventMapper;
+import com.dochiri.tooltestlab.review.application.port.out.IntegrationEventPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public final class DeleteReviewService implements DeleteReviewUseCase {
 
     private final ReviewRepositoryPort reviewRepositoryPort;
+    private final IntegrationEventPort integrationEventPort;
 
     @Override
     @Transactional
@@ -26,5 +29,6 @@ public final class DeleteReviewService implements DeleteReviewUseCase {
         }
 
         reviewRepositoryPort.deleteByPublicId(reviewPublicId);
+        integrationEventPort.publish(ReviewEventMapper.toIntegration(review.deletedEvent()));
     }
 }

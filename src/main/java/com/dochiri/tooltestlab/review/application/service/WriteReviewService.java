@@ -9,6 +9,8 @@ import com.dochiri.tooltestlab.review.application.port.in.WriteReviewUseCase;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
 import com.dochiri.tooltestlab.review.domain.vo.Rating;
 import com.dochiri.tooltestlab.review.domain.Review;
+import com.dochiri.tooltestlab.review.application.ReviewEventMapper;
+import com.dochiri.tooltestlab.review.application.port.out.IntegrationEventPort;
 import com.dochiri.tooltestlab.review.domain.vo.ReviewContent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public final class WriteReviewService implements WriteReviewUseCase {
 
     private final ReviewRepositoryPort reviewRepositoryPort;
+    private final IntegrationEventPort integrationEventPort;
 
     @Override
     @Transactional
@@ -35,6 +38,7 @@ public final class WriteReviewService implements WriteReviewUseCase {
                 Rating.of(command.rating()),
                 ReviewContent.of(command.content()));
         final Review saved = reviewRepositoryPort.save(review);
+        integrationEventPort.publish(ReviewEventMapper.toIntegration(saved.writtenEvent()));
 
         return new WriteReviewResult(saved.id().value(), saved.memberId().value(),
                 saved.productId().value(), saved.rating().value(), saved.content().value());

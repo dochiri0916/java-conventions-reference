@@ -3,6 +3,7 @@ package com.dochiri.tooltestlab.order.adapter.out.persistence;
 import com.dochiri.tooltestlab.global.domain.vo.Money;
 import com.dochiri.tooltestlab.global.domain.vo.Quantity;
 import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
+import com.dochiri.tooltestlab.order.domain.vo.CartReferenceId;
 import com.dochiri.tooltestlab.order.domain.Order;
 import com.dochiri.tooltestlab.order.domain.vo.OrderId;
 import com.dochiri.tooltestlab.order.domain.vo.OrderLine;
@@ -37,16 +38,19 @@ final class OrderMapper {
                 StreetAddress.of(entity.getAddress()), ZipCode.of(entity.getZipCode()));
 
         return Order.restore(
-                OrderId.parse(entity.getOrderId()), MemberReferenceId.parse(entity.getMemberId()), OrderLines.of(domainItems),
+                OrderId.parse(entity.getOrderId()), MemberReferenceId.parse(entity.getMemberId()),
+                CartReferenceId.parse(entity.getCartId()), entity.getCartRevision(), OrderLines.of(domainItems),
                 OrderStatus.valueOf(entity.getStatus()), shippingAddress, Money.of(entity.getTotalAmount()));
     }
 
     static OrderEntity toEntity(final Order domain) {
-        return OrderEntity.create(
+        final OrderEntity entity = OrderEntity.create(
                 domain.id().value(), domain.memberId().value(), domain.status().name(),
                 domain.totalAmount().amount(),
                 domain.shippingAddress().recipientName().value(), domain.shippingAddress().phone().value(),
                 domain.shippingAddress().address().value(), domain.shippingAddress().zipCode().value());
+        entity.setCheckout(domain.cartId().value(), domain.cartRevision());
+        return entity;
     }
 
     static void updateEntity(final OrderEntity entity, final Order domain) {

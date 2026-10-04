@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.member.domain;
 
 import com.dochiri.tooltestlab.member.domain.vo.Email;
+import com.dochiri.tooltestlab.member.domain.event.MemberRegistered;
 import com.dochiri.tooltestlab.member.domain.vo.EncodedPassword;
 import com.dochiri.tooltestlab.member.domain.vo.MemberId;
 import com.dochiri.tooltestlab.member.domain.vo.MemberName;
@@ -54,6 +55,10 @@ public final class Member {
 
     public MemberId id() {
         return id;
+    }
+
+    public MemberRegistered registeredEvent() {
+        return new MemberRegistered(id);
     }
 
     public Email email() {

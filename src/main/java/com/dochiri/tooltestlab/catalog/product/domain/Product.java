@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.catalog.product.domain;
 
 import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
+import com.dochiri.tooltestlab.catalog.product.domain.event.ProductChanged;
 import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductDescription;
 import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductId;
 import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductName;
@@ -145,6 +146,10 @@ public final class Product {
 
     public ProductId id() {
         return id;
+    }
+
+    public ProductChanged changedEvent() {
+        return new ProductChanged(this);
     }
 
     public ProductName name() {

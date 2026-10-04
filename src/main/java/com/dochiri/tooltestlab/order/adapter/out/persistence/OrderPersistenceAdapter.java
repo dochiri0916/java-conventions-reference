@@ -47,6 +47,12 @@ class OrderPersistenceAdapter implements OrderRepositoryPort {
     }
 
     @Override
+    public Optional<Order> findByPublicIdForUpdate(final String publicId) {
+        return execute(() -> orderJpaRepository.findByOrderIdForUpdate(publicId).map(entity ->
+                OrderMapper.toDomain(entity, orderLineJpaRepository.findByOrderIdOrderById(entity.getOrderId()))));
+    }
+
+    @Override
     public Optional<Order> findByPublicId(final String publicId) {
         return execute(() -> orderJpaRepository.findByOrderId(publicId)
                 .map(entity -> {

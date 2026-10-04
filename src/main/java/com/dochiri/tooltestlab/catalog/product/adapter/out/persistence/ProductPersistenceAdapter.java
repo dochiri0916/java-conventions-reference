@@ -5,6 +5,7 @@ import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductPage;
 import com.dochiri.tooltestlab.catalog.product.domain.Product;
 import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductId;
 import lombok.RequiredArgsConstructor;
+import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
@@ -18,6 +19,7 @@ import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTran
 class ProductPersistenceAdapter implements ProductRepositoryPort {
 
     private final ProductJpaRepository productJpaRepository;
+    private final EntityManager entityManager;
 
     @Override
     public Product create(final Product product) {
@@ -53,7 +55,10 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
     public Optional<Product> findByIdForUpdate(final ProductId productId) {
         return execute(() -> productJpaRepository
                 .findWithLockByPublicId(productId.value())
-                .map(ProductMapper::toDomain));
+                .map(entity -> {
+                    entityManager.refresh(entity);
+                    return ProductMapper.toDomain(entity);
+                }));
     }
 
     @Override

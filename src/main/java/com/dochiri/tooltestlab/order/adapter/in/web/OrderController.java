@@ -37,12 +37,12 @@ public class OrderController {
     private final ListOrdersUseCase listOrdersUseCase;
     private final CancelOrderUseCase cancelOrderUseCase;
 
-    @Operation(summary = "주문 생성", description = "장바구니에 담긴 상품으로 주문을 생성합니다.")
+    @Operation(summary = "주문 생성", description = "동기화된 장바구니로 주문을 접수합니다. STOCK_PENDING으로 반환되며 재고 예약 결과는 주문 조회에서 확인합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "주문 생성 성공"),
-            @ApiResponse(responseCode = "400", description = "빈 장바구니 또는 잘못된 배송지"),
+            @ApiResponse(responseCode = "202", description = "주문 접수, 재고 예약 결과 대기"),
+            @ApiResponse(responseCode = "400", description = "잘못된 배송지"),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
-            @ApiResponse(responseCode = "409", description = "재고 부족")
+            @ApiResponse(responseCode = "409", description = "빈 장바구니, 장바구니 동기화 대기 또는 중복 주문 요청")
     })
     @PostMapping
     public ResponseEntity<PlaceOrderResponse> place(
@@ -57,7 +57,7 @@ public class OrderController {
                         i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(),
                         i.quantity() * i.unitPrice()))
                 .toList();
-        return ResponseEntity.ok(new PlaceOrderResponse(result.publicId(), result.status(), result.totalAmount(),
+        return ResponseEntity.accepted().body(new PlaceOrderResponse(result.publicId(), result.status(), result.totalAmount(),
                 request.recipientName(), request.phone(), request.address(), request.zipCode(), items));
     }
 

@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.cart.domain;
 
 import com.dochiri.tooltestlab.cart.domain.vo.CartId;
+import com.dochiri.tooltestlab.cart.domain.event.CartChanged;
 import com.dochiri.tooltestlab.cart.domain.vo.CartItem;
 import com.dochiri.tooltestlab.cart.domain.vo.CartItems;
 import com.dochiri.tooltestlab.cart.domain.vo.MemberReferenceId;
@@ -16,19 +17,29 @@ public final class Cart {
     private final CartId id;
     private final MemberReferenceId memberId;
     private final CartItems items;
+    private final long revision;
 
-    private Cart(final CartId id, final MemberReferenceId memberId, final CartItems items) {
+    private Cart(final CartId id, final MemberReferenceId memberId, final CartItems items, final long revision) {
         this.id = requireNonNull(id);
         this.memberId = requireNonNull(memberId);
         this.items = requireNonNull(items);
+        if (revision < 0) {
+            throw new IllegalArgumentException("장바구니 revision은 음수일 수 없습니다.");
+        }
+        this.revision = revision;
     }
 
     public static Cart create(final MemberReferenceId memberId) {
-        return new Cart(CartId.generate(), memberId, CartItems.empty());
+        return new Cart(CartId.generate(), memberId, CartItems.empty(), 0);
     }
 
     public static Cart restore(final CartId id, final MemberReferenceId memberId, final CartItems items) {
-        return new Cart(id, memberId, items);
+        return restore(id, memberId, items, 0);
+    }
+
+    public static Cart restore(final CartId id, final MemberReferenceId memberId,
+                               final CartItems items, final long revision) {
+        return new Cart(id, memberId, items, revision);
     }
 
     public Cart addItem(
@@ -38,16 +49,24 @@ public final class Cart {
         requireNonNull(quantity);
         requireNonNull(unitPrice);
         return items.findByProductId(productId)
-                .map(existing -> new Cart(id, memberId, items.replace(existing, existing.increaseQuantity(quantity.value()))))
-                .orElseGet(() -> new Cart(id, memberId, items.add(CartItem.of(productId, productName, quantity, unitPrice))));
+                .map(existing -> new Cart(id, memberId, items.replace(existing, existing.increaseQuantity(quantity.value())), revision + 1))
+                .orElseGet(() -> new Cart(id, memberId, items.add(CartItem.of(productId, productName, quantity, unitPrice)), revision + 1));
     }
 
     public Cart removeItem(final ProductReferenceId productId) {
-        return new Cart(id, memberId, items.remove(productId));
+        return new Cart(id, memberId, items.remove(productId), revision + 1);
     }
 
     public Cart clear() {
-        return new Cart(id, memberId, CartItems.empty());
+        return new Cart(id, memberId, CartItems.empty(), revision + 1);
+    }
+
+    public long revision() {
+        return revision;
+    }
+
+    public CartChanged changedEvent() {
+        return new CartChanged(this);
     }
 
     public Money totalAmount() {

@@ -2,11 +2,15 @@ package com.dochiri.tooltestlab.order.adapter.in.web;
 
 import com.dochiri.tooltestlab.order.domain.exception.InvalidProductReferenceIdException;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidMemberReferenceIdException;
+import com.dochiri.tooltestlab.order.domain.exception.CartReferenceIdRequiredException;
+import com.dochiri.tooltestlab.order.domain.exception.InvalidCartReferenceIdException;
 import com.dochiri.tooltestlab.global.exception.ProblemDetails;
 import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
 import com.dochiri.tooltestlab.order.application.exception.NotOrderOwnerException;
 import com.dochiri.tooltestlab.order.application.exception.OrderApplicationException;
 import com.dochiri.tooltestlab.order.application.exception.OrderNotFoundException;
+import com.dochiri.tooltestlab.order.application.exception.CartSnapshotNotReadyException;
+import com.dochiri.tooltestlab.order.application.exception.CheckoutAlreadyRequestedException;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderIdException;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderLinesException;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
@@ -42,6 +46,8 @@ public final class OrderExceptionHandler {
     @ExceptionHandler(OrderDomainException.class)
     public ProblemDetail handle(final OrderDomainException exception) {
         return switch (exception) {
+            case CartReferenceIdRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "CART_ID_REQUIRED");
+            case InvalidCartReferenceIdException e -> respond(e, HttpStatus.BAD_REQUEST, "CART_ID_INVALID");
             case InvalidProductReferenceIdException e -> respond(e, HttpStatus.BAD_REQUEST, "PRODUCT_ID_INVALID");
             case InvalidMemberReferenceIdException e -> respond(e, HttpStatus.BAD_REQUEST, "MEMBER_ID_INVALID");
             case InvalidOrderIdException e -> respond(e, HttpStatus.BAD_REQUEST, "ORDER_ID_INVALID");
@@ -65,6 +71,8 @@ public final class OrderExceptionHandler {
     public ProblemDetail handle(final OrderApplicationException exception) {
         return switch (exception) {
             case OrderNotFoundException e -> respond(e, HttpStatus.NOT_FOUND, "ORDER_NOT_FOUND");
+            case CartSnapshotNotReadyException e -> respond(e, HttpStatus.CONFLICT, "CART_SNAPSHOT_NOT_READY");
+            case CheckoutAlreadyRequestedException e -> respond(e, HttpStatus.CONFLICT, "CHECKOUT_ALREADY_REQUESTED");
             case NotOrderOwnerException e -> respond(e, HttpStatus.FORBIDDEN, "NOT_ORDER_OWNER");
             case EmptyCartException e -> respond(e, HttpStatus.CONFLICT, "EMPTY_CART");
         };

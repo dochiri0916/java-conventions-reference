@@ -4,6 +4,7 @@ import com.dochiri.tooltestlab.global.domain.vo.Money;
 import com.dochiri.tooltestlab.global.domain.vo.Quantity;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
 import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
+import com.dochiri.tooltestlab.order.domain.vo.CartReferenceId;
 import com.dochiri.tooltestlab.order.domain.vo.OrderLine;
 import com.dochiri.tooltestlab.order.domain.vo.OrderLines;
 import com.dochiri.tooltestlab.order.domain.vo.Phone;
@@ -22,6 +23,7 @@ class OrderTest {
 
     private static Order order() {
         return Order.create(MemberReferenceId.parse("01900000-0000-7000-8000-000000000001"),
+                CartReferenceId.parse("01900000-0000-7000-8000-000000000003"), 1,
                 OrderLines.of(OrderLine.of(ProductReferenceId.parse("01900000-0000-7000-8000-000000000002"),
                         ProductName.of("상품"), Quantity.of(2), Money.of(100))),
                 ShippingAddress.of(RecipientName.of("홍길동"), Phone.of("010-1234-5678"),
@@ -32,7 +34,8 @@ class OrderTest {
     @DisplayName("주문 상태 전이는 새 객체를 반환하고 ID와 주문 정보를 유지한다")
     void transitionsImmutably() {
         // given
-        final Order pending = order();
+        final Order awaitingStock = order();
+        final Order pending = awaitingStock.confirmStock();
 
         // when
         final Order paid = pending.pay();
@@ -42,6 +45,9 @@ class OrderTest {
 
         // then
         assertEquals(OrderStatus.PENDING, pending.status());
+        assertEquals(OrderStatus.STOCK_PENDING, awaitingStock.status());
+        assertEquals(OrderStatus.REJECTED, awaitingStock.rejectStock().status());
+        assertThrows(InvalidOrderStatusException.class, awaitingStock::pay);
         assertEquals(OrderStatus.PAID, paid.status());
         assertEquals(OrderStatus.SHIPPING, shipping.status());
         assertEquals(OrderStatus.DELIVERED, delivered.status());
@@ -65,17 +71,17 @@ class OrderTest {
 
         // when
         // then
-        assertThrows(NullPointerException.class, () -> Order.restore(null, order.memberId(), order.items(),
+        assertThrows(NullPointerException.class, () -> Order.restore(null, order.memberId(), order.cartId(), order.cartRevision(), order.items(),
                 order.status(), order.shippingAddress(), order.totalAmount()));
-        assertThrows(NullPointerException.class, () -> Order.restore(order.id(), null, order.items(),
+        assertThrows(NullPointerException.class, () -> Order.restore(order.id(), null, order.cartId(), order.cartRevision(), order.items(),
                 order.status(), order.shippingAddress(), order.totalAmount()));
-        assertThrows(NullPointerException.class, () -> Order.restore(order.id(), order.memberId(), null,
+        assertThrows(NullPointerException.class, () -> Order.restore(order.id(), order.memberId(), order.cartId(), order.cartRevision(), null,
                 order.status(), order.shippingAddress(), order.totalAmount()));
-        assertThrows(NullPointerException.class, () -> Order.restore(order.id(), order.memberId(), order.items(),
+        assertThrows(NullPointerException.class, () -> Order.restore(order.id(), order.memberId(), order.cartId(), order.cartRevision(), order.items(),
                 null, order.shippingAddress(), order.totalAmount()));
-        assertThrows(NullPointerException.class, () -> Order.restore(order.id(), order.memberId(), order.items(),
+        assertThrows(NullPointerException.class, () -> Order.restore(order.id(), order.memberId(), order.cartId(), order.cartRevision(), order.items(),
                 order.status(), null, order.totalAmount()));
-        assertThrows(NullPointerException.class, () -> Order.restore(order.id(), order.memberId(), order.items(),
+        assertThrows(NullPointerException.class, () -> Order.restore(order.id(), order.memberId(), order.cartId(), order.cartRevision(), order.items(),
                 order.status(), order.shippingAddress(), null));
     }
 }
