@@ -1,6 +1,9 @@
 package com.dochiri.tooltestlab.global.exception;
 
+import com.dochiri.tooltestlab.global.domain.exception.InvalidOutboxAttemptsException;
+import com.dochiri.tooltestlab.global.domain.exception.InvalidOutboxSequenceException;
 import com.dochiri.tooltestlab.global.domain.exception.InvalidQuantityException;
+import com.dochiri.tooltestlab.global.domain.exception.MoneyRequiredException;
 import com.dochiri.tooltestlab.global.domain.exception.MoneyOverflowException;
 import com.dochiri.tooltestlab.global.domain.exception.NegativeMoneyException;
 import com.dochiri.tooltestlab.global.domain.exception.NegativeMoneyMultiplierException;
@@ -38,6 +41,21 @@ public final class GlobalDomainExceptionHandler {
     @ExceptionHandler(NegativeMoneyMultiplierException.class)
     public ProblemDetail handleNegativeMoneyMultiplier(final NegativeMoneyMultiplierException exception) {
         return respond(exception, HttpStatus.CONFLICT, "MONEY_MULTIPLIER_NEGATIVE");
+    }
+
+    @ExceptionHandler(MoneyRequiredException.class)
+    public ProblemDetail handleMoneyRequired(final MoneyRequiredException exception) {
+        return respond(exception, HttpStatus.BAD_REQUEST, "MONEY_REQUIRED");
+    }
+
+    @ExceptionHandler(InvalidOutboxSequenceException.class)
+    public ProblemDetail handleInvalidOutboxSequence(final InvalidOutboxSequenceException exception) {
+        return respond(exception, HttpStatus.INTERNAL_SERVER_ERROR, "OUTBOX_SEQUENCE_INVALID");
+    }
+
+    @ExceptionHandler(InvalidOutboxAttemptsException.class)
+    public ProblemDetail handleInvalidOutboxAttempts(final InvalidOutboxAttemptsException exception) {
+        return respond(exception, HttpStatus.INTERNAL_SERVER_ERROR, "OUTBOX_ATTEMPTS_INVALID");
     }
 
     @ExceptionHandler(InvalidQuantityException.class)

@@ -1,10 +1,9 @@
 package com.dochiri.tooltestlab.global.domain.vo;
 
 import com.dochiri.tooltestlab.global.domain.exception.MoneyOverflowException;
+import com.dochiri.tooltestlab.global.domain.exception.MoneyRequiredException;
 import com.dochiri.tooltestlab.global.domain.exception.NegativeMoneyException;
 import com.dochiri.tooltestlab.global.domain.exception.NegativeMoneyMultiplierException;
-
-import static java.util.Objects.requireNonNull;
 
 public final class Money {
 
@@ -20,11 +19,15 @@ public final class Money {
     }
 
     public Money add(final Money other) {
-        requireNonNull(other, "더할 금액은 null일 수 없습니다.");
+        if (other == null) {
+            throw new MoneyRequiredException();
+        }
 
         try {
             return new Money(
-                    Math.addExact(this.amount, other.amount)
+                    Math.addExact(
+                            this.amount,
+                    other.amount)
             );
         } catch (final ArithmeticException exception) {
             throw new MoneyOverflowException();
@@ -38,7 +41,8 @@ public final class Money {
 
         try {
             return new Money(
-                    Math.multiplyExact(this.amount, (long) quantity)
+                    Math.multiplyExact(
+                            this.amount, (long) quantity)
             );
         } catch (final ArithmeticException exception) {
             throw new MoneyOverflowException();

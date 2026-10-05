@@ -9,6 +9,7 @@ import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDescripti
 import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDescriptionTooLongException;
 import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductDescriptionTooShortException;
 import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductIdRequiredException;
+import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductRequiredException;
 import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductNameRequiredException;
 import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductPriceRequiredException;
 import com.dochiri.tooltestlab.catalog.product.domain.exception.ProductStockRequiredException;
@@ -46,6 +47,20 @@ public final class ProductDomainExceptionHandler {
         return problemDetails.create(
                 HttpStatus.BAD_REQUEST,
                 "PRODUCT_ID_REQUIRED",
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler(ProductRequiredException.class)
+    public ProblemDetail handleProductRequired(final ProductRequiredException exception) {
+        log.warn(
+                "Product required: message={}",
+                exception.getMessage()
+        );
+
+        return problemDetails.create(
+                HttpStatus.BAD_REQUEST,
+                "PRODUCT_REQUIRED",
                 exception.getMessage()
         );
     }
@@ -150,8 +165,11 @@ public final class ProductDomainExceptionHandler {
 
     @ExceptionHandler(InvalidCategoryIdsException.class)
     public ProblemDetail handleInvalidCategoryIds(final InvalidCategoryIdsException exception) {
-        log.warn("Invalid product category ids: message={}", exception.getMessage());
-        return problemDetails.create(HttpStatus.BAD_REQUEST, "PRODUCT_CATEGORY_IDS_INVALID", exception.getMessage());
+        log.warn("Invalid product category ids: message={}",
+                exception.getMessage());
+        return problemDetails.create(
+                HttpStatus.BAD_REQUEST, "PRODUCT_CATEGORY_IDS_INVALID",
+                exception.getMessage());
     }
 
     @ExceptionHandler(ProductDescriptionRequiredException.class)

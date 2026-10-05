@@ -4,6 +4,7 @@ import com.dochiri.tooltestlab.order.domain.exception.InvalidProductReferenceIdE
 import com.dochiri.tooltestlab.order.domain.exception.InvalidMemberReferenceIdException;
 import com.dochiri.tooltestlab.order.domain.exception.CartReferenceIdRequiredException;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidCartReferenceIdException;
+import com.dochiri.tooltestlab.order.domain.exception.InvalidCartRevisionException;
 import com.dochiri.tooltestlab.global.exception.ProblemDetails;
 import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
 import com.dochiri.tooltestlab.order.domain.exception.NotOrderOwnerException;
@@ -19,6 +20,7 @@ import com.dochiri.tooltestlab.order.domain.exception.MemberReferenceIdRequiredE
 import com.dochiri.tooltestlab.order.domain.exception.OrderDomainException;
 import com.dochiri.tooltestlab.order.domain.exception.OrderIdRequiredException;
 import com.dochiri.tooltestlab.order.domain.exception.OrderLinesRequiredException;
+import com.dochiri.tooltestlab.order.domain.exception.OrderRequiredException;
 import com.dochiri.tooltestlab.order.domain.exception.OrderStatusRequiredException;
 import com.dochiri.tooltestlab.order.domain.exception.ProductNameRequiredException;
 import com.dochiri.tooltestlab.order.domain.exception.ProductReferenceIdRequiredException;
@@ -51,6 +53,8 @@ public final class OrderExceptionHandler {
             case InvalidProductReferenceIdException e -> respond(e, HttpStatus.BAD_REQUEST, "PRODUCT_ID_INVALID");
             case InvalidMemberReferenceIdException e -> respond(e, HttpStatus.BAD_REQUEST, "MEMBER_ID_INVALID");
             case InvalidOrderIdException e -> respond(e, HttpStatus.BAD_REQUEST, "ORDER_ID_INVALID");
+            case InvalidCartRevisionException e -> respond(e, HttpStatus.BAD_REQUEST, "CART_REVISION_INVALID");
+            case OrderRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "ORDER_REQUIRED");
             case OrderIdRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "ORDER_ID_REQUIRED");
             case QuantityRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "QUANTITY_REQUIRED");
             case InvalidShippingAddressException e -> respond(e, HttpStatus.BAD_REQUEST, "SHIPPING_ADDRESS_INVALID");
@@ -80,8 +84,11 @@ public final class OrderExceptionHandler {
 
     private ProblemDetail respond(final RuntimeException exception, final HttpStatus status, final String code) {
         log.info("Order 예외가 발생했습니다. type={}, code={}, message={}",
-                exception.getClass().getSimpleName(), code, exception.getMessage());
-        return problemDetails.create(status, code, exception.getMessage());
+                exception.getClass()
+                        .getSimpleName(), code,
+                exception.getMessage());
+        return problemDetails.create(status, code,
+                exception.getMessage());
     }
 
 }

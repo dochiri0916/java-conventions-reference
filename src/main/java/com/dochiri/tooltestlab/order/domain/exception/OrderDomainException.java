@@ -7,6 +7,8 @@ public abstract sealed class OrderDomainException extends RuntimeException
         InvalidMemberReferenceIdException,
         InvalidOrderIdException,
         OrderIdRequiredException,
+        OrderRequiredException,
+        InvalidCartRevisionException,
         QuantityRequiredException,
         InvalidShippingAddressException,
         ShippingAddressRequiredException,

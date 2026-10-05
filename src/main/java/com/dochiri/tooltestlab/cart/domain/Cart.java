@@ -2,6 +2,11 @@ package com.dochiri.tooltestlab.cart.domain;
 
 import com.dochiri.tooltestlab.cart.domain.vo.CartId;
 import com.dochiri.tooltestlab.cart.domain.event.CartChanged;
+import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartRevisionException;
+import com.dochiri.tooltestlab.cart.domain.exception.ProductNameRequiredException;
+import com.dochiri.tooltestlab.cart.domain.exception.ProductReferenceIdRequiredException;
+import com.dochiri.tooltestlab.cart.domain.exception.QuantityRequiredException;
+import com.dochiri.tooltestlab.cart.domain.exception.UnitPriceRequiredException;
 import com.dochiri.tooltestlab.cart.domain.vo.CartItem;
 import com.dochiri.tooltestlab.cart.domain.vo.CartItems;
 import com.dochiri.tooltestlab.cart.domain.vo.MemberReferenceId;
@@ -24,13 +29,14 @@ public final class Cart {
         this.memberId = requireNonNull(memberId);
         this.items = requireNonNull(items);
         if (revision < 0) {
-            throw new IllegalArgumentException("장바구니 revision은 음수일 수 없습니다.");
+            throw new InvalidCartRevisionException();
         }
         this.revision = revision;
     }
 
     public static Cart create(final MemberReferenceId memberId) {
-        return new Cart(CartId.generate(), memberId, CartItems.empty(), 0);
+        return new Cart(CartId.generate(), memberId,
+                CartItems.empty(), 0);
     }
 
     public static Cart restore(final CartId id, final MemberReferenceId memberId, final CartItems items) {
@@ -44,13 +50,31 @@ public final class Cart {
 
     public Cart addItem(
             final ProductReferenceId productId, final ProductName productName, final Quantity quantity, final Money unitPrice) {
-        requireNonNull(productId);
-        requireNonNull(productName);
-        requireNonNull(quantity);
-        requireNonNull(unitPrice);
+        requireItemValues(productId, productName, quantity, unitPrice);
         return items.findByProductId(productId)
-                .map(existing -> new Cart(id, memberId, items.replace(existing, existing.increaseQuantity(quantity)), revision + 1))
-                .orElseGet(() -> new Cart(id, memberId, items.add(CartItem.of(productId, productName, quantity, unitPrice)), revision + 1));
+                .map(existing -> new Cart(id, memberId,
+                items.replace(existing,
+                existing.increaseQuantity(quantity)), revision + 1))
+                .orElseGet(() -> new Cart(id, memberId,
+                items.add(
+                        CartItem.of(productId, productName, quantity, unitPrice)), revision + 1));
+    }
+
+    private static void requireItemValues(
+            final ProductReferenceId productId, final ProductName productName,
+            final Quantity quantity, final Money unitPrice) {
+        if (productId == null) {
+            throw new ProductReferenceIdRequiredException();
+        }
+        if (productName == null) {
+            throw new ProductNameRequiredException();
+        }
+        if (quantity == null) {
+            throw new QuantityRequiredException();
+        }
+        if (unitPrice == null) {
+            throw new UnitPriceRequiredException();
+        }
     }
 
     public Cart removeItem(final ProductReferenceId productId) {
@@ -91,7 +115,8 @@ public final class Cart {
 
     @Override
     public boolean equals(final Object other) {
-        return this == other || other instanceof Cart cart && id.equals(cart.id);
+        return this == other || other instanceof Cart cart && id.equals(
+                cart.id);
     }
 
     @Override

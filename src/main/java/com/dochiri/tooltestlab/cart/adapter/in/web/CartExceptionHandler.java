@@ -12,6 +12,7 @@ import com.dochiri.tooltestlab.cart.domain.exception.CartDomainException;
 import com.dochiri.tooltestlab.cart.domain.exception.CartIdRequiredException;
 import com.dochiri.tooltestlab.cart.domain.exception.CartItemRequiredException;
 import com.dochiri.tooltestlab.cart.domain.exception.CartRequiredException;
+import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartRevisionException;
 import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartException;
 import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartIdException;
 import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException;
@@ -47,6 +48,7 @@ public final class CartExceptionHandler {
             case InvalidCartIdException e -> respond(e, HttpStatus.BAD_REQUEST, "CART_ID_INVALID");
             case CartItemRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "CART_ITEM_REQUIRED");
             case InvalidCartItemException e -> respond(e, HttpStatus.BAD_REQUEST, "CART_ITEM_INVALID");
+            case InvalidCartRevisionException e -> respond(e, HttpStatus.BAD_REQUEST, "CART_REVISION_INVALID");
             case CartRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "CART_REQUIRED");
             case InvalidCartException e -> respond(e, HttpStatus.BAD_REQUEST, "CART_INVALID");
             case TooManyCartItemsException e -> respond(e, HttpStatus.BAD_REQUEST, "TOO_MANY_ITEMS");
@@ -70,8 +72,11 @@ public final class CartExceptionHandler {
 
     private ProblemDetail respond(final RuntimeException exception, final HttpStatus status, final String code) {
         log.info("Cart 예외가 발생했습니다. type={}, code={}, message={}",
-                exception.getClass().getSimpleName(), code, exception.getMessage());
-        return problemDetails.create(status, code, exception.getMessage());
+                exception.getClass()
+                        .getSimpleName(), code,
+                exception.getMessage());
+        return problemDetails.create(status, code,
+                exception.getMessage());
     }
 
 }

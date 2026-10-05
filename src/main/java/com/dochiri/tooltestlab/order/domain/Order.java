@@ -1,12 +1,14 @@
 package com.dochiri.tooltestlab.order.domain;
 
 import com.dochiri.tooltestlab.global.domain.vo.Money;
+import com.dochiri.tooltestlab.order.domain.exception.InvalidCartRevisionException;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
 import com.dochiri.tooltestlab.order.domain.exception.MemberReferenceIdRequiredException;
 import com.dochiri.tooltestlab.order.domain.exception.NotOrderOwnerException;
 import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
 import com.dochiri.tooltestlab.order.domain.vo.CartReferenceId;
-import com.dochiri.tooltestlab.order.domain.event.*;
+import com.dochiri.tooltestlab.order.domain.event.OrderCancelled;
+import com.dochiri.tooltestlab.order.domain.event.OrderPlaced;
 import com.dochiri.tooltestlab.order.domain.vo.OrderId;
 import com.dochiri.tooltestlab.order.domain.vo.OrderStatus;
 import com.dochiri.tooltestlab.order.domain.vo.OrderLines;
@@ -39,7 +41,7 @@ public final class Order {
         this.memberId = requireNonNull(memberId);
         this.cartId = requireNonNull(cartId);
         if (cartRevision < 0) {
-            throw new IllegalArgumentException("장바구니 revision은 음수일 수 없습니다.");
+            throw new InvalidCartRevisionException();
         }
         this.cartRevision = cartRevision;
         this.items = requireNonNull(items);
@@ -56,7 +58,9 @@ public final class Order {
             final ShippingAddress shippingAddress
     ) {
         return new Order(
-                OrderId.generate(), memberId, cartId, cartRevision, items, OrderStatus.PENDING, shippingAddress, items.totalAmount());
+                OrderId.generate(), memberId, cartId, cartRevision, items,
+                OrderStatus.PENDING, shippingAddress,
+                items.totalAmount());
     }
 
     public static Order restore(
@@ -108,7 +112,8 @@ public final class Order {
 
     public Order cancel(final MemberReferenceId requesterId) {
         verifyOwner(requesterId);
-        if (status == OrderStatus.DELIVERED || status == OrderStatus.CANCELLED) {
+        if (status == OrderStatus.DELIVERED || status ==
+                OrderStatus.CANCELLED) {
             throw new InvalidOrderStatusException();
         }
         return withStatus(OrderStatus.CANCELLED);
@@ -156,7 +161,8 @@ public final class Order {
 
     @Override
     public boolean equals(final Object other) {
-        return this == other || other instanceof Order order && id.equals(order.id);
+        return this == other || other instanceof Order order && id.equals(
+                order.id);
     }
 
     @Override

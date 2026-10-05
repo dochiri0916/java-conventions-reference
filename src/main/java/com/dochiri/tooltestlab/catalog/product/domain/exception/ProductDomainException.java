@@ -7,6 +7,7 @@ public abstract sealed class ProductDomainException extends RuntimeException
         InvalidProductNameException,
         InvalidStockQuantityException,
         ProductCategoryIdsRequiredException,
+        ProductRequiredException,
         ProductDescriptionRequiredException,
         ProductDescriptionTooLongException,
         ProductDescriptionTooShortException,

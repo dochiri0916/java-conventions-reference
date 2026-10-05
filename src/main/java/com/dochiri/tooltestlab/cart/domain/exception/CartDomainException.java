@@ -8,6 +8,7 @@ public abstract sealed class CartDomainException extends RuntimeException
         CartItemRequiredException,
         InvalidCartItemException,
         CartRequiredException,
+        InvalidCartRevisionException,
         InvalidCartException,
         TooManyCartItemsException,
         ProductReferenceIdRequiredException,
