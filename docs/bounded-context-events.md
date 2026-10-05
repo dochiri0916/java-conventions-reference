@@ -10,6 +10,7 @@
 - 현재 구현은 BC별 단일 Outbox 테이블의 내부 PK를 `sequence`로 사용한다. 위 규칙은 적용 기준이며, 다중 테이블 발급·애그리거트 비교 범위·동시 변경 제어까지 구현이 완료되었다는 의미는 아니다. 전송 기술 교체나 Outbox 재저장 시에도 최초 `sequence`를 유지한다.
 - 현재 로컬 전송은 Kafka 전환 시 `MessageBroker` 구현과 `MessageConsumer`를 호출하는 수신 전송 어댑터로 교체한다. 이벤트 계약·유스케이스·Outbox·Inbox는 유지한다.
 - Kafka 전환 시 `aggregateId`를 메시지 key로 사용하고 BC별 consumer group을 둔다. Kafka API·설정은 전송 어댑터에 두고 BC별 이벤트 처리 로직과 분리한다.
+- 공개 통합 이벤트는 `application.port.out.event`에 두며 `Port` 접미사를 붙이지 않는다. 공통 마커 `global.messaging.IntegrationEvent`(`eventType`·`aggregateId`)를 구현할 수 있으며, 애플리케이션이 이 마커 외의 전송 기술 타입에 의존하지 않는다.
 
 전달 보장·재시도·완료 판정·트랜잭션·소비자별 멱등성·ACK/offset 커밋·보관 규칙은 [Outbox/Inbox](outbox-inbox-conventions.md) 컨벤션을 따른다.
 

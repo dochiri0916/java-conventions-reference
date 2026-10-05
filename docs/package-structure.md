@@ -19,7 +19,7 @@ tooltestlab/
     │   ├── exception/      # 공통 VO 예외(GlobalDomainException 등)
     │   └── outbox/         # 공통 Outbox 모델
     ├── exception/          # 공통 예외 처리기·ProblemDetails
-    ├── messaging/          # MessageBroker·MessageConsumer·MessageEnvelope·OutboxRelay·로컬 전송
+    ├── messaging/          # IntegrationEvent(공통 마커)·MessageBroker·MessageConsumer·MessageEnvelope·OutboxRelay·로컬 전송
     │   └── persistence/    # OutboxEntry·InboxEntry·OutboxStore·OutboxDispatcher·OutboxCleanup·InboxProcessor
     └── persistence/        # BaseEntity·RepositoryExceptionTranslator
 ```
