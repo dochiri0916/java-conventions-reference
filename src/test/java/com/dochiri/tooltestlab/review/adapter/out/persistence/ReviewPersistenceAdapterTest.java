@@ -33,8 +33,16 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 @ActiveProfiles("test")
 @DataJpaTest(showSql = false)
@@ -49,7 +57,7 @@ class ReviewPersistenceAdapterTest {
     @ParameterizedTest(name = "safe={0}")
     @ValueSource(booleans = {false, true})
     @DisplayName("기본 및 안전 어댑터 모두 리뷰를 저장하고 VO로 조회 및 삭제한다")
-    void createsFindsAndDeletesReview(final boolean safe) {
+    void creates_finds_and_deletes_review(final boolean safe) {
         // given
         final ReviewRepositoryPort reviews = adapter(safe);
         final Review original = create(reviews, review(memberId(), productId()));
@@ -65,7 +73,7 @@ class ReviewPersistenceAdapterTest {
         assertEquals(original.rating(), restored.rating());
         assertEquals(original.content(), restored.content());
         assertTrue(reviews.existsByMemberIdAndProductId(original.memberId(), original.productId()));
-        assertEquals(java.util.List.of(original), reviews.findByProductId(original.productId()));
+        assertEquals(java.util.List.of(original), reviews.findByProductId(original.productId()).values());
         assertEquals(original.id().value(), jdbc.queryForObject(
                 "select public_id from reviews where member_id = ? and product_id = ?", String.class,
                 original.memberId().value(), original.productId().value()));
@@ -80,7 +88,7 @@ class ReviewPersistenceAdapterTest {
     @ParameterizedTest(name = "safe={0}")
     @ValueSource(booleans = {false, true})
     @DisplayName("삭제 반영 시 발생한 기술 오류도 저장소 오류로 전달한다")
-    void translatesDeleteFlushFailureAsRepositoryFailure(final boolean safe) {
+    void translates_delete_flush_failure_as_repository_failure(final boolean safe) {
         // given
         final ReviewJpaRepository failingJpa = mock(ReviewJpaRepository.class);
         final ReviewRepositoryPort reviews = safe
@@ -103,15 +111,14 @@ class ReviewPersistenceAdapterTest {
     @ParameterizedTest(name = "safe={0}")
     @ValueSource(booleans = {false, true})
     @DisplayName("회원과 상품이 같은 리뷰만 리뷰 중복 오류로 번역한다")
-    void rejectsDuplicateMemberProductWithoutApplicationPrecheck(final boolean safe) {
+    void rejects_duplicate_member_product_without_application_precheck(final boolean safe) {
         // given
         final ReviewRepositoryPort reviews = adapter(safe);
         final MemberReferenceId memberId = memberId();
         final ProductReferenceId productId = productId();
         create(reviews, review(memberId, productId));
 
-        // when
-        // then
+        // when & then
         assertThrows(DuplicateReviewException.class, () -> create(reviews, review(memberId, productId)));
         assertEquals(1L, count(memberId, productId));
     }
@@ -119,7 +126,7 @@ class ReviewPersistenceAdapterTest {
     @ParameterizedTest(name = "safe={0}")
     @ValueSource(booleans = {false, true})
     @DisplayName("리뷰 공개 식별자 중복은 저장소 오류로 전달한다")
-    void translatesDuplicatePublicIdAsRepositoryFailure(final boolean safe) {
+    void translates_duplicate_public_id_as_repository_failure(final boolean safe) {
         // given
         final ReviewRepositoryPort reviews = adapter(safe);
         final Review original = create(reviews, review(memberId(), productId()));
@@ -139,21 +146,20 @@ class ReviewPersistenceAdapterTest {
     @ParameterizedTest(name = "safe={0}")
     @ValueSource(booleans = {false, true})
     @DisplayName("리뷰 내용 컬럼 길이 초과는 저장소 오류로 전달한다")
-    void translatesColumnLengthViolationAsRepositoryFailure(final boolean safe) {
+    void translates_column_length_violation_as_repository_failure(final boolean safe) {
         // given
         final ReviewRepositoryPort reviews = adapter(safe);
         final Review invalid = Review.create(memberId(), productId(), Rating.of(5),
                 ReviewContent.of("a".repeat(1001)));
 
-        // when
-        // then
+        // when & then
         assertThrows(RepositoryOperationException.class, () -> create(reviews, invalid));
     }
 
     @ParameterizedTest(name = "safe={0}")
     @ValueSource(booleans = {false, true})
     @DisplayName("같은 회원이 같은 상품에 동시에 작성하면 한 리뷰만 생성한다")
-    void allowsOnlyOneConcurrentInsertForTheSameMemberProduct(final boolean safe) throws Exception {
+    void allows_only_one_concurrent_insert_for_the_same_member_product(final boolean safe) throws Exception {
         // given
         final ReviewRepositoryPort reviews = adapter(safe);
         final MemberReferenceId memberId = memberId();

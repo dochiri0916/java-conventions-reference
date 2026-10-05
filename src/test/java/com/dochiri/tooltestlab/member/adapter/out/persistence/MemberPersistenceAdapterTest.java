@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.member.adapter.out.persistence;
 
+import org.junit.jupiter.api.DisplayName;
 import com.dochiri.tooltestlab.global.application.exception.RepositoryOperationException;
 import com.dochiri.tooltestlab.member.application.exception.DuplicateEmailException;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
@@ -28,7 +29,10 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("test")
 @DataJpaTest(showSql = false)
@@ -41,52 +45,65 @@ class MemberPersistenceAdapterTest {
     @Autowired JdbcTemplate jdbc;
 
     @Test
-    void storesAndLoadsMemberIdThroughPublicIdColumn() {
+    @DisplayName("회원 ID를 publicId 컬럼으로 저장하고 조회한다")
+    void stores_and_loads_member_id_through_public_id_column() {
+        // given
         final Member member = create(member(uniqueEmail()));
-
         final String publicId = jdbc.queryForObject(
                 "select public_id from members where email = ?", String.class, member.email().value());
         final Member loaded = members.findByMemberId(member.id()).orElseThrow();
 
+        // when & then
         assertEquals(member.id().value(), publicId);
         assertEquals(member.id(), loaded.id());
         assertEquals(member.email(), loaded.email());
     }
 
     @Test
-    void rejectsDuplicateEmailWithoutApplicationPrecheck() {
+    @DisplayName("애플리케이션 사전 확인 없이도 중복 이메일을 거부한다")
+    void rejects_duplicate_email_without_application_precheck() {
+        // given
         final String email = uniqueEmail();
         create(member(email));
 
+        // when & then
         assertThrows(DuplicateEmailException.class, () -> create(member(email)));
         assertEquals(1L, count(email));
     }
 
     @Test
-    void translatesDuplicateMemberIdAsRepositoryFailure() {
+    @DisplayName("중복 회원 ID는 저장소 예외로 번역한다")
+    void translates_duplicate_member_id_as_repository_failure() {
+        // given
         final Member original = create(member(uniqueEmail()));
         final Member duplicateId = Member.restore(original.id(), Email.of(uniqueEmail()),
                 original.encodedPassword(), original.name(), original.status());
 
+        // when & then
         final RepositoryOperationException exception = assertThrows(
                 RepositoryOperationException.class, () -> create(duplicateId));
-
         assertInstanceOf(org.springframework.dao.DataIntegrityViolationException.class, exception.getCause());
     }
 
     @Test
-    void translatesColumnLengthViolationAsRepositoryFailure() {
+    @DisplayName("컬럼 길이 위반은 저장소 예외로 번역한다")
+    void translates_column_length_violation_as_repository_failure() {
+        // given
         final Member invalid = Member.create(Email.of(uniqueEmail()),
                 EncodedPassword.of("encoded-password"), MemberName.of("a".repeat(256)));
 
+        // when & then
         assertThrows(RepositoryOperationException.class, () -> create(invalid));
     }
 
     @Test
-    void allowsOnlyOneConcurrentInsertForTheSameEmail() throws Exception {
+    @DisplayName("같은 이메일의 동시 저장은 하나만 허용한다")
+    void allows_only_one_concurrent_insert_for_the_same_email() throws Exception {
+        // given
         final String email = uniqueEmail();
         final CyclicBarrier barrier = new CyclicBarrier(2);
 
+        // when & then
         try (final var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             final var first = executor.submit(() -> createConcurrently(member(email), barrier));
             final var second = executor.submit(() -> createConcurrently(member(email), barrier));

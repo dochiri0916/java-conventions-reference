@@ -5,6 +5,7 @@ import com.dochiri.tooltestlab.global.domain.vo.Money;
 import com.dochiri.tooltestlab.global.domain.vo.Quantity;
 import com.dochiri.tooltestlab.global.messaging.EventCodec;
 import com.dochiri.tooltestlab.order.application.exception.CheckoutAlreadyRequestedException;
+import com.dochiri.tooltestlab.order.application.port.out.CartSnapshotLines;
 import com.dochiri.tooltestlab.order.application.port.out.CartSnapshotPort;
 import com.dochiri.tooltestlab.order.domain.vo.CartReferenceId;
 import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
@@ -19,9 +20,16 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 class CartSnapshotPersistenceAdapterTest {
 
@@ -31,7 +39,7 @@ class CartSnapshotPersistenceAdapterTest {
 
     @Test
     @DisplayName("장바구니 스냅샷 claim 저장 오류는 원인을 보존한 저장소 예외로 전달한다")
-    void translatesClaimFlushFailure() {
+    void translates_claim_flush_failure() {
         // given
         final CartSnapshotEntity entity = entity();
         final PersistenceException cause = new PersistenceException("storage unavailable");
@@ -52,10 +60,10 @@ class CartSnapshotPersistenceAdapterTest {
 
     @Test
     @DisplayName("장바구니 스냅샷 update 저장 오류는 원인을 보존한 저장소 예외로 전달한다")
-    void translatesUpdateFlushFailure() {
+    void translates_update_flush_failure() {
         // given
-        final var snapshot = new CartSnapshotPort.CartSnapshot(cartId(), memberId(), 1, List.of(
-                OrderLine.of(productId(), ProductName.of("상품"), Quantity.of(1), Money.of(100))));
+        final var snapshot = new CartSnapshotPort.CartSnapshot(cartId(), memberId(), 1, new CartSnapshotLines(List.of(
+                OrderLine.of(productId(), ProductName.of("상품"), Quantity.of(1), Money.of(100)))));
         final PersistenceException cause = new PersistenceException("storage unavailable");
         when(codec.encode(any(CartSnapshotPersistenceAdapter.ItemsData.class))).thenReturn("items");
         doThrow(cause).when(entityManager).flush();
@@ -70,15 +78,14 @@ class CartSnapshotPersistenceAdapterTest {
 
     @Test
     @DisplayName("이미 claim한 revision은 기존 체크아웃 중복 예외를 유지한다")
-    void preservesAlreadyClaimedRevisionFailure() {
+    void preserves_already_claimed_revision_failure() {
         // given
         final CartSnapshotEntity entity = entity();
         entity.claim();
         when(entityManager.find(CartSnapshotEntity.class, memberId().value(), LockModeType.PESSIMISTIC_WRITE))
                 .thenReturn(entity);
 
-        // when
-        // then
+        // when & then
         assertThrows(CheckoutAlreadyRequestedException.class, () -> adapter.claim(memberId()));
         verify(entityManager, never()).flush();
         verifyNoInteractions(codec);

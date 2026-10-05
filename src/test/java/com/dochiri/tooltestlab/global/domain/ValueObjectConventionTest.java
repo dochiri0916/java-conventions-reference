@@ -7,7 +7,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.lang.reflect.Modifier;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ValueObjectConventionTest {
 
@@ -54,7 +57,7 @@ class ValueObjectConventionTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("valueObjects")
     @DisplayName("모든 VO는 비공개 생성자와 불변 상태를 가진 final class이다")
-    void protectsConstructionAndState(final Class<?> type) {
+    void protects_construction_and_state(final Class<?> type) {
         // given
         final var constructors = type.getDeclaredConstructors();
 

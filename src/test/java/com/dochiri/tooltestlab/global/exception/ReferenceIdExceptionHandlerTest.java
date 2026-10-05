@@ -10,7 +10,8 @@ import java.time.Clock;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ReferenceIdExceptionHandlerTest {
 
@@ -37,7 +38,7 @@ class ReferenceIdExceptionHandlerTest {
     @ParameterizedTest(name = "{1}")
     @MethodSource("invalidReferences")
     @DisplayName("잘못된 회원 및 상품 참조 ID는 도메인별 핸들러에서 400으로 처리한다")
-    void mapsInvalidReferenceIds(final Supplier<ProblemDetail> handler, final String expectedCode) {
+    void maps_invalid_reference_ids(final Supplier<ProblemDetail> handler, final String expectedCode) {
         // given
         final int expectedStatus = 400;
 

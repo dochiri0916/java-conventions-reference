@@ -27,7 +27,7 @@ class CartExceptionHandlerTest {
 
     @Test
     @DisplayName("장바구니 동시 생성 충돌은 409로 전달하고 내부 원인을 노출하지 않는다")
-    void handlesCartCreationConflict() throws Exception {
+    void handles_cart_creation_conflict() throws Exception {
         // given
         final String path = "/test/cart/conflict";
 
@@ -43,7 +43,7 @@ class CartExceptionHandlerTest {
 
     @Test
     @DisplayName("다른 저장소 오류는 기존 500 응답을 유지한다")
-    void retainsRepositoryFailureHandling() throws Exception {
+    void retains_repository_failure_handling() throws Exception {
         // given
         final String path = "/test/cart/repository";
 

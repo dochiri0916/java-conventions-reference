@@ -13,13 +13,13 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ProductMapperTest {
 
     @Test
     @DisplayName("상품 UUID v7을 표준 36자리 문자열로 변환하고 같은 상품 ID로 복원한다")
-    void preservesUuidV7WhenMapping() {
+    void preserves_uuid_v7_when_mapping() {
         // given
         final CategoryId categoryId = CategoryId.generate();
         final Product product = Product.create(ProductName.of("상품 이름"), ProductDescription.of("상품 설명입니다"),
@@ -49,15 +49,16 @@ class ProductMapperTest {
 
     @Test
     @DisplayName("상품 상태와 재고 변경을 문자열 저장 형식으로 반영하고 복원한다")
-    void mapsUpdatedStockAndStatus() {
+    void maps_updated_stock_and_status() {
+        // given
         final Product product = Product.create(ProductName.of("상품 이름"), ProductDescription.of("상품 설명입니다"),
                 Money.of(1_000), Stock.of(10));
         final ProductEntity entity = ProductMapper.toEntity(product);
         final Product changed = product.startSale().decreaseStock(3);
-
         ProductMapper.updateEntity(entity, changed);
         final Product restored = ProductMapper.toDomain(entity, List.of());
 
+        // when & then
         assertEquals(changed.status().name(), entity.getStatus());
         assertEquals(changed.id(), restored.id());
         assertEquals(changed.status(), restored.status());

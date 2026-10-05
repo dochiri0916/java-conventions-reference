@@ -4,13 +4,15 @@ import com.dochiri.tooltestlab.review.domain.exception.InvalidRatingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RatingTest {
 
     @Test
     @DisplayName("평점은 1부터 5까지 허용하고 값 기준 동등성을 유지한다")
-    void validatesAndComparesValues() {
+    void validates_and_compares_values() {
         // given
         final Rating minimum = Rating.of(1);
 

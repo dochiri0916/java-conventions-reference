@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.catalog.category.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.catalog.category.application.exception.DuplicateCategoryNameException;
+import com.dochiri.tooltestlab.catalog.category.application.port.out.Categories;
 import com.dochiri.tooltestlab.catalog.category.application.port.out.CategoryRepositoryPort;
 import com.dochiri.tooltestlab.catalog.category.domain.Category;
 import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryName;
@@ -28,7 +29,10 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("test")
 @DataJpaTest(showSql = false)
@@ -42,28 +46,26 @@ class CategoryPersistenceAdapterTest {
 
     @Test
     @DisplayName("사전 조회 없이 저장해도 중복 카테고리 이름을 거부한다")
-    void rejectsDuplicateNameWithoutApplicationPrecheck() {
+    void rejects_duplicate_name_without_application_precheck() {
         // given
         final String name = uniqueName();
         create(category(name));
 
-        // when
-        // then
+        // when & then
         assertThrows(DuplicateCategoryNameException.class, () -> create(category(name)));
         assertEquals(1L, count(name));
     }
 
     @Test
     @DisplayName("일괄 저장의 이름 중복을 번역하고 전체 저장을 롤백한다")
-    void translatesDuplicateNameAndRollsBackBatch() {
+    void translates_duplicate_name_and_rolls_back_batch() {
         // given
         final String existingName = uniqueName();
         final String newName = uniqueName();
         create(category(existingName));
         final Set<Category> batch = Set.of(category(existingName), category(newName));
 
-        // when
-        // then
+        // when & then
         assertThrows(DuplicateCategoryNameException.class, () -> createAll(batch));
         assertEquals(1L, count(existingName));
         assertEquals(0L, count(newName));
@@ -71,7 +73,7 @@ class CategoryPersistenceAdapterTest {
 
     @Test
     @DisplayName("공개 식별자 중복은 이름 중복이 아닌 저장소 오류로 전달한다")
-    void translatesDuplicatePublicIdAsRepositoryFailure() {
+    void translates_duplicate_public_id_as_repository_failure() {
         // given
         final Category original = create(category(uniqueName()));
         final Category duplicateId = Category.restore(original.id(), CategoryName.of(uniqueName()), original.state());
@@ -86,7 +88,7 @@ class CategoryPersistenceAdapterTest {
 
     @Test
     @DisplayName("일괄 저장의 공개 식별자 중복도 저장소 오류로 전달한다")
-    void translatesDuplicatePublicIdInBatchAsRepositoryFailure() {
+    void translates_duplicate_public_id_in_batch_as_repository_failure() {
         // given
         final Category original = create(category(uniqueName()));
         final Category duplicateId = Category.restore(original.id(), CategoryName.of(uniqueName()), original.state());
@@ -102,18 +104,17 @@ class CategoryPersistenceAdapterTest {
 
     @Test
     @DisplayName("이름 컬럼 길이 초과는 저장소 오류로 전달한다")
-    void translatesColumnLengthViolationAsRepositoryFailure() {
+    void translates_column_length_violation_as_repository_failure() {
         // given
         final Category invalid = category("a".repeat(256));
 
-        // when
-        // then
+        // when & then
         assertThrows(RepositoryOperationException.class, () -> create(invalid));
     }
 
     @Test
     @DisplayName("같은 이름을 동시에 저장하면 한 카테고리만 생성한다")
-    void allowsOnlyOneConcurrentInsertForTheSameName() throws Exception {
+    void allows_only_one_concurrent_insert_for_the_same_name() throws Exception {
         // given
         final String name = uniqueName();
         final CyclicBarrier barrier = new CyclicBarrier(2);
@@ -145,8 +146,8 @@ class CategoryPersistenceAdapterTest {
         return new TransactionTemplate(transactionManager).execute(status -> categories.create(category));
     }
 
-    private Set<Category> createAll(final Set<Category> batch) {
-        return new TransactionTemplate(transactionManager).execute(status -> categories.createAll(batch));
+    private Categories createAll(final Set<Category> batch) {
+        return new TransactionTemplate(transactionManager).execute(status -> categories.createAll(new Categories(batch)));
     }
 
     private long count(final String name) {

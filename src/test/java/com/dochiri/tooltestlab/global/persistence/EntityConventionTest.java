@@ -9,7 +9,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.lang.reflect.Modifier;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EntityConventionTest {
 
@@ -29,7 +33,7 @@ class EntityConventionTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("entities")
     @DisplayName("영속성 Entity의 UUID 컬럼은 36자리이며 기술 키와 버전을 공개하지 않는다")
-    void storesUuidAndHidesPersistenceKeys(final Class<?> type) throws Exception {
+    void stores_uuid_and_hides_persistence_keys(final Class<?> type) throws Exception {
         // given
         final var id = type.getDeclaredField("id");
 

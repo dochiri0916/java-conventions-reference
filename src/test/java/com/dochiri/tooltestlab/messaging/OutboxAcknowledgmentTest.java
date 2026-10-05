@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.messaging;
 
+import org.junit.jupiter.api.DisplayName;
 import com.dochiri.tooltestlab.ToolTestLabApplication;
 import com.dochiri.tooltestlab.catalog.product.adapter.out.persistence.outbox.CatalogOutboxEntry;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.IntegrationEventPort;
@@ -32,7 +33,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = {ToolTestLabApplication.class, OutboxAcknowledgmentTest.Config.class},
@@ -67,11 +70,16 @@ class OutboxAcknowledgmentTest {
     }
 
     @Test
-    void publishesOnlyAfterTransportAcknowledgmentWithoutWaitingForConsumers() throws Exception {
+    @DisplayName("소비자를 기다리지 않고 전송 확인 후에만 발행 완료로 기록한다")
+    void publishes_only_after_transport_acknowledgment_without_waiting_for_consumers() throws Exception {
+        // given
+        final Class<CatalogOutboxEntry> entryType = CatalogOutboxEntry.class;
         assertTrue(context.getBeansOfType(LocalMessageBroker.class).isEmpty());
         assertTrue(context.getBeansOfType(LocalMessageReceiver.class).isEmpty());
+
+        // when & then
         try (final var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            final var result = executor.submit(() -> dispatcher.dispatch(CatalogOutboxEntry.class));
+            final var result = executor.submit(() -> dispatcher.dispatch(entryType));
             try {
                 assertTrue(broker.accepted.await(2, TimeUnit.SECONDS));
                 assertFalse(result.isDone());
@@ -88,8 +96,12 @@ class OutboxAcknowledgmentTest {
     }
 
     @Test
-    void failedAcknowledgmentPersistsRetryAndOriginalCause() {
+    @DisplayName("확인 실패는 재시도 정보와 원인을 영속화한다")
+    void failed_acknowledgment_persists_retry_and_original_cause() {
+        // given
         broker.ack.completeExceptionally(new IllegalStateException("전송 거절"));
+
+        // when & then
         assertEquals(0, dispatcher.dispatch(CatalogOutboxEntry.class));
         assertEquals(1L, pending());
         assertEquals(1, jdbc.queryForObject("select attempts from catalog_outbox", Integer.class));
@@ -98,8 +110,13 @@ class OutboxAcknowledgmentTest {
     }
 
     @Test
-    void missingAcknowledgmentTimesOutAndLeavesTheEventPending() {
-        assertEquals(0, dispatcher.dispatch(CatalogOutboxEntry.class));
+    @DisplayName("확인이 없으면 시간 초과로 이벤트를 미발행으로 남긴다")
+    void missing_acknowledgment_times_out_and_leaves_the_event_pending() {
+        // given
+        final Class<CatalogOutboxEntry> entryType = CatalogOutboxEntry.class;
+
+        // when & then
+        assertEquals(0, dispatcher.dispatch(entryType));
         assertEquals(1L, pending());
         assertEquals(1, jdbc.queryForObject("select attempts from catalog_outbox", Integer.class));
         assertTrue(jdbc.queryForObject("select last_error from catalog_outbox", String.class).startsWith("TimeoutException:"));

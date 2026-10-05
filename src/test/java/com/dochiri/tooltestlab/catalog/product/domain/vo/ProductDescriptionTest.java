@@ -8,30 +8,32 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Modifier;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProductDescriptionTest {
 
     @Test
     @DisplayName("상품 설명이 null이면 필수 예외가 발생한다")
-    void rejectsNull() {
+    void rejects_null() {
         // given
         final String value = null;
 
-        // when
-        // then
+        // when & then
         assertThrows(ProductDescriptionRequiredException.class, () -> ProductDescription.of(value));
     }
 
     @Test
     @DisplayName("공백 제거 후 상품 설명이 5자 미만이거나 1000자를 초과하면 거부한다")
-    void rejectsInvalidLengths() {
+    void rejects_invalid_lengths() {
         // given
         final String[] shortValues = {"", " ", "\u2003", "abcd", "  abcd  "};
         final String longValue = "a".repeat(1_001);
 
-        // when
-        // then
+        // when & then
         for (final String value : shortValues) {
             assertThrows(ProductDescriptionTooShortException.class, () -> ProductDescription.of(value));
         }
@@ -40,7 +42,7 @@ class ProductDescriptionTest {
 
     @Test
     @DisplayName("상품 설명의 양끝 공백을 제거하고 최소 및 최대 길이를 허용한다")
-    void normalizesBoundaryValues() {
+    void normalizes_boundary_values() {
         // given
         final String minimum = "abcde";
         final String maximum = "a".repeat(1_000);
@@ -56,7 +58,7 @@ class ProductDescriptionTest {
 
     @Test
     @DisplayName("상품 설명은 값 기준 동등성과 문자열 표현을 유지한다")
-    void comparesValues() {
+    void compares_values() {
         // given
         final ProductDescription value = ProductDescription.of("상품 설명입니다");
         final ProductDescription same = ProductDescription.of(" 상품 설명입니다 ");
@@ -78,7 +80,7 @@ class ProductDescriptionTest {
 
     @Test
     @DisplayName("상품 설명은 상속과 외부 생성자 호출을 차단하고 상태를 불변으로 유지한다")
-    void restrictsConstructionAndMutation() {
+    void restricts_construction_and_mutation() {
         // given
         final Class<ProductDescription> type = ProductDescription.class;
 

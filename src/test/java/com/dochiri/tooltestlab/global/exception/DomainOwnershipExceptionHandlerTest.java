@@ -14,7 +14,8 @@ import java.time.Clock;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class DomainOwnershipExceptionHandlerTest {
 
@@ -30,9 +31,11 @@ class DomainOwnershipExceptionHandlerTest {
     @ParameterizedTest(name = "{1}")
     @MethodSource("ownershipFailures")
     @DisplayName("소유자 검증이 도메인으로 이동해도 403과 기존 오류 코드를 유지한다")
-    void preservesForbiddenResponses(final Supplier<ProblemDetail> handler, final String expectedCode) {
+    void preserves_forbidden_responses(final Supplier<ProblemDetail> handler, final String expectedCode) {
+        // given
         final ProblemDetail problem = handler.get();
 
+        // when & then
         assertEquals(403, problem.getStatus());
         assertNotNull(problem.getProperties());
         assertEquals(expectedCode, problem.getProperties().get("code"));

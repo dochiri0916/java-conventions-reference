@@ -24,23 +24,30 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 class OrderOwnershipServiceTest {
 
     @Test
     @DisplayName("다른 회원의 주문 취소는 저장과 이벤트 발행 전에 거부한다")
-    void rejectsCancellationBeforeUpdatingOrPublishing() {
+    void rejects_cancellation_before_updating_or_publishing() {
+        // given
         final Order order = order();
         final OrderRepositoryPort orders = mock(OrderRepositoryPort.class);
         final IntegrationEventPort events = mock(IntegrationEventPort.class);
         final CancelOrderService service = new CancelOrderService(orders, events);
         when(orders.findByOrderIdForUpdate(order.id())).thenReturn(Optional.of(order));
 
+        // when & then
         assertThrows(NotOrderOwnerException.class, () -> service.cancel(
                 "01900000-0000-7000-8000-000000000004", order.id().value()));
-
         verify(orders, never()).update(any());
         verifyNoInteractions(events);
         assertEquals(OrderStatus.PENDING, order.status());
@@ -48,12 +55,14 @@ class OrderOwnershipServiceTest {
 
     @Test
     @DisplayName("다른 회원의 주문 상세는 도메인 소유자 검증에서 거부한다")
-    void rejectsReadingAnotherMembersOrder() {
+    void rejects_reading_another_members_order() {
+        // given
         final Order order = order();
         final OrderRepositoryPort orders = mock(OrderRepositoryPort.class);
         final GetOrderService service = new GetOrderService(orders);
         when(orders.findByOrderId(order.id())).thenReturn(Optional.of(order));
 
+        // when & then
         assertThrows(NotOrderOwnerException.class, () -> service.getOrder(new GetOrderQuery(
                 "01900000-0000-7000-8000-000000000004", order.id().value())));
     }

@@ -5,13 +5,14 @@ import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryName;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CategoryMapperTest {
 
     @Test
     @DisplayName("카테고리 UUID v7과 이름 및 상태를 저장 형식으로 변환하고 복원한다")
-    void mapsAndUpdatesCategory() {
+    void maps_and_updates_category() {
         // given
         final Category category = Category.create(CategoryName.of("카테고리"));
 

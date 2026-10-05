@@ -32,9 +32,17 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @DataJpaTest(showSql = false)
@@ -51,7 +59,7 @@ class CartPersistenceAdapterTest {
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
     @DisplayName("기존 장바구니를 저장할 때 항목은 저장된 공개 식별자를 참조한다")
-    void storesItemsUnderExistingPublicId(final boolean safe) {
+    void stores_items_under_existing_public_id(final boolean safe) {
         // given
         final CartRepositoryPort adapter = adapter(safe, cartJpaRepository);
         final MemberReferenceId memberId = memberId();
@@ -76,7 +84,7 @@ class CartPersistenceAdapterTest {
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
     @DisplayName("회원별 생성 제약 위반만 충돌로 전달하고 실패한 트랜잭션에서 재조회하지 않는다")
-    void translatesMemberCreationConflictWithoutRetry(final boolean safe) {
+    void translates_member_creation_conflict_without_retry(final boolean safe) {
         // given
         final MemberReferenceId memberId = memberId();
         save(adapter(safe, cartJpaRepository), Cart.create(memberId));
@@ -110,7 +118,7 @@ class CartPersistenceAdapterTest {
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
     @DisplayName("장바구니 공개 식별자 중복은 생성 충돌이 아닌 저장소 오류로 전달한다")
-    void translatesDuplicatePublicIdAsRepositoryFailure(final boolean safe) {
+    void translates_duplicate_public_id_as_repository_failure(final boolean safe) {
         // given
         final CartRepositoryPort adapter = adapter(safe, cartJpaRepository);
         final Cart original = save(adapter, Cart.create(memberId()));
@@ -129,7 +137,7 @@ class CartPersistenceAdapterTest {
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
     @DisplayName("항목의 컬럼 위반은 저장소 오류로 전달하고 장바구니 생성도 롤백한다")
-    void translatesItemFailureAndRollsBackCart(final boolean safe) {
+    void translates_item_failure_and_rolls_back_cart(final boolean safe) {
         // given
         final CartRepositoryPort adapter = adapter(safe, cartJpaRepository);
         final MemberReferenceId memberId = memberId();

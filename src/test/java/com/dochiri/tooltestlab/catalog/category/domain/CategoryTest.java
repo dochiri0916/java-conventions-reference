@@ -5,13 +5,15 @@ import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CategoryTest {
 
     @Test
     @DisplayName("카테고리 이름과 상태 변경은 새 객체를 반환하고 ID와 원본을 유지한다")
-    void changesCategoryImmutably() {
+    void changes_category_immutably() {
         // given
         final Category original = Category.create(CategoryName.of("카테고리"));
 
@@ -33,12 +35,11 @@ class CategoryTest {
 
     @Test
     @DisplayName("카테고리 복원은 null 필수 필드를 거부한다")
-    void rejectsNullFields() {
+    void rejects_null_fields() {
         // given
         final Category category = Category.create(CategoryName.of("카테고리"));
 
-        // when
-        // then
+        // when & then
         assertThrows(NullPointerException.class, () -> Category.restore(null, category.name(), category.state()));
         assertThrows(NullPointerException.class, () -> Category.restore(category.id(), null, category.state()));
         assertThrows(NullPointerException.class, () -> Category.restore(category.id(), category.name(), null));

@@ -13,7 +13,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CartItemsTest {
 
@@ -23,7 +25,7 @@ class CartItemsTest {
 
     @Test
     @DisplayName("장바구니 목록은 원본과 반환 목록의 변경으로부터 보호된다")
-    void copiesAndProtectsValues() {
+    void copies_and_protects_values() {
         // given
         final CartItem item = item("01900000-0000-7000-8000-000000000001", 2);
         final List<CartItem> source = new ArrayList<>(List.of(item));
@@ -43,7 +45,7 @@ class CartItemsTest {
 
     @Test
     @DisplayName("장바구니 목록은 null 요소와 최대 항목 수 초과를 거부한다")
-    void validatesCollectionBoundaries() {
+    void validates_collection_boundaries() {
         // given
         final CartItem item = item("01900000-0000-7000-8000-000000000001", 1);
 
@@ -61,7 +63,7 @@ class CartItemsTest {
 
     @Test
     @DisplayName("장바구니 항목 추가 교체 삭제는 원본 목록을 유지한다")
-    void changesCollectionsImmutably() {
+    void changes_collections_immutably() {
         // given
         final CartItem first = item("01900000-0000-7000-8000-000000000001", 1);
         final CartItem second = item("01900000-0000-7000-8000-000000000002", 2);

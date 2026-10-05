@@ -8,20 +8,21 @@ import com.dochiri.tooltestlab.member.domain.vo.MemberStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MemberTest {
 
     @Test
     @DisplayName("회원 생성 시 필수 VO가 null이면 NullPointerException이 발생한다")
-    void rejectsNullWhenCreating() {
+    void rejects_null_when_creating() {
         // given
         final Email email = Email.of("member@example.com");
         final EncodedPassword password = EncodedPassword.of("encoded-password");
         final MemberName name = MemberName.of("홍길동");
 
-        // when
-        // then
+        // when & then
         assertThrows(NullPointerException.class, () -> Member.create(null, password, name));
         assertThrows(NullPointerException.class, () -> Member.create(email, null, name));
         assertThrows(NullPointerException.class, () -> Member.create(email, password, null));
@@ -29,7 +30,7 @@ class MemberTest {
 
     @Test
     @DisplayName("회원 복원 시 모든 필수 필드의 null을 거부한다")
-    void rejectsNullWhenRestoring() {
+    void rejects_null_when_restoring() {
         // given
         final MemberId id = MemberId.generate();
         final Email email = Email.of("member@example.com");
@@ -37,8 +38,7 @@ class MemberTest {
         final MemberName name = MemberName.of("홍길동");
         final MemberStatus status = MemberStatus.ACTIVE;
 
-        // when
-        // then
+        // when & then
         assertThrows(NullPointerException.class, () -> Member.restore(null, email, password, name, status));
         assertThrows(NullPointerException.class, () -> Member.restore(id, null, password, name, status));
         assertThrows(NullPointerException.class, () -> Member.restore(id, email, null, name, status));
@@ -48,7 +48,7 @@ class MemberTest {
 
     @Test
     @DisplayName("유효한 VO로 회원을 생성하고 같은 상태로 복원한다")
-    void createsAndRestoresMember() {
+    void creates_and_restores_member() {
         // given
         final Email email = Email.of("member@example.com");
         final EncodedPassword password = EncodedPassword.of("encoded-password");

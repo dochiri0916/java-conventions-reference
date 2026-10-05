@@ -12,13 +12,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OrderLinesTest {
 
     @Test
     @DisplayName("주문 목록은 방어적으로 복사하고 값 동등성과 합계를 유지한다")
-    void copiesAndProtectsValues() {
+    void copies_and_protects_values() {
         // given
         final OrderLine line = OrderLine.of(
                 ProductReferenceId.parse("01900000-0000-7000-8000-000000000001"),
@@ -41,7 +43,7 @@ class OrderLinesTest {
 
     @Test
     @DisplayName("주문 목록은 null 빈 목록 null 요소와 100개 초과 항목을 거부한다")
-    void validatesCollectionBoundaries() {
+    void validates_collection_boundaries() {
         // given
         final OrderLine line = OrderLine.of(
                 ProductReferenceId.parse("01900000-0000-7000-8000-000000000001"),

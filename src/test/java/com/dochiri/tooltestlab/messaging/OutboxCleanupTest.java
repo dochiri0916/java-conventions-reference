@@ -1,13 +1,16 @@
 package com.dochiri.tooltestlab.messaging;
 
+import org.junit.jupiter.api.DisplayName;
 import com.dochiri.tooltestlab.ToolTestLabApplication;
 import com.dochiri.tooltestlab.cart.adapter.out.persistence.outbox.CartOutboxEntry;
 import com.dochiri.tooltestlab.cart.domain.outbox.CartOutbox;
 import com.dochiri.tooltestlab.catalog.product.adapter.out.persistence.outbox.CatalogOutboxEntry;
 import com.dochiri.tooltestlab.catalog.product.domain.outbox.CatalogOutbox;
 import com.dochiri.tooltestlab.global.domain.outbox.Outbox;
+import com.dochiri.tooltestlab.global.configuration.properties.OutboxProperties;
 import com.dochiri.tooltestlab.global.messaging.persistence.OutboxCleanup;
 import com.dochiri.tooltestlab.global.messaging.persistence.OutboxEntry;
+import com.dochiri.tooltestlab.global.messaging.persistence.RequiresNewTransaction;
 import com.dochiri.tooltestlab.member.adapter.out.persistence.outbox.MemberOutboxEntry;
 import com.dochiri.tooltestlab.member.domain.outbox.MemberOutbox;
 import com.dochiri.tooltestlab.order.adapter.out.persistence.outbox.OrderOutboxEntry;
@@ -39,7 +42,9 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = {ToolTestLabApplication.class, OutboxCleanupTest.Config.class},
@@ -82,7 +87,9 @@ class OutboxCleanupTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("queues")
-    void deletesOnlyExpiredCompletedEventsAndKeepsInbox(final Queue queue) {
+    @DisplayName("보관 기간이 지난 완료 이벤트만 삭제하고 Inbox는 유지한다")
+    void deletes_only_expired_completed_events_and_keeps_inbox(final Queue queue) {
+        // given
         final Instant cutoff = NOW.minus(Duration.ofDays(7));
         final String expired = append(queue, cutoff.minusSeconds(1), false);
         final String boundary = append(queue, cutoff, false);
@@ -91,9 +98,9 @@ class OutboxCleanupTest {
         final String failed = append(queue, null, true);
         jdbc.update("insert into order_inbox (event_id, event_type, processed_at) values (?, ?, ?)",
                 expired, "test.v1", Timestamp.from(NOW.minus(Duration.ofDays(30))));
-
         cleanup.cleanup();
 
+        // when & then
         assertEquals(0, count(queue, expired));
         assertEquals(1, count(queue, boundary));
         assertEquals(1, count(queue, recent));
@@ -103,15 +110,17 @@ class OutboxCleanupTest {
     }
 
     @Test
-    void boundsEachRunAndContinuesOldestFirstOnTheNextRun() {
+    @DisplayName("실행마다 배치를 제한하고 다음 실행에서 오래된 것부터 이어 삭제한다")
+    void bounds_each_run_and_continues_oldest_first_on_the_next_run() {
+        // given
         final Queue queue = queues().findFirst().orElseThrow();
         final var events = new ArrayList<String>();
         for (int i = 0; i < 7; i++) {
             events.add(append(queue, NOW.minus(Duration.ofDays(10)).plusSeconds(6 - i), false));
         }
-
         cleanup.cleanup();
 
+        // when & then
         for (int i = 0; i < events.size(); i++) {
             assertEquals(i < 3 ? 1 : 0, count(queue, events.get(i)));
         }
@@ -121,25 +130,35 @@ class OutboxCleanupTest {
     }
 
     @Test
-    void zeroRetentionDeletesCompletedEventsOnTheNextCleanup() {
+    @DisplayName("보관 기간이 0이면 다음 정리에서 완료 이벤트를 삭제한다")
+    void zero_retention_deletes_completed_events_on_the_next_cleanup() {
+        // given
         final Queue queue = queues().findFirst().orElseThrow();
         final String completed = append(queue, NOW.minusSeconds(1), false);
         final String pending = append(queue, null, false);
+        new OutboxCleanup(entityManager, clock, new RequiresNewTransaction(transactionManager),
+                new OutboxProperties(10000, new OutboxProperties.Cleanup(0, 2, 2))).cleanup();
 
-        new OutboxCleanup(entityManager, clock, transactionManager, 0, 2, 2).cleanup();
-
+        // when & then
         assertEquals(0, count(queue, completed));
         assertEquals(1, count(queue, pending));
     }
 
     @Test
-    void rejectsInvalidRetentionAndBatchLimits() {
+    @DisplayName("잘못된 보관 기간과 배치 한도를 거부한다")
+    void rejects_invalid_retention_and_batch_limits() {
+        // given
+        final int validRetentionDays = 7;
+        final int validBatchSize = 2;
+
+        // when & then
         assertThrows(IllegalArgumentException.class,
-                () -> new OutboxCleanup(entityManager, clock, transactionManager, -1, 2, 2));
+                () -> new OutboxProperties.Cleanup(-1, validBatchSize, validBatchSize));
         assertThrows(IllegalArgumentException.class,
-                () -> new OutboxCleanup(entityManager, clock, transactionManager, 7, 0, 2));
+                () -> new OutboxProperties.Cleanup(validRetentionDays, 0, validBatchSize));
         assertThrows(IllegalArgumentException.class,
-                () -> new OutboxCleanup(entityManager, clock, transactionManager, 7, 2, 0));
+                () -> new OutboxProperties.Cleanup(validRetentionDays, validBatchSize, 0));
+        assertThrows(IllegalArgumentException.class, () -> new OutboxProperties(0, new OutboxProperties.Cleanup(1, 1, 1)));
     }
 
     private String append(final Queue queue, final Instant publishedAt, final boolean failed) {

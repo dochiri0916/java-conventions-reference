@@ -9,13 +9,18 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Modifier;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StockTest {
 
     @Test
     @DisplayName("음수 재고는 기존 예외로 거부하고 0과 최대 재고는 허용한다")
-    void validatesStock() {
+    void validates_stock() {
         // given
         final int negative = -1;
 
@@ -33,7 +38,7 @@ class StockTest {
 
     @Test
     @DisplayName("재고 증감은 새 객체를 반환하고 기존 재고를 유지한다")
-    void changesStockImmutably() {
+    void changes_stock_immutably() {
         // given
         final Stock original = Stock.of(10);
 
@@ -52,13 +57,12 @@ class StockTest {
 
     @Test
     @DisplayName("재고 증감 수량이 0 이하이면 거부한다")
-    void rejectsInvalidQuantities() {
+    void rejects_invalid_quantities() {
         // given
         final Stock stock = Stock.of(10);
         final int[] quantities = {0, -1, Integer.MIN_VALUE};
 
-        // when
-        // then
+        // when & then
         for (final int quantity : quantities) {
             assertThrows(InvalidStockQuantityException.class, () -> stock.increase(quantity));
             assertThrows(InvalidStockQuantityException.class, () -> stock.decrease(quantity));
@@ -68,7 +72,7 @@ class StockTest {
 
     @Test
     @DisplayName("재고 부족과 정수 범위 초과를 거부하고 최대 재고 증가 경계는 허용한다")
-    void validatesArithmeticBoundaries() {
+    void validates_arithmetic_boundaries() {
         // given
         final Stock stock = Stock.of(10);
         final Stock maximum = Stock.of(Integer.MAX_VALUE);
@@ -86,7 +90,7 @@ class StockTest {
 
     @Test
     @DisplayName("재고는 값 기준 동등성과 문자열 표현을 유지한다")
-    void comparesValues() {
+    void compares_values() {
         // given
         final Stock value = Stock.of(10);
         final Stock same = Stock.of(10);
@@ -108,7 +112,7 @@ class StockTest {
 
     @Test
     @DisplayName("재고는 상속과 외부 생성자 호출을 차단하고 상태를 불변으로 유지한다")
-    void restrictsConstructionAndMutation() throws Exception {
+    void restricts_construction_and_mutation() throws Exception {
         // given
         final Class<Stock> type = Stock.class;
 

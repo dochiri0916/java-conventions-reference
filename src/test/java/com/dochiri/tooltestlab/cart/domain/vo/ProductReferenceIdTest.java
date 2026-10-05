@@ -8,7 +8,10 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Modifier;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProductReferenceIdTest {
 
@@ -16,24 +19,24 @@ class ProductReferenceIdTest {
 
     @Test
     @DisplayName("문자열과 UUID가 null이면 상품 참조 ID 필수 예외가 발생한다")
-    void rejectsNull() {
+    void rejects_null() {
         // given
         final String text = null;
         final UUID uuid = null;
-        // when
-        // then
+
+        // when & then
         assertThrows(ProductReferenceIdRequiredException.class, () -> ProductReferenceId.parse(text));
         assertThrows(ProductReferenceIdRequiredException.class, () -> ProductReferenceId.of(uuid));
     }
 
     @Test
     @DisplayName("빈 문자열과 공백이 포함된 ID는 유효하지 않은 상품 참조 ID 예외가 발생한다")
-    void rejectsWhitespace() {
+    void rejects_whitespace() {
         // given
         final String[] inputs = {"", " ", "\t\n", "\u2003", " " + VALID_UUID,
                 VALID_UUID + " ", VALID_UUID + "\n", "01900000-0000-7000-8000-00000000000 "};
-        // when
-        // then
+
+        // when & then
         for (final String input : inputs) {
             assertThrows(InvalidProductReferenceIdException.class, () -> ProductReferenceId.parse(input));
         }
@@ -41,13 +44,13 @@ class ProductReferenceIdTest {
 
     @Test
     @DisplayName("잘못된 UUID 형식과 축약 및 하이픈 없는 UUID는 커스텀 예외가 발생한다")
-    void rejectsMalformedUuid() {
+    void rejects_malformed_uuid() {
         // given
         final String[] inputs = {"invalid", "1-1-7000-8000-1",
                 "01900000-0000-7000-8000-00000000000g", "0190000000007000800000000000000",
                 "01900000000070008000000000000001"};
-        // when
-        // then
+
+        // when & then
         for (final String input : inputs) {
             assertThrows(InvalidProductReferenceIdException.class, () -> ProductReferenceId.parse(input));
         }
@@ -55,18 +58,18 @@ class ProductReferenceIdTest {
 
     @Test
     @DisplayName("UUID v7이 아니면 생성과 문자열 복원을 거부한다")
-    void rejectsOtherVersions() {
+    void rejects_other_versions() {
         // given
         final UUID uuid = UUID.fromString("01900000-0000-4000-8000-000000000001");
-        // when
-        // then
+
+        // when & then
         assertThrows(InvalidProductReferenceIdException.class, () -> ProductReferenceId.of(uuid));
         assertThrows(InvalidProductReferenceIdException.class, () -> ProductReferenceId.parse(uuid.toString()));
     }
 
     @Test
     @DisplayName("표준 형식의 소문자와 대문자 문자열에서 동일한 UUID를 복원한다")
-    void parsesSupportedFormats() {
+    void parses_supported_formats() {
         // given
         final UUID uuid = UUID.fromString("019000ab-cdef-7000-8000-000000000001");
         // when
@@ -80,7 +83,7 @@ class ProductReferenceIdTest {
 
     @Test
     @DisplayName("참조 UUID v7은 표준 36자리 문자열로 변환되고 동일한 값으로 복원된다")
-    void serializesAndRestores() {
+    void serializes_and_restores() {
         // given
         final ProductReferenceId reference = ProductReferenceId.of(VALID_UUID);
 
@@ -100,7 +103,7 @@ class ProductReferenceIdTest {
 
     @Test
     @DisplayName("상품 참조 ID는 상속과 외부 생성자 호출을 차단한다")
-    void restrictsConstruction() {
+    void restricts_construction() {
         // given
         final Class<ProductReferenceId> type = ProductReferenceId.class;
         // when

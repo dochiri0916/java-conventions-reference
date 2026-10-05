@@ -1,11 +1,23 @@
 package com.dochiri.tooltestlab.order.adapter.out.persistence;
 
+import org.junit.jupiter.api.DisplayName;
 import com.dochiri.tooltestlab.global.application.exception.RepositoryOperationException;
 import com.dochiri.tooltestlab.global.domain.vo.Money;
 import com.dochiri.tooltestlab.global.domain.vo.Quantity;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
 import com.dochiri.tooltestlab.order.domain.Order;
-import com.dochiri.tooltestlab.order.domain.vo.*;
+import com.dochiri.tooltestlab.order.domain.vo.CartReferenceId;
+import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
+import com.dochiri.tooltestlab.order.domain.vo.OrderLine;
+import com.dochiri.tooltestlab.order.domain.vo.OrderLines;
+import com.dochiri.tooltestlab.order.domain.vo.OrderStatus;
+import com.dochiri.tooltestlab.order.domain.vo.Phone;
+import com.dochiri.tooltestlab.order.domain.vo.ProductName;
+import com.dochiri.tooltestlab.order.domain.vo.ProductReferenceId;
+import com.dochiri.tooltestlab.order.domain.vo.RecipientName;
+import com.dochiri.tooltestlab.order.domain.vo.ShippingAddress;
+import com.dochiri.tooltestlab.order.domain.vo.StreetAddress;
+import com.dochiri.tooltestlab.order.domain.vo.ZipCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -26,7 +38,10 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("test")
 @DataJpaTest(showSql = false)
@@ -40,18 +55,20 @@ abstract class OrderPersistenceAdapterTestBase {
     @Autowired JdbcTemplate jdbc;
 
     @Test
-    void storesPublicIdsAndFindsOrdersThroughDomainIds() {
+    @DisplayName("주문은 publicId로 저장하고 도메인 ID로 조회한다")
+    void stores_public_ids_and_finds_orders_through_domain_ids() {
+        // given
         final Order original = transaction(() -> orders.create(order("상품")));
-
         final Order loaded = transaction(() -> orders.findByOrderId(original.id()).orElseThrow());
         final Order locked = transaction(() -> orders.findByOrderIdForUpdate(original.id()).orElseThrow());
         final var memberOrders = transaction(() -> orders.findByMemberId(original.memberId()));
         final Order paid = transaction(() -> orders.update(loaded.pay()));
 
+        // when & then
         assertEquals(original.id(), loaded.id());
         assertEquals(original.id(), locked.id());
         assertEquals(original.items(), loaded.items());
-        assertEquals(1, memberOrders.size());
+        assertEquals(1, memberOrders.values().size());
         assertEquals(OrderStatus.PAID, paid.status());
         assertEquals(OrderStatus.PAID, transaction(() -> orders.findByOrderId(original.id()).orElseThrow()).status());
         assertEquals(original.id().value(), jdbc.queryForObject(
@@ -61,22 +78,26 @@ abstract class OrderPersistenceAdapterTestBase {
     }
 
     @Test
-    void duplicatePublicIdIsARepositoryFailureAndPreservesExistingLines() {
+    @DisplayName("중복 publicId는 저장소 예외가 되고 기존 주문 항목을 보존한다")
+    void duplicate_public_id_is_a_repository_failure_and_preserves_existing_lines() {
+        // given
         final Order original = transaction(() -> orders.create(order("상품")));
 
+        // when & then
         final RepositoryOperationException exception = assertThrows(RepositoryOperationException.class,
                 () -> transaction(() -> orders.create(original)));
-
         assertInstanceOf(DataIntegrityViolationException.class, exception.getCause());
         assertEquals(original.items(), transaction(() -> orders.findByOrderId(original.id()).orElseThrow()).items());
     }
 
     @Test
-    void failedLineInsertRollsBackTheWholeOrder() {
+    @DisplayName("주문 항목 저장이 실패하면 주문 전체를 롤백한다")
+    void failed_line_insert_rolls_back_the_whole_order() {
+        // given
         final Order invalid = order("a".repeat(256));
 
+        // when & then
         assertThrows(RepositoryOperationException.class, () -> transaction(() -> orders.create(invalid)));
-
         assertEquals(0L, jdbc.queryForObject(
                 "select count(*) from orders where public_id = ?", Long.class, invalid.id().value()));
         assertEquals(0L, jdbc.queryForObject(

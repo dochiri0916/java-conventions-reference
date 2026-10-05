@@ -11,8 +11,11 @@ import jakarta.persistence.PersistenceException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ProductSnapshotPersistenceAdapterTest {
 
@@ -21,7 +24,7 @@ class ProductSnapshotPersistenceAdapterTest {
 
     @Test
     @DisplayName("상품 스냅샷 조회의 저장소 오류는 포트 계약의 예외로 전달한다")
-    void translatesReadFailure() {
+    void translates_read_failure() {
         // given
         final ProductReferenceId productId = productId();
         final PersistenceException cause = new PersistenceException("storage unavailable");
@@ -37,7 +40,7 @@ class ProductSnapshotPersistenceAdapterTest {
 
     @Test
     @DisplayName("상품 스냅샷 저장 오류는 트랜잭션 커밋 전 어댑터에서 전달한다")
-    void translatesFlushFailure() {
+    void translates_flush_failure() {
         // given
         final var snapshot = new ProductCatalogPort.ProductSnapshot(productId(), ProductName.of("상품"), Money.of(100));
         final PersistenceException cause = new PersistenceException("storage unavailable");
@@ -53,12 +56,11 @@ class ProductSnapshotPersistenceAdapterTest {
 
     @Test
     @DisplayName("준비되지 않은 상품 스냅샷은 기존 애플리케이션 예외를 유지한다")
-    void preservesMissingSnapshotFailure() {
+    void preserves_missing_snapshot_failure() {
         // given
         final ProductReferenceId productId = productId();
 
-        // when
-        // then
+        // when & then
         assertThrows(ProductSnapshotNotReadyException.class, () -> adapter.findProduct(productId));
     }
 

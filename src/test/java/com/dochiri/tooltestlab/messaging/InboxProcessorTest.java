@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.messaging;
 
+import org.junit.jupiter.api.DisplayName;
 import com.dochiri.tooltestlab.ToolTestLabApplication;
 import com.dochiri.tooltestlab.global.messaging.MessageEnvelope;
 import com.dochiri.tooltestlab.global.messaging.persistence.InboxProcessor;
@@ -25,7 +26,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = ToolTestLabApplication.class, webEnvironment = SpringBootTest.WebEnvironment.NONE,
@@ -65,12 +68,17 @@ class InboxProcessorTest {
     }
 
     @Test
-    void failedHandlerRollsBackInboxBusinessChangeAndFollowUpOutboxAndAllowsRetry() {
+    @DisplayName("핸들러가 실패하면 Inbox·업무 변경·후속 Outbox를 롤백하고 재시도를 허용한다")
+    void failed_handler_rolls_back_inbox_business_change_and_follow_up_outbox_and_allows_retry() {
+        // given
+        final Runnable failingHandler = () -> {
+            handler.run();
+            throw new IllegalStateException("처리 실패");
+        };
+
+        // when & then
         assertThrows(IllegalStateException.class, () -> inbox.process(message, OrderInboxEntry.class,
-                OrderInboxEntry::new, () -> {
-                    handler.run();
-                    throw new IllegalStateException("처리 실패");
-                }));
+                OrderInboxEntry::new, failingHandler));
         assertCounts(0);
 
         process();
@@ -86,7 +94,9 @@ class InboxProcessorTest {
     }
 
     @Test
-    void concurrentDuplicateIsBlockedBeforeHandlerAndSkipsOnRedelivery() throws Exception {
+    @DisplayName("동시 중복 수신은 핸들러 전에 막고 재전달은 건너뛴다")
+    void concurrent_duplicate_is_blocked_before_handler_and_skips_on_redelivery() throws Exception {
+        // given
         final var bothMissing = new CyclicBarrier(2);
         final InboxProcessor.EntryFactory factory = (eventId, eventType, processedAt) -> {
             try {
@@ -104,6 +114,8 @@ class InboxProcessorTest {
                 return false;
             }
         };
+
+        // when & then
         try (final var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             final var results = executor.invokeAll(List.of(receive, receive), 10, TimeUnit.SECONDS);
             int committed = 0;

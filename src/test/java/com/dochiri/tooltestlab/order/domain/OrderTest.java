@@ -20,7 +20,9 @@ import com.dochiri.tooltestlab.order.domain.vo.ZipCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class OrderTest {
 
@@ -35,7 +37,7 @@ class OrderTest {
 
     @Test
     @DisplayName("주문 상태 전이는 새 객체를 반환하고 ID와 주문 정보를 유지한다")
-    void transitionsImmutably() {
+    void transitions_immutably() {
         // given
         final Order pending = order();
 
@@ -64,10 +66,12 @@ class OrderTest {
 
     @Test
     @DisplayName("다른 회원은 주문 소유자 검증과 취소를 통과할 수 없다")
-    void rejectsAnotherOwner() {
+    void rejects_another_owner() {
+        // given
         final Order pending = order();
         final MemberReferenceId anotherMember = MemberReferenceId.parse("01900000-0000-7000-8000-000000000004");
 
+        // when & then
         assertDoesNotThrow(() -> pending.verifyOwner(pending.memberId()));
         assertThrows(NotOrderOwnerException.class, () -> pending.verifyOwner(anotherMember));
         assertThrows(NotOrderOwnerException.class, () -> pending.cancel(anotherMember));
@@ -77,12 +81,11 @@ class OrderTest {
 
     @Test
     @DisplayName("주문 복원은 null 필수 필드를 거부한다")
-    void rejectsNullFields() {
+    void rejects_null_fields() {
         // given
         final Order order = order();
 
-        // when
-        // then
+        // when & then
         assertThrows(NullPointerException.class, () -> Order.restore(null, order.memberId(), order.cartId(), order.cartRevision(), order.items(),
                 order.status(), order.shippingAddress(), order.totalAmount()));
         assertThrows(NullPointerException.class, () -> Order.restore(order.id(), null, order.cartId(), order.cartRevision(), order.items(),

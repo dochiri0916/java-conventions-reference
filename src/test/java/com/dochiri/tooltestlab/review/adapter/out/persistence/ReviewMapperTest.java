@@ -8,13 +8,13 @@ import com.dochiri.tooltestlab.review.domain.vo.ReviewContent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ReviewMapperTest {
 
     @Test
     @DisplayName("리뷰와 참조 UUID v7 및 평점과 내용을 저장하고 동일하게 복원한다")
-    void mapsReview() {
+    void maps_review() {
         // given
         final Review review = Review.create(
                 MemberReferenceId.parse("01900000-0000-7000-8000-000000000001"),

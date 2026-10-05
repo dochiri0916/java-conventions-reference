@@ -20,13 +20,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OrderMapperTest {
 
     @Test
     @DisplayName("주문 UUID v7과 배송지 및 항목을 복원하고 변경 상태를 매핑한다")
-    void mapsAndUpdatesOrder() {
+    void maps_and_updates_order() {
         // given
         final Order order = Order.create(
                 MemberReferenceId.parse("01900000-0000-7000-8000-000000000001"),

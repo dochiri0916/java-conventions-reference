@@ -4,13 +4,15 @@ import com.dochiri.tooltestlab.order.domain.exception.ShippingAddressRequiredExc
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ShippingAddressTest {
 
     @Test
     @DisplayName("배송 주소는 모든 필수 VO를 요구하고 값 기준 동등성을 유지한다")
-    void validatesAndComparesAddress() {
+    void validates_and_compares_address() {
         // given
         final RecipientName name = RecipientName.of("홍길동");
         final Phone phone = Phone.of("010-1234-5678");

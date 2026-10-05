@@ -11,13 +11,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CartMapperTest {
 
     @Test
     @DisplayName("장바구니와 항목 및 참조 UUID v7을 저장하고 같은 값으로 복원한다")
-    void mapsCartAndItems() {
+    void maps_cart_and_items() {
         // given
         final Cart cart = Cart.create(MemberReferenceId.parse("01900000-0000-7000-8000-000000000001"))
                 .addItem(ProductReferenceId.parse("01900000-0000-7000-8000-000000000002"),

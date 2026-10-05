@@ -9,13 +9,15 @@ import com.dochiri.tooltestlab.global.domain.vo.Quantity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CartTest {
 
     @Test
     @DisplayName("장바구니 변경은 ID와 원본을 유지하고 같은 상품의 수량을 합산한다")
-    void changesCartImmutably() {
+    void changes_cart_immutably() {
         // given
         final Cart empty = Cart.create(MemberReferenceId.parse("01900000-0000-7000-8000-000000000001"));
         final ProductReferenceId productId = ProductReferenceId.parse("01900000-0000-7000-8000-000000000002");
@@ -43,12 +45,11 @@ class CartTest {
 
     @Test
     @DisplayName("장바구니 생성과 복원은 null 필수 필드를 거부한다")
-    void rejectsNullFields() {
+    void rejects_null_fields() {
         // given
         final Cart cart = Cart.create(MemberReferenceId.parse("01900000-0000-7000-8000-000000000001"));
 
-        // when
-        // then
+        // when & then
         assertThrows(NullPointerException.class, () -> Cart.create(null));
         assertThrows(NullPointerException.class, () -> Cart.restore(null, cart.memberId(), CartItems.empty()));
         assertThrows(NullPointerException.class, () -> Cart.restore(cart.id(), null, CartItems.empty()));
