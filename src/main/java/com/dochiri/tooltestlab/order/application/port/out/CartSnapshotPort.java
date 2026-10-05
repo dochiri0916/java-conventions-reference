@@ -10,7 +10,6 @@ import java.util.Optional;
 public interface CartSnapshotPort {
     Optional<CartSnapshot> claim(MemberReferenceId memberId);
     void update(CartSnapshot snapshot, long sequence);
-    void release(CartReferenceId cartId, long revision);
 
     record CartSnapshot(CartReferenceId cartId, MemberReferenceId memberId, long revision, List<OrderLine> items) {
         public CartSnapshot {

@@ -16,19 +16,10 @@ public final class OrderEventMapper {
                         item.quantity().value(), item.unitPrice().amount())).toList());
     }
 
-    public static OrderConfirmedIntegrationEvent toIntegration(final OrderConfirmed event) {
-        final var order = event.order();
-        return new OrderConfirmedIntegrationEvent(order.id().value(), order.memberId().value(),
-                order.cartId().value(), order.cartRevision());
-    }
-
     public static OrderCancelledIntegrationEvent toIntegration(final OrderCancelled event) {
         final var order = event.order();
         return new OrderCancelledIntegrationEvent(order.id().value(), order.memberId().value(),
                 order.cartId().value(), order.cartRevision());
     }
 
-    public static OrderRejectedIntegrationEvent toIntegration(final OrderRejected event) {
-        return new OrderRejectedIntegrationEvent(event.orderId().value(), event.reason());
-    }
 }

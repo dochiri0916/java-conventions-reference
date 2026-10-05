@@ -2,10 +2,13 @@ package com.dochiri.tooltestlab.order.domain;
 
 import com.dochiri.tooltestlab.global.domain.vo.Money;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
+import com.dochiri.tooltestlab.order.domain.exception.MemberReferenceIdRequiredException;
+import com.dochiri.tooltestlab.order.domain.exception.NotOrderOwnerException;
 import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
 import com.dochiri.tooltestlab.order.domain.vo.CartReferenceId;
 import com.dochiri.tooltestlab.order.domain.event.*;
 import com.dochiri.tooltestlab.order.domain.vo.OrderId;
+import com.dochiri.tooltestlab.order.domain.vo.OrderStatus;
 import com.dochiri.tooltestlab.order.domain.vo.OrderLines;
 import com.dochiri.tooltestlab.order.domain.vo.ShippingAddress;
 
@@ -53,7 +56,7 @@ public final class Order {
             final ShippingAddress shippingAddress
     ) {
         return new Order(
-                OrderId.generate(), memberId, cartId, cartRevision, items, OrderStatus.STOCK_PENDING, shippingAddress, items.totalAmount());
+                OrderId.generate(), memberId, cartId, cartRevision, items, OrderStatus.PENDING, shippingAddress, items.totalAmount());
     }
 
     public static Order restore(
@@ -67,20 +70,6 @@ public final class Order {
             final Money totalAmount
     ) {
         return new Order(id, memberId, cartId, cartRevision, items, status, shippingAddress, totalAmount);
-    }
-
-    public Order confirmStock() {
-        if (status != OrderStatus.STOCK_PENDING) {
-            throw new InvalidOrderStatusException();
-        }
-        return withStatus(OrderStatus.PENDING);
-    }
-
-    public Order rejectStock() {
-        if (status != OrderStatus.STOCK_PENDING) {
-            throw new InvalidOrderStatusException();
-        }
-        return withStatus(OrderStatus.REJECTED);
     }
 
     private Order withStatus(final OrderStatus changed) {
@@ -108,8 +97,18 @@ public final class Order {
         return withStatus(OrderStatus.DELIVERED);
     }
 
-    public Order cancel() {
-        if (status == OrderStatus.DELIVERED || status == OrderStatus.CANCELLED || status == OrderStatus.REJECTED) {
+    public void verifyOwner(final MemberReferenceId requesterId) {
+        if (requesterId == null) {
+            throw new MemberReferenceIdRequiredException();
+        }
+        if (!memberId.equals(requesterId)) {
+            throw new NotOrderOwnerException();
+        }
+    }
+
+    public Order cancel(final MemberReferenceId requesterId) {
+        verifyOwner(requesterId);
+        if (status == OrderStatus.DELIVERED || status == OrderStatus.CANCELLED) {
             throw new InvalidOrderStatusException();
         }
         return withStatus(OrderStatus.CANCELLED);
@@ -127,16 +126,8 @@ public final class Order {
         return new OrderPlaced(this);
     }
 
-    public OrderConfirmed confirmedEvent() {
-        return new OrderConfirmed(this);
-    }
-
     public OrderCancelled cancelledEvent() {
         return new OrderCancelled(this);
-    }
-
-    public OrderRejected rejectedEvent(final String reason) {
-        return new OrderRejected(id, reason);
     }
 
     public OrderId id() {

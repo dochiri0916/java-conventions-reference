@@ -6,14 +6,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "order_cart_snapshots")
+@Table(
+        name = "order_cart_snapshots",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_order_cart_snapshots_cart_reference_id",
+                columnNames = "cart_reference_id"
+        )
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartSnapshotEntity {
     @Id
     @Column(nullable = false, updatable = false, length = 36)
     private String memberReferenceId;
-    @Column(nullable = false, length = 36, unique = true)
+    @Column(name = "cart_reference_id", nullable = false, length = 36)
     private String cartReferenceId;
     @Column(nullable = false)
     private long revision;
@@ -40,9 +46,4 @@ public class CartSnapshotEntity {
         claimedRevision = revision;
     }
 
-    void release(final long claimed) {
-        if (claimedRevision == claimed) {
-            claimedRevision = -1;
-        }
-    }
 }
