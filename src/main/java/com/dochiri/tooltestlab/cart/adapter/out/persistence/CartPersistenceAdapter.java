@@ -47,6 +47,7 @@ class CartPersistenceAdapter implements CartRepositoryPort {
             cartEntity.updateRevision(cart.revision());
             final CartEntity savedCart = cartJpaRepository.saveAndFlush(cartEntity);
             cartItemJpaRepository.deleteByCartId(savedCart.getPublicId());
+            cartItemJpaRepository.flush();
             final List<CartItemEntity> itemEntities = CartMapper.toItemEntities(cart, savedCart.getPublicId());
             final List<CartItemEntity> savedItems = cartItemJpaRepository.saveAllAndFlush(itemEntities);
             return CartMapper.toDomain(savedCart, savedItems);
@@ -55,6 +56,7 @@ class CartPersistenceAdapter implements CartRepositoryPort {
         final CartEntity cartEntity = CartMapper.toEntity(cart);
         final CartEntity savedCart = cartJpaRepository.saveAndFlush(cartEntity);
         cartItemJpaRepository.deleteByCartId(savedCart.getPublicId());
+        cartItemJpaRepository.flush();
         final List<CartItemEntity> itemEntities = CartMapper.toItemEntities(cart, savedCart.getPublicId());
         final List<CartItemEntity> savedItems = cartItemJpaRepository.saveAllAndFlush(itemEntities);
         return CartMapper.toDomain(savedCart, savedItems);

@@ -132,7 +132,9 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
                 .toList();
 
         productCategoryJpaRepository.deleteAll(removed);
+        productCategoryJpaRepository.flush();
         productCategoryJpaRepository.saveAll(added);
+        productCategoryJpaRepository.flush();
 
         return Stream.concat(
                 current.stream().filter(category -> requested.contains(category.getCategoryId())),

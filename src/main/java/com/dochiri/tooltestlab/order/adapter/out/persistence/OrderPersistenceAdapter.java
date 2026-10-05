@@ -29,6 +29,7 @@ class OrderPersistenceAdapter implements OrderRepositoryPort {
             final OrderEntity entity = OrderMapper.toEntity(order);
             final OrderEntity savedOrder = orderJpaRepository.saveAndFlush(entity);
             orderLineJpaRepository.deleteByOrderId(order.id().value());
+            orderLineJpaRepository.flush();
             final List<OrderLineEntity> items = OrderMapper.toItemEntities(order, order.id().value());
             orderLineJpaRepository.saveAllAndFlush(items);
             return OrderMapper.toDomain(savedOrder, items);
@@ -42,6 +43,7 @@ class OrderPersistenceAdapter implements OrderRepositoryPort {
             OrderMapper.updateEntity(entity, order);
             final OrderEntity savedOrder = orderJpaRepository.saveAndFlush(entity);
             orderLineJpaRepository.deleteByOrderId(order.id().value());
+            orderLineJpaRepository.flush();
             final List<OrderLineEntity> items = OrderMapper.toItemEntities(order, order.id().value());
             orderLineJpaRepository.saveAllAndFlush(items);
             return OrderMapper.toDomain(savedOrder, items);
