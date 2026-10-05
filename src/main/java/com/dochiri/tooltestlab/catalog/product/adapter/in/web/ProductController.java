@@ -4,10 +4,12 @@ import com.dochiri.tooltestlab.catalog.product.adapter.in.web.request.RegisterPr
 import com.dochiri.tooltestlab.catalog.product.adapter.in.web.response.GetProductResponse;
 import com.dochiri.tooltestlab.catalog.product.adapter.in.web.response.ProductListResponse;
 import com.dochiri.tooltestlab.catalog.product.adapter.in.web.response.RegisterProductResponse;
-import com.dochiri.tooltestlab.catalog.product.application.port.in.GetProductUseCase;
-import com.dochiri.tooltestlab.catalog.product.application.port.in.ListProductsUseCase;
-import com.dochiri.tooltestlab.catalog.product.application.port.in.RegisterProductUseCase;
-import com.dochiri.tooltestlab.catalog.product.application.port.in.command.RegisterProductCommand;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductStatus;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.usecase.GetProductUseCase;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.usecase.ListProductsUseCase;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.usecase.RegisterProductUseCase;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.query.GetProductQuery;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.query.ListProductsQuery;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.result.GetProductResult;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.result.ListProductsResult;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.result.RegisterProductResult;
@@ -17,11 +19,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.stream.Collectors;
 
 @Tag(name = "상품", description = "상품 등록, 조회, 목록 API")
 @RestController
@@ -41,29 +43,36 @@ public final class ProductController {
     @PostMapping
     public ResponseEntity<RegisterProductResponse> register(@Valid @RequestBody RegisterProductRequest request) {
         final RegisterProductResult result = registerProductUseCase.register(
-                new RegisterProductCommand(request.name(), request.description(), request.priceAmount(),
-                        request.stock(), request.categoryIds().stream().collect(Collectors.toUnmodifiableSet())));
-        return ResponseEntity.ok(new RegisterProductResponse(
-                result.publicId(), result.name(), null, result.priceAmount(),
-                result.stock(), result.status(), result.categoryNames()));
+                request.toCommand());
+        return ResponseEntity.ok(RegisterProductResponse.from(result));
     }
 
-    @Operation(summary = "상품 목록 조회", description = "상품 목록을 페이지네이션으로 조회합니다.")
+    @Operation(summary = "상품 목록 조회", description = "검색 조건(이름·상태·카테고리·가격 범위)을 선택적으로 적용해 상품 목록을 페이지네이션으로 조회합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공")
+            @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 조회 조건")
     })
     @GetMapping
     public ResponseEntity<ProductListResponse> list(
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
-            @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "페이지 크기", example = "20")
-            @RequestParam(defaultValue = "20") int size) {
-        final ListProductsResult result = listProductsUseCase.list(page, size);
-        final var summaries = result.products().stream()
-                .map(p -> new ProductListResponse.ProductSummary(
-                        p.publicId(), p.name(), p.priceAmount(), p.stock(), p.status(), p.categoryNames()))
-                .toList();
-        return ResponseEntity.ok(new ProductListResponse(summaries, result.page(), result.size(), result.totalCount()));
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page는 0 이상이어야 합니다.") int page,
+            @Parameter(description = "페이지 크기 (1~100)", example = "20")
+            @RequestParam(defaultValue = "20")
+            @Min(value = 1, message = "size는 1 이상이어야 합니다.")
+            @Max(value = 100, message = "size는 100 이하여야 합니다.") int size,
+            @Parameter(description = "상품 이름 검색어 (부분 일치, 대소문자 무시)")
+            @RequestParam(required = false) String keyword,
+            @Parameter(description = "상품 상태")
+            @RequestParam(required = false) ProductStatus status,
+            @Parameter(description = "카테고리 publicId")
+            @RequestParam(required = false) String categoryId,
+            @Parameter(description = "최소 가격", example = "1000")
+            @RequestParam(required = false) Long minPrice,
+            @Parameter(description = "최대 가격", example = "50000")
+            @RequestParam(required = false) Long maxPrice) {
+        final ListProductsResult result = listProductsUseCase.list(new ListProductsQuery(
+                page, size, keyword, status == null ? null : status.name(), categoryId, minPrice, maxPrice));
+        return ResponseEntity.ok(ProductListResponse.from(result));
     }
 
     @Operation(summary = "상품 상세 조회", description = "상품 publicId로 상품 상세 정보를 조회합니다.")
@@ -75,9 +84,7 @@ public final class ProductController {
     public ResponseEntity<GetProductResponse> get(
             @Parameter(description = "상품 publicId", example = "01900000-0000-7000-8000-000000000001")
             @PathVariable String publicId) {
-        final GetProductResult result = getProductUseCase.getProduct(publicId);
-        return ResponseEntity.ok(new GetProductResponse(
-                result.publicId(), result.name(), result.description(), result.priceAmount(),
-                result.stock(), result.status(), result.categoryNames()));
+        final GetProductResult result = getProductUseCase.getProduct(new GetProductQuery(publicId));
+        return ResponseEntity.ok(GetProductResponse.from(result));
     }
 }

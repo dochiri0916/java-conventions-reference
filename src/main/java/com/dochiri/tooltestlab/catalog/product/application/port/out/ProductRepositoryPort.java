@@ -21,4 +21,6 @@ public interface ProductRepositoryPort {
 
     ProductPage findAll(int page, int size);
 
+    ProductPage search(ProductSearchCondition condition, int page, int size);
+
 }

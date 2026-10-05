@@ -1,17 +1,19 @@
 package com.dochiri.tooltestlab.catalog.product.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.global.persistence.BaseEntity;
-import com.dochiri.tooltestlab.catalog.product.domain.ProductStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Entity
-@Table(name = "products")
+@Table(
+        name = "products",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_products_public_id",
+                columnNames = "public_id"
+        )
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductEntity extends BaseEntity {
@@ -40,34 +42,8 @@ public class ProductEntity extends BaseEntity {
     @Column(name = "stock", nullable = false)
     private int stock;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private ProductStatus status;
-
-    @Getter(AccessLevel.NONE)
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(
-            name = "product_categories",
-            joinColumns = @JoinColumn(
-                    name = "product_id",
-                    nullable = false
-            ),
-            uniqueConstraints = {
-                    @UniqueConstraint(
-                            name = "uk_product_categories_product_category",
-                            columnNames = {
-                                    "product_id",
-                                    "category_public_id"
-                            }
-                    )
-            }
-    )
-    @Column(
-            name = "category_public_id",
-            nullable = false,
-            length = 36
-    )
-    private Set<String> categoryPublicIds = new HashSet<>();
+    private String status;
 
     private ProductEntity(
             final String publicId,
@@ -75,8 +51,7 @@ public class ProductEntity extends BaseEntity {
             final String description,
             long priceAmount,
             final int stock,
-            final ProductStatus status,
-            final Set<String> categoryPublicIds
+            final String status
     ) {
         this.publicId = publicId;
         this.name = name;
@@ -84,7 +59,6 @@ public class ProductEntity extends BaseEntity {
         this.priceAmount = priceAmount;
         this.stock = stock;
         this.status = status;
-        replaceCategoryPublicIds(categoryPublicIds);
     }
 
     static ProductEntity create(
@@ -93,8 +67,7 @@ public class ProductEntity extends BaseEntity {
             final String description,
             final long priceAmount,
             final int stock,
-            final ProductStatus status,
-            final Set<String> categoryPublicIds
+            final String status
     ) {
         return new ProductEntity(
                 publicId,
@@ -102,8 +75,7 @@ public class ProductEntity extends BaseEntity {
                 description,
                 priceAmount,
                 stock,
-                status,
-                categoryPublicIds
+                status
         );
     }
 
@@ -112,26 +84,13 @@ public class ProductEntity extends BaseEntity {
             final String description,
             final long priceAmount,
             final int stock,
-            final ProductStatus status,
-            final Set<String> categoryPublicIds
+            final String status
     ) {
         this.name = name;
         this.description = description;
         this.priceAmount = priceAmount;
         this.stock = stock;
         this.status = status;
-        replaceCategoryPublicIds(categoryPublicIds);
-    }
-
-    Set<String> categoryPublicIds() {
-        return Set.copyOf(categoryPublicIds);
-    }
-
-    private void replaceCategoryPublicIds(final Set<String> categoryPublicIds) {
-        final Set<String> replacement = Set.copyOf(categoryPublicIds);
-
-        this.categoryPublicIds.clear();
-        this.categoryPublicIds.addAll(replacement);
     }
 
 }
