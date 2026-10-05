@@ -5,13 +5,13 @@ import tools.jackson.databind.json.JsonMapper;
 
 @Component
 public final class EventCodec {
-    private final JsonMapper mapper = JsonMapper.builder().build();
+    private static final JsonMapper MAPPER = JsonMapper.builder().build();
 
     public String encode(final Object value) {
-        return mapper.writeValueAsString(value);
+        return MAPPER.writeValueAsString(value);
     }
 
     public <T> T decode(final String payload, final Class<T> type) {
-        return mapper.readValue(payload, type);
+        return MAPPER.readValue(payload, type);
     }
 }

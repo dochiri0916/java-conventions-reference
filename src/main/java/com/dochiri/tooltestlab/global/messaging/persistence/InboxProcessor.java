@@ -2,32 +2,34 @@ package com.dochiri.tooltestlab.global.messaging.persistence;
 
 import com.dochiri.tooltestlab.global.messaging.MessageEnvelope;
 import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public final class InboxProcessor {
     private final EntityManager entityManager;
     private final Clock clock;
-    private final TransactionTemplate transaction;
+    private final RequiresNewTransaction transaction;
+    private final List<InboxRegistration> registrations;
 
-    public InboxProcessor(final EntityManager entityManager, final Clock clock,
-                          final PlatformTransactionManager transactionManager) {
-        this.entityManager = entityManager;
-        this.clock = clock;
-        this.transaction = new TransactionTemplate(transactionManager);
-        transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+    /** 소비자 이름으로 등록된 Inbox 영속 구현을 찾아 처리한다. */
+    public void process(final MessageEnvelope message, final String consumer, final Runnable handler) {
+        final InboxRegistration registration = registrations.stream()
+                .filter(candidate -> candidate.consumer().equals(consumer))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Inbox 등록이 없는 소비자입니다: " + consumer));
+        process(message, registration.type(), registration.factory(), handler);
     }
 
     /** Inbox 표시, 로컬 변경, 후속 Outbox 기록이 한 트랜잭션으로 커밋된다. */
     public void process(final MessageEnvelope message, final Class<? extends InboxEntry> type,
                         final EntryFactory factory, final Runnable handler) {
-        transaction.executeWithoutResult(status -> {
+        transaction.run(() -> {
             if (entityManager.find(type, message.eventId()) != null) {
                 return;
             }

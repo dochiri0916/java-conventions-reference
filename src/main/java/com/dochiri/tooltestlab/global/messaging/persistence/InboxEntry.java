@@ -1,6 +1,10 @@
 package com.dochiri.tooltestlab.global.messaging.persistence;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

@@ -1,7 +1,12 @@
 package com.dochiri.tooltestlab.global.messaging.persistence;
 
 import com.dochiri.tooltestlab.global.domain.outbox.Outbox;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.MappedSuperclass;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
