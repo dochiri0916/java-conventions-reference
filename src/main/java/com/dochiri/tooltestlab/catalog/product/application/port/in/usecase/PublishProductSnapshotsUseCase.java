@@ -1,4 +1,4 @@
-package com.dochiri.tooltestlab.catalog.application.port.in;
+package com.dochiri.tooltestlab.catalog.product.application.port.in.usecase;
 
 public interface PublishProductSnapshotsUseCase {
     int publishPage(int page, int size);

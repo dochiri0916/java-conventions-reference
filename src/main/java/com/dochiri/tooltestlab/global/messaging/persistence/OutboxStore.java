@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.global.messaging.persistence;
 
+import com.dochiri.tooltestlab.global.domain.outbox.Outbox;
 import com.dochiri.tooltestlab.global.messaging.EventCodec;
 import com.dochiri.tooltestlab.global.messaging.IntegrationEvent;
 import com.github.f4b6a3.uuid.UuidCreator;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
@@ -20,13 +22,8 @@ public class OutboxStore {
     private final Clock clock;
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public void append(final IntegrationEvent event, final EntryFactory factory) {
-        entityManager.persist(factory.create(UuidCreator.getTimeOrderedEpoch().toString(),
-                event.eventType(), event.aggregateId(), codec.encode(event), Instant.now(clock)));
-    }
-
-    @FunctionalInterface
-    public interface EntryFactory {
-        OutboxEntry create(String eventId, String eventType, String aggregateId, String payload, Instant occurredAt);
+    public void append(final IntegrationEvent event, final Function<Outbox.Message, ? extends OutboxEntry> factory) {
+        entityManager.persist(factory.apply(new Outbox.Message(UuidCreator.getTimeOrderedEpoch().toString(),
+                event.eventType(), event.aggregateId(), 0, Instant.now(clock), codec.encode(event))));
     }
 }

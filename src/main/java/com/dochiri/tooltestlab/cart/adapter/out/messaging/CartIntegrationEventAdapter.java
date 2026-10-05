@@ -3,6 +3,7 @@ package com.dochiri.tooltestlab.cart.adapter.out.messaging;
 import com.dochiri.tooltestlab.cart.application.port.out.IntegrationEventPort;
 import com.dochiri.tooltestlab.cart.application.port.out.event.CartIntegrationEvent;
 import com.dochiri.tooltestlab.cart.adapter.out.persistence.outbox.CartOutboxEntry;
+import com.dochiri.tooltestlab.cart.domain.outbox.CartOutbox;
 import com.dochiri.tooltestlab.global.messaging.OutboxRelay;
 import com.dochiri.tooltestlab.global.messaging.persistence.OutboxDispatcher;
 import com.dochiri.tooltestlab.global.messaging.persistence.OutboxStore;
@@ -17,11 +18,11 @@ public final class CartIntegrationEventAdapter implements IntegrationEventPort, 
 
     @Override
     public void publish(final CartIntegrationEvent event) {
-        store.append(event, CartOutboxEntry::new);
+        store.append(event, message -> new CartOutboxEntry(new CartOutbox(message)));
     }
 
     @Override
     public int relay() {
-        return dispatcher.dispatch(CartOutboxEntry.class, "cart");
+        return dispatcher.dispatch(CartOutboxEntry.class);
     }
 }

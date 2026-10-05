@@ -1,6 +1,6 @@
-package com.dochiri.tooltestlab.catalog.adapter.in.bootstrap;
+package com.dochiri.tooltestlab.catalog.product.adapter.in.bootstrap;
 
-import com.dochiri.tooltestlab.catalog.application.port.in.PublishProductSnapshotsUseCase;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.usecase.PublishProductSnapshotsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

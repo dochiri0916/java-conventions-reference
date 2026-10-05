@@ -32,6 +32,7 @@ public final class InboxProcessor {
                 return;
             }
             entityManager.persist(factory.create(message.eventId(), message.eventType(), Instant.now(clock)));
+            // 동시 중복은 PK 제약으로 차단한다. 충돌은 롤백 후 전송 계층에서 재시도한다.
             entityManager.flush();
             handler.run();
         });

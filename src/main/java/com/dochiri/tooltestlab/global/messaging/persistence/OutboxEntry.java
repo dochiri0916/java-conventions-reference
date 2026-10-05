@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.global.messaging.persistence;
 
-import com.dochiri.tooltestlab.global.messaging.MessageEnvelope;
+import com.dochiri.tooltestlab.global.domain.outbox.Outbox;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -32,33 +32,31 @@ public abstract class OutboxEntry {
     @Column(length = 1000)
     private String lastError;
 
-    protected OutboxEntry(final String eventId, final String eventType, final String aggregateId,
-                          final String payload, final Instant occurredAt) {
-        this.eventId = eventId;
-        this.eventType = eventType;
-        this.aggregateId = aggregateId;
-        this.payload = payload;
-        this.occurredAt = occurredAt;
-        this.nextAttemptAt = occurredAt;
+    protected OutboxEntry(final Outbox outbox) {
+        final var message = outbox.message();
+        this.eventId = message.eventId();
+        this.eventType = message.eventType();
+        this.aggregateId = message.aggregateId();
+        this.payload = message.payload();
+        this.occurredAt = message.occurredAt();
+        update(outbox);
     }
 
-    public MessageEnvelope envelope(final String source) {
-        return new MessageEnvelope(eventId, source, eventType, aggregateId, id, occurredAt, payload);
+    public abstract Outbox toDomain();
+
+    protected Outbox.Message message() {
+        return new Outbox.Message(eventId, eventType, aggregateId, id == null ? 0 : id, occurredAt, payload);
     }
 
-    public boolean ready(final Instant now) {
-        return !nextAttemptAt.isAfter(now);
+    protected Outbox.Delivery delivery() {
+        return new Outbox.Delivery(publishedAt, nextAttemptAt, attempts, lastError);
     }
 
-    public void published(final Instant now) {
-        publishedAt = now;
-        lastError = null;
-    }
-
-    public void failed(final Instant now, final RuntimeException failure) {
-        attempts++;
-        nextAttemptAt = now.plusSeconds(Math.min(60, 1L << Math.min(attempts - 1, 6)));
-        final String error = failure.getClass().getSimpleName() + ": " + failure.getMessage();
-        lastError = error.substring(0, Math.min(error.length(), 1000));
+    public void update(final Outbox outbox) {
+        final var delivery = outbox.delivery();
+        publishedAt = delivery.publishedAt();
+        nextAttemptAt = delivery.nextAttemptAt();
+        attempts = delivery.attempts();
+        lastError = delivery.lastError();
     }
 }

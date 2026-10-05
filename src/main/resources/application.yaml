@@ -2,6 +2,11 @@ spring:
   application:
     name: tool-test-lab
 
+  task:
+    scheduling:
+      pool:
+        size: 2
+
   # JDK Dynamic Proxy (final service + interface 기반)
   aop:
     proxy-target-class: false
@@ -38,9 +43,17 @@ time:
   timezone: Asia/Seoul
 
 messaging:
+  transport: local
   outbox:
     enabled: true
     poll-interval-ms: 250
+    send-timeout-ms: 10000
+    cleanup:
+      enabled: true
+      retention-days: 7
+      interval-ms: 600000
+      batch-size: 1000
+      max-batches: 10
   snapshots:
     publish-on-startup: true
 

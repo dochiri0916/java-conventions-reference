@@ -1,8 +1,8 @@
-package com.dochiri.tooltestlab.catalog.application.service;
+package com.dochiri.tooltestlab.catalog.product.application.service;
 
-import com.dochiri.tooltestlab.catalog.application.CatalogEventMapper;
-import com.dochiri.tooltestlab.catalog.application.port.in.PublishProductSnapshotsUseCase;
-import com.dochiri.tooltestlab.catalog.application.port.out.IntegrationEventPort;
+import com.dochiri.tooltestlab.catalog.product.application.CatalogEventMapper;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.usecase.PublishProductSnapshotsUseCase;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.IntegrationEventPort;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

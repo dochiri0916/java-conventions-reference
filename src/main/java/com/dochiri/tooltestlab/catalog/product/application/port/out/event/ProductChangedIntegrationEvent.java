@@ -1,4 +1,4 @@
-package com.dochiri.tooltestlab.catalog.application.port.out.event;
+package com.dochiri.tooltestlab.catalog.product.application.port.out.event;
 
 public record ProductChangedIntegrationEvent(String productId, String name, long priceAmount, int stock, String status) implements CatalogIntegrationEvent {
     public static final String TYPE = "catalog.product-changed.v1";

@@ -3,6 +3,7 @@ package com.dochiri.tooltestlab.review.adapter.out.messaging;
 import com.dochiri.tooltestlab.review.application.port.out.IntegrationEventPort;
 import com.dochiri.tooltestlab.review.application.port.out.event.ReviewIntegrationEvent;
 import com.dochiri.tooltestlab.review.adapter.out.persistence.outbox.ReviewOutboxEntry;
+import com.dochiri.tooltestlab.review.domain.outbox.ReviewOutbox;
 import com.dochiri.tooltestlab.global.messaging.OutboxRelay;
 import com.dochiri.tooltestlab.global.messaging.persistence.OutboxDispatcher;
 import com.dochiri.tooltestlab.global.messaging.persistence.OutboxStore;
@@ -17,11 +18,11 @@ public final class ReviewIntegrationEventAdapter implements IntegrationEventPort
 
     @Override
     public void publish(final ReviewIntegrationEvent event) {
-        store.append(event, ReviewOutboxEntry::new);
+        store.append(event, message -> new ReviewOutboxEntry(new ReviewOutbox(message)));
     }
 
     @Override
     public int relay() {
-        return dispatcher.dispatch(ReviewOutboxEntry.class, "review");
+        return dispatcher.dispatch(ReviewOutboxEntry.class);
     }
 }

@@ -1,6 +1,8 @@
 package com.dochiri.tooltestlab.global.messaging;
 
-/** 정상 반환은 모든 수신자의 처리가 완료되었음을 의미한다. */
+import java.util.concurrent.CompletionStage;
+
+/** 완료는 전송 수단의 인수 확인을 뜻한다. 소비자의 비즈니스 처리 완료는 별도다. */
 public interface MessageBroker {
-    void send(MessageEnvelope message);
+    CompletionStage<Void> send(MessageEnvelope message);
 }
