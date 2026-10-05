@@ -12,17 +12,23 @@ final class CategoryMapper {
 
     static CategoryEntity toEntity(final Category category) {
         return CategoryEntity.create(
-                category.id().value(),
-                category.name().value(),
-                category.state().name()
+                category.id()
+                        .value(),
+                category.name()
+                        .value(),
+                category.state()
+                        .name()
         );
     }
 
     static Category toDomain(final CategoryEntity entity) {
         return Category.restore(
-                CategoryId.parse(entity.getPublicId()),
-                CategoryName.of(entity.getName()),
-                CategoryStatus.valueOf(entity.getStatus())
+                CategoryId.parse(
+                        entity.getPublicId()),
+                CategoryName.of(
+                        entity.getName()),
+                CategoryStatus.valueOf(
+                        entity.getStatus())
         );
     }
 }

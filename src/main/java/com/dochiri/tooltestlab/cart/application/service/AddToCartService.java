@@ -26,15 +26,25 @@ public final class AddToCartService implements AddToCartUseCase {
     @Override
     @Transactional
     public void add(final AddToCartCommand command) {
-        final MemberReferenceId memberId = MemberReferenceId.parse(command.memberPublicId());
+        final MemberReferenceId memberId = MemberReferenceId.parse(
+                command.memberPublicId());
         final ProductSnapshot product = productCatalogPort.findProduct(
-                ProductReferenceId.parse(command.productPublicId()));
+                ProductReferenceId.parse(
+                        command.productPublicId()));
 
         Cart cart = cartRepositoryPort.findByMemberIdForUpdate(memberId)
-                .orElseGet(() -> Cart.create(memberId));
+                .orElseGet(() ->
+                        Cart.create(memberId));
 
-        cart = cart.addItem(product.id(), product.name(), Quantity.of(command.quantity()), product.price());
+        cart = cart.addItem(
+                product.id(),
+                product.name(),
+                Quantity.of(
+                        command.quantity()),
+                product.price());
         final Cart saved = cartRepositoryPort.save(cart);
-        integrationEventPort.publish(CartEventMapper.toIntegration(saved.changedEvent()));
+        integrationEventPort.publish(
+                CartEventMapper.toIntegration(
+                        saved.changedEvent()));
     }
 }

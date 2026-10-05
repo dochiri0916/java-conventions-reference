@@ -23,11 +23,15 @@ public final class IncreaseProductStockService implements IncreaseProductStockUs
     @Override
     @Transactional
     public void increase(final String productPublicId, final int quantity) {
-        final Product product = productRepositoryPort.findByIdForUpdate(ProductId.parse(productPublicId))
+        final Product product = productRepositoryPort.findByIdForUpdate(
+                ProductId.parse(productPublicId))
                 .orElseThrow(ProductNotFoundException::new);
         try {
-            final Product changed = productRepositoryPort.update(product.increaseStock(quantity));
-            integrationEventPort.publish(CatalogEventMapper.toIntegration(changed.changedEvent()));
+            final Product changed = productRepositoryPort.update(
+                    product.increaseStock(quantity));
+            integrationEventPort.publish(
+                    CatalogEventMapper.toIntegration(
+                            changed.changedEvent()));
         } catch (final StockOverflowException exception) {
             throw new ProductStockOverflowException();
         }

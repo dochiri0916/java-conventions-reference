@@ -30,7 +30,8 @@ public final class ProductName {
         if (!(object instanceof final ProductName other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

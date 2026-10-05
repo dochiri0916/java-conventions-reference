@@ -43,7 +43,8 @@ public final class ReviewId {
             throw new InvalidReviewIdException();
         }
 
-        if (!uuid.toString().equalsIgnoreCase(value)) {
+        if (!uuid.toString()
+                .equalsIgnoreCase(value)) {
             throw new InvalidReviewIdException();
         }
 
@@ -66,7 +67,8 @@ public final class ReviewId {
         if (!(object instanceof final ReviewId other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

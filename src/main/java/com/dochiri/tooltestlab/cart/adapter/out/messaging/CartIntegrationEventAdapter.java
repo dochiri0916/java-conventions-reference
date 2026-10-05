@@ -23,6 +23,7 @@ public final class CartIntegrationEventAdapter implements IntegrationEventPort, 
 
     @Override
     public int relay() {
-        return dispatcher.dispatch(CartOutboxEntry.class);
+        return dispatcher.dispatch(
+                CartOutboxEntry.class);
     }
 }

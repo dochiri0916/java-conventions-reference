@@ -43,7 +43,8 @@ public final class OrderId {
             throw new InvalidOrderIdException();
         }
 
-        if (!uuid.toString().equalsIgnoreCase(value)) {
+        if (!uuid.toString()
+                .equalsIgnoreCase(value)) {
             throw new InvalidOrderIdException();
         }
 
@@ -66,7 +67,8 @@ public final class OrderId {
         if (!(object instanceof final OrderId other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

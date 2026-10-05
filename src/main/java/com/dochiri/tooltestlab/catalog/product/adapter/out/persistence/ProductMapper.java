@@ -22,36 +22,54 @@ final class ProductMapper {
 
     static Product toDomain(final ProductEntity entity, final Collection<ProductCategoryEntity> categories) {
         return Product.restore(
-                ProductId.parse(entity.getPublicId()),
-                ProductName.of(entity.getName()),
-                ProductDescription.of(entity.getDescription()),
-                Money.of(entity.getPriceAmount()),
-                Stock.of(entity.getStock()),
-                ProductStatus.valueOf(entity.getStatus()),
+                ProductId.parse(
+                        entity.getPublicId()),
+                ProductName.of(
+                        entity.getName()),
+                ProductDescription.of(
+                        entity.getDescription()),
+                Money.of(
+                        entity.getPriceAmount()),
+                Stock.of(
+                        entity.getStock()),
+                ProductStatus.valueOf(
+                        entity.getStatus()),
                 toCategoryIds(categories)
         );
     }
 
     static Product toDomain(final ProductRow row, final Collection<ProductCategoryEntity> categories) {
         return Product.restore(
-                ProductId.parse(row.publicId()),
-                ProductName.of(row.name()),
-                ProductDescription.of(row.description()),
-                Money.of(row.priceAmount()),
-                Stock.of(row.stock()),
-                ProductStatus.valueOf(row.status()),
+                ProductId.parse(
+                        row.publicId()),
+                ProductName.of(
+                        row.name()),
+                ProductDescription.of(
+                        row.description()),
+                Money.of(
+                        row.priceAmount()),
+                Stock.of(
+                        row.stock()),
+                ProductStatus.valueOf(
+                        row.status()),
                 toCategoryIds(categories)
         );
     }
 
     static ProductEntity toEntity(final Product domain) {
         return ProductEntity.create(
-                domain.id().value(),
-                domain.name().value(),
-                domain.description().value(),
-                domain.price().amount(),
-                domain.stock().value(),
-                domain.status().name()
+                domain.id()
+                        .value(),
+                domain.name()
+                        .value(),
+                domain.description()
+                        .value(),
+                domain.price()
+                        .amount(),
+                domain.stock()
+                        .value(),
+                domain.status()
+                        .name()
         );
     }
 
@@ -69,11 +87,16 @@ final class ProductMapper {
             final Product domain
     ) {
         entity.update(
-                domain.name().value(),
-                domain.description().value(),
-                domain.price().amount(),
-                domain.stock().value(),
-                domain.status().name()
+                domain.name()
+                        .value(),
+                domain.description()
+                        .value(),
+                domain.price()
+                        .amount(),
+                domain.stock()
+                        .value(),
+                domain.status()
+                        .name()
         );
     }
 

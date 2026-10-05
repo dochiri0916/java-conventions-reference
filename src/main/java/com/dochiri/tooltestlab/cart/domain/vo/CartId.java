@@ -43,7 +43,8 @@ public final class CartId {
             throw new InvalidCartIdException();
         }
 
-        if (!uuid.toString().equalsIgnoreCase(value)) {
+        if (!uuid.toString()
+                .equalsIgnoreCase(value)) {
             throw new InvalidCartIdException();
         }
 
@@ -66,7 +67,8 @@ public final class CartId {
         if (!(object instanceof final CartId other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

@@ -39,8 +39,11 @@ public final class ProductApplicationExceptionHandler {
 
     private ProblemDetail respond(final RuntimeException exception, final HttpStatus status, final String code) {
         log.info("Product 예외가 발생했습니다. type={}, code={}, message={}",
-                exception.getClass().getSimpleName(), code, exception.getMessage());
-        return problemDetails.create(status, code, exception.getMessage());
+                exception.getClass()
+                        .getSimpleName(), code,
+                exception.getMessage());
+        return problemDetails.create(status, code,
+                exception.getMessage());
     }
 
 }

@@ -35,7 +35,8 @@ public final class MemberName {
         if (!(object instanceof final MemberName other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

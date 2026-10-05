@@ -8,6 +8,7 @@ public final class MemberEventMapper {
     }
 
     public static MemberRegisteredIntegrationEvent toIntegration(final MemberRegistered event) {
-        return new MemberRegisteredIntegrationEvent(event.memberId().value());
+        return new MemberRegisteredIntegrationEvent(event.memberId()
+                .value());
     }
 }

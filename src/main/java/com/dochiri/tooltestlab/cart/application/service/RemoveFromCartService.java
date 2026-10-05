@@ -23,14 +23,18 @@ public final class RemoveFromCartService implements RemoveFromCartUseCase {
     @Override
     @Transactional
     public void remove(final RemoveFromCartCommand command) {
-        final MemberReferenceId memberId = MemberReferenceId.parse(command.memberPublicId());
-        final ProductReferenceId productId = ProductReferenceId.parse(command.productPublicId());
+        final MemberReferenceId memberId = MemberReferenceId.parse(
+                command.memberPublicId());
+        final ProductReferenceId productId = ProductReferenceId.parse(
+                command.productPublicId());
 
         Cart cart = cartRepositoryPort.findByMemberIdForUpdate(memberId)
                 .orElseThrow(() -> new CartNotFoundException());
 
         cart = cart.removeItem(productId);
         final Cart saved = cartRepositoryPort.save(cart);
-        integrationEventPort.publish(CartEventMapper.toIntegration(saved.changedEvent()));
+        integrationEventPort.publish(
+                CartEventMapper.toIntegration(
+                        saved.changedEvent()));
     }
 }

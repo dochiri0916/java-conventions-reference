@@ -44,7 +44,8 @@ public final class ProductDescription {
         if (!(object instanceof final ProductDescription other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

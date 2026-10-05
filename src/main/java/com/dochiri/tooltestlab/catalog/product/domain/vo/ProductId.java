@@ -43,7 +43,8 @@ public final class ProductId {
             throw new InvalidProductIdException(value);
         }
 
-        if (!uuid.toString().equalsIgnoreCase(value)) {
+        if (!uuid.toString()
+                .equalsIgnoreCase(value)) {
             throw new InvalidProductIdException(value);
         }
 
@@ -66,7 +67,8 @@ public final class ProductId {
         if (!(object instanceof final ProductId other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

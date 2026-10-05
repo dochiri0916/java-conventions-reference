@@ -29,7 +29,8 @@ public final class CartItems {
             throw new InvalidCartItemException();
         }
 
-        this.values = List.copyOf(values);
+        this.values =
+                List.copyOf(values);
     }
 
     public static CartItems empty() {
@@ -121,7 +122,8 @@ public final class CartItems {
         if (!(object instanceof final CartItems other)) {
             return false;
         }
-        return values.equals(other.values);
+        return values.equals(
+                other.values);
     }
 
     @Override

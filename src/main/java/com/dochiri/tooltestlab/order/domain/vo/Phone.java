@@ -34,7 +34,8 @@ public final class Phone {
         if (!(object instanceof final Phone other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

@@ -23,11 +23,15 @@ public final class DecreaseProductStockService implements DecreaseProductStockUs
     @Override
     @Transactional
     public void decrease(final String productPublicId, final int quantity) {
-        final Product product = productRepositoryPort.findByIdForUpdate(ProductId.parse(productPublicId))
+        final Product product = productRepositoryPort.findByIdForUpdate(
+                ProductId.parse(productPublicId))
                 .orElseThrow(ProductNotFoundException::new);
         try {
-            final Product changed = productRepositoryPort.update(product.decreaseStock(quantity));
-            integrationEventPort.publish(CatalogEventMapper.toIntegration(changed.changedEvent()));
+            final Product changed = productRepositoryPort.update(
+                    product.decreaseStock(quantity));
+            integrationEventPort.publish(
+                    CatalogEventMapper.toIntegration(
+                            changed.changedEvent()));
         } catch (final InsufficientStockException exception) {
             throw new InsufficientProductStockException();
         }

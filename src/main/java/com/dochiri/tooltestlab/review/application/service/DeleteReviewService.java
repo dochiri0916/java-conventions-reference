@@ -30,6 +30,7 @@ public final class DeleteReviewService implements DeleteReviewUseCase {
 
         final ReviewDeleted deleted = review.delete(memberId);
         reviewRepositoryPort.deleteByReviewId(reviewId);
-        integrationEventPort.publish(ReviewEventMapper.toIntegration(deleted));
+        integrationEventPort.publish(
+                ReviewEventMapper.toIntegration(deleted));
     }
 }

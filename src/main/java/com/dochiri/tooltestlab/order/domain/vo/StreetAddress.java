@@ -34,7 +34,8 @@ public final class StreetAddress {
         if (!(object instanceof final StreetAddress other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

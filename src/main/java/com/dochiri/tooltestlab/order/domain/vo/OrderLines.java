@@ -31,7 +31,8 @@ public final class OrderLines {
             throw new InvalidOrderLinesException();
         }
 
-        this.values = List.copyOf(values);
+        this.values =
+                List.copyOf(values);
     }
 
     public static OrderLines of(final OrderLine... lines) {
@@ -74,7 +75,8 @@ public final class OrderLines {
         if (!(object instanceof final OrderLines other)) {
             return false;
         }
-        return values.equals(other.values);
+        return values.equals(
+                other.values);
     }
 
     @Override

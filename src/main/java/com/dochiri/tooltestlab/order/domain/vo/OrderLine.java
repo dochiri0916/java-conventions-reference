@@ -41,7 +41,8 @@ public final class OrderLine {
     }
 
     public Money totalPrice() {
-        return unitPrice.multiply(quantity.value());
+        return unitPrice.multiply(
+                quantity.value());
     }
 
     public static OrderLine of(
@@ -77,10 +78,14 @@ public final class OrderLine {
         if (!(object instanceof final OrderLine other)) {
             return false;
         }
-        return productId.equals(other.productId)
-                && productName.equals(other.productName)
-                && quantity.equals(other.quantity)
-                && unitPrice.equals(other.unitPrice);
+        return productId.equals(
+                other.productId)
+                && productName.equals(
+                        other.productName)
+                && quantity.equals(
+                        other.quantity)
+                && unitPrice.equals(
+                        other.unitPrice);
     }
 
     @Override

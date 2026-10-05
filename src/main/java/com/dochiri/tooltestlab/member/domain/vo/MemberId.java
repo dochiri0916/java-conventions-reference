@@ -43,7 +43,8 @@ public final class MemberId {
             throw new InvalidMemberIdException();
         }
 
-        if (!uuid.toString().equalsIgnoreCase(value)) {
+        if (!uuid.toString()
+                .equalsIgnoreCase(value)) {
             throw new InvalidMemberIdException();
         }
 
@@ -66,7 +67,8 @@ public final class MemberId {
         if (!(object instanceof final MemberId other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

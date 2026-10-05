@@ -89,7 +89,8 @@ public final class Review {
 
     @Override
     public boolean equals(final Object other) {
-        return this == other || other instanceof Review review && id.equals(review.id);
+        return this == other || other instanceof Review review && id.equals(
+                review.id);
     }
 
     @Override

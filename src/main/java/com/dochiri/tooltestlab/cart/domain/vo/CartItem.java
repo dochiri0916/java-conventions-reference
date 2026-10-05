@@ -41,14 +41,17 @@ public final class CartItem {
     }
 
     public Money totalPrice() {
-        return unitPrice.multiply(quantity.value());
+        return unitPrice.multiply(
+                quantity.value());
     }
 
     public CartItem increaseQuantity(final Quantity delta) {
         if (delta == null) {
             throw new QuantityRequiredException();
         }
-        return new CartItem(productId, productName, Quantity.of(quantity.value() + delta.value()), unitPrice);
+        return new CartItem(productId, productName, Quantity.of(
+                quantity.value() +
+                        delta.value()), unitPrice);
     }
 
     public static CartItem of(
@@ -84,10 +87,14 @@ public final class CartItem {
         if (!(object instanceof final CartItem other)) {
             return false;
         }
-        return productId.equals(other.productId)
-                && productName.equals(other.productName)
-                && quantity.equals(other.quantity)
-                && unitPrice.equals(other.unitPrice);
+        return productId.equals(
+                other.productId)
+                && productName.equals(
+                        other.productName)
+                && quantity.equals(
+                        other.quantity)
+                && unitPrice.equals(
+                        other.unitPrice);
     }
 
     @Override

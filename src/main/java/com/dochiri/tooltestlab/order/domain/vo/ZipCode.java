@@ -34,7 +34,8 @@ public final class ZipCode {
         if (!(object instanceof final ZipCode other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

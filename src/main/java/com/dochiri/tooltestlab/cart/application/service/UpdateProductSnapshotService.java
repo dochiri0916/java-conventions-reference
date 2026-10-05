@@ -18,8 +18,14 @@ public final class UpdateProductSnapshotService implements UpdateProductSnapshot
     @Override
     @Transactional
     public void update(final UpdateProductSnapshotCommand command) {
-        productCatalogPort.save(new ProductCatalogPort.ProductSnapshot(
-                ProductReferenceId.parse(command.productId()), ProductName.of(command.name()),
-                Money.of(command.priceAmount())), command.sequence());
+        productCatalogPort.save(new
+                ProductCatalogPort.ProductSnapshot(
+                ProductReferenceId.parse(
+                        command.productId()),
+                ProductName.of(
+                        command.name()),
+                Money.of(
+                        command.priceAmount())),
+                command.sequence());
     }
 }

@@ -43,7 +43,8 @@ public final class CategoryId {
             throw new InvalidCategoryIdException();
         }
 
-        if (!uuid.toString().equalsIgnoreCase(value)) {
+        if (!uuid.toString()
+                .equalsIgnoreCase(value)) {
             throw new InvalidCategoryIdException();
         }
 
@@ -66,7 +67,8 @@ public final class CategoryId {
         if (!(object instanceof final CategoryId other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

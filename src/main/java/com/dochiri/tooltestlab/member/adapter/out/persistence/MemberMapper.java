@@ -15,19 +15,29 @@ final class MemberMapper {
 
     static Member toDomain(final MemberEntity entity) {
         return Member.restore(
-                MemberId.parse(entity.getPublicId()),
-                Email.of(entity.getEmail()),
-                EncodedPassword.of(entity.getEncodedPassword()),
-                MemberName.of(entity.getName()),
-                MemberStatus.valueOf(entity.getStatus()));
+                MemberId.parse(
+                        entity.getPublicId()),
+                Email.of(
+                        entity.getEmail()),
+                EncodedPassword.of(
+                        entity.getEncodedPassword()),
+                MemberName.of(
+                        entity.getName()),
+                MemberStatus.valueOf(
+                        entity.getStatus()));
     }
 
     static MemberEntity toEntity(final Member domain) {
         return MemberEntity.create(
-                domain.id().value(),
-                domain.email().value(),
-                domain.encodedPassword().value(),
-                domain.name().value(),
-                domain.status().name());
+                domain.id()
+                        .value(),
+                domain.email()
+                        .value(),
+                domain.encodedPassword()
+                        .value(),
+                domain.name()
+                        .value(),
+                domain.status()
+                        .name());
     }
 }

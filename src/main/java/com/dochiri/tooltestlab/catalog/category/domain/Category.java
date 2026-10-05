@@ -78,7 +78,8 @@ public final class Category {
     public boolean equals(final Object other) {
         return this == other
                 || other instanceof Category category
-                && id.equals(category.id);
+                && id.equals(
+                        category.id);
     }
 
     @Override

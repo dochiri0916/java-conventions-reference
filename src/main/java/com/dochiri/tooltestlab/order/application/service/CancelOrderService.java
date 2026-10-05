@@ -24,12 +24,15 @@ public final class CancelOrderService implements CancelOrderUseCase {
     @Transactional
     public void cancel(final String memberPublicId, final String orderPublicId) {
         final MemberReferenceId memberId = MemberReferenceId.parse(memberPublicId);
-        final Order order = orderRepositoryPort.findByOrderIdForUpdate(OrderId.parse(orderPublicId))
+        final Order order = orderRepositoryPort.findByOrderIdForUpdate(
+                OrderId.parse(orderPublicId))
                 .orElseThrow(OrderNotFoundException::new);
 
         final Order cancelled = order.cancel(memberId);
         orderRepositoryPort.update(cancelled);
 
-        integrationEventPort.publish(OrderEventMapper.toIntegration(cancelled.cancelledEvent()));
+        integrationEventPort.publish(
+                OrderEventMapper.toIntegration(
+                        cancelled.cancelledEvent()));
     }
 }

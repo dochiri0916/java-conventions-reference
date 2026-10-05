@@ -36,7 +36,8 @@ public final class Member {
             final EncodedPassword encodedPassword,
             final MemberName name
     ) {
-        return new Member(MemberId.generate(), email, encodedPassword, name, MemberStatus.ACTIVE);
+        return new Member(MemberId.generate(), email, encodedPassword, name,
+                MemberStatus.ACTIVE);
     }
 
     public static Member restore(
@@ -80,7 +81,8 @@ public final class Member {
     @Override
     public boolean equals(final Object other) {
         return this == other
-                || other instanceof Member member && id.equals(member.id);
+                || other instanceof Member member && id.equals(
+                        member.id);
     }
 
     @Override

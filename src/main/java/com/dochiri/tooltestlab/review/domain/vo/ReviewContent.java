@@ -34,7 +34,8 @@ public final class ReviewContent {
         if (!(object instanceof final ReviewContent other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

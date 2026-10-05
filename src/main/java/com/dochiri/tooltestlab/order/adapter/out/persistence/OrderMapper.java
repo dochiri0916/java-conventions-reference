@@ -34,30 +34,77 @@ final class OrderMapper {
                 .toList();
 
         final ShippingAddress shippingAddress = ShippingAddress.of(
-                RecipientName.of(entity.getRecipientName()), Phone.of(entity.getPhone()),
-                StreetAddress.of(entity.getAddress()), ZipCode.of(entity.getZipCode()));
+                RecipientName.of(
+                        entity.getRecipientName()),
+                Phone.of(
+                        entity.getPhone()),
+                StreetAddress.of(
+                        entity.getAddress()),
+                ZipCode.of(
+                        entity.getZipCode()));
 
         return Order.restore(
-                OrderId.parse(entity.getPublicId()), MemberReferenceId.parse(entity.getMemberId()),
-                CartReferenceId.parse(entity.getCartId()), entity.getCartRevision(), OrderLines.of(domainItems),
-                OrderStatus.valueOf(entity.getStatus()), shippingAddress, Money.of(entity.getTotalAmount()));
+                OrderId.parse(
+                        entity.getPublicId()),
+                MemberReferenceId.parse(
+                        entity.getMemberId()),
+                CartReferenceId.parse(
+                        entity.getCartId()),
+                entity.getCartRevision(),
+                OrderLines.of(domainItems),
+                OrderStatus.valueOf(
+                        entity.getStatus()), shippingAddress,
+                Money.of(
+                        entity.getTotalAmount()));
     }
 
     static OrderEntity toEntity(final Order domain) {
         final OrderEntity entity = OrderEntity.create(
-                domain.id().value(), domain.memberId().value(), domain.status().name(),
-                domain.totalAmount().amount(),
-                domain.shippingAddress().recipientName().value(), domain.shippingAddress().phone().value(),
-                domain.shippingAddress().address().value(), domain.shippingAddress().zipCode().value());
-        entity.setCheckout(domain.cartId().value(), domain.cartRevision());
+                domain.id()
+                        .value(),
+                domain.memberId()
+                        .value(),
+                domain.status()
+                        .name(),
+                domain.totalAmount()
+                        .amount(),
+                domain.shippingAddress()
+                        .recipientName()
+                        .value(),
+                domain.shippingAddress()
+                        .phone()
+                        .value(),
+                domain.shippingAddress()
+                        .address()
+                        .value(),
+                domain.shippingAddress()
+                        .zipCode()
+                        .value());
+        entity.setCheckout(
+                domain.cartId()
+                        .value(),
+                domain.cartRevision());
         return entity;
     }
 
     static void updateEntity(final OrderEntity entity, final Order domain) {
         entity.update(
-                domain.status().name(), domain.totalAmount().amount(),
-                domain.shippingAddress().recipientName().value(), domain.shippingAddress().phone().value(),
-                domain.shippingAddress().address().value(), domain.shippingAddress().zipCode().value());
+                domain.status()
+                        .name(),
+                domain.totalAmount()
+                        .amount(),
+                domain.shippingAddress()
+                        .recipientName()
+                        .value(),
+                domain.shippingAddress()
+                        .phone()
+                        .value(),
+                domain.shippingAddress()
+                        .address()
+                        .value(),
+                domain.shippingAddress()
+                        .zipCode()
+                        .value());
     }
 
     static List<OrderLineEntity> toItemEntities(final Order domain, final String orderId) {

@@ -25,14 +25,22 @@ final class CartMapper {
                         ProductName.of(e.getProductName()), Quantity.of(e.getQuantity()), Money.of(e.getUnitPrice())))
                 .toList();
         return Cart.restore(
-                CartId.parse(entity.getPublicId()),
-                MemberReferenceId.parse(entity.getMemberId()),
-                CartItems.of(domainItems), entity.getRevision());
+                CartId.parse(
+                        entity.getPublicId()),
+                MemberReferenceId.parse(
+                        entity.getMemberId()),
+                CartItems.of(domainItems),
+                entity.getRevision());
     }
 
     static CartEntity toEntity(final Cart domain) {
-        final CartEntity entity = CartEntity.create(domain.id().value(), domain.memberId().value());
-        entity.updateRevision(domain.revision());
+        final CartEntity entity = CartEntity.create(
+                domain.id()
+                        .value(),
+                domain.memberId()
+                        .value());
+        entity.updateRevision(
+                domain.revision());
         return entity;
     }
 

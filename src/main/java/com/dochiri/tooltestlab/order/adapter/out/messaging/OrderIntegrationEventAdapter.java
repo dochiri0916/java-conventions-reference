@@ -23,6 +23,7 @@ public final class OrderIntegrationEventAdapter implements IntegrationEventPort,
 
     @Override
     public int relay() {
-        return dispatcher.dispatch(OrderOutboxEntry.class);
+        return dispatcher.dispatch(
+                OrderOutboxEntry.class);
     }
 }

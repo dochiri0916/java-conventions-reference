@@ -36,7 +36,8 @@ public final class MemberReferenceId {
             throw new InvalidMemberReferenceIdException();
         }
 
-        if (!uuid.toString().equalsIgnoreCase(value)) {
+        if (!uuid.toString()
+                .equalsIgnoreCase(value)) {
             throw new InvalidMemberReferenceIdException();
         }
 
@@ -59,7 +60,8 @@ public final class MemberReferenceId {
         if (!(object instanceof final MemberReferenceId other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

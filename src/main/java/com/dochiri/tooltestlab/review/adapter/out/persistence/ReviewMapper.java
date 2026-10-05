@@ -15,19 +15,29 @@ final class ReviewMapper {
 
     static Review toDomain(final ReviewEntity entity) {
         return Review.restore(
-                ReviewId.parse(entity.getPublicId()),
-                MemberReferenceId.parse(entity.getMemberId()),
-                ProductReferenceId.parse(entity.getProductId()),
-                Rating.of(entity.getRating()),
-                ReviewContent.of(entity.getContent()));
+                ReviewId.parse(
+                        entity.getPublicId()),
+                MemberReferenceId.parse(
+                        entity.getMemberId()),
+                ProductReferenceId.parse(
+                        entity.getProductId()),
+                Rating.of(
+                        entity.getRating()),
+                ReviewContent.of(
+                        entity.getContent()));
     }
 
     static ReviewEntity toEntity(final Review domain) {
         return ReviewEntity.create(
-                domain.id().value(),
-                domain.memberId().value(),
-                domain.productId().value(),
-                domain.rating().value(),
-                domain.content().value());
+                domain.id()
+                        .value(),
+                domain.memberId()
+                        .value(),
+                domain.productId()
+                        .value(),
+                domain.rating()
+                        .value(),
+                domain.content()
+                        .value());
     }
 }

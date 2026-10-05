@@ -59,10 +59,14 @@ public final class ShippingAddress {
         if (!(object instanceof final ShippingAddress other)) {
             return false;
         }
-        return recipientName.equals(other.recipientName)
-                && phone.equals(other.phone)
-                && address.equals(other.address)
-                && zipCode.equals(other.zipCode);
+        return recipientName.equals(
+                other.recipientName)
+                && phone.equals(
+                        other.phone)
+                && address.equals(
+                        other.address)
+                && zipCode.equals(
+                        other.zipCode);
     }
 
     @Override

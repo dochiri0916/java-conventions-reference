@@ -141,7 +141,8 @@ public final class Product {
     }
 
     public boolean isPurchasable() {
-        return status == ProductStatus.ON_SALE && stock.hasStock();
+        return status == ProductStatus.ON_SALE &&
+                stock.hasStock();
     }
 
     public ProductId id() {
@@ -208,7 +209,8 @@ public final class Product {
     public boolean equals(final Object other) {
         return this == other
                 || other instanceof Product product
-                && id.equals(product.id);
+                && id.equals(
+                        product.id);
     }
 
     @Override

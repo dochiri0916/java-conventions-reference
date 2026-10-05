@@ -20,7 +20,8 @@ public final class Email {
         if (normalized.isBlank()) {
             throw new InvalidEmailException();
         }
-        if (!EMAIL_PATTERN.matcher(normalized).matches()) {
+        if (!EMAIL_PATTERN.matcher(normalized)
+                .matches()) {
             throw new InvalidEmailException();
         }
         this.value = normalized;
@@ -42,7 +43,8 @@ public final class Email {
         if (!(object instanceof final Email other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

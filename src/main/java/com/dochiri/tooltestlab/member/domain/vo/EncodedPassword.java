@@ -35,7 +35,8 @@ public final class EncodedPassword {
         if (!(object instanceof final EncodedPassword other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override

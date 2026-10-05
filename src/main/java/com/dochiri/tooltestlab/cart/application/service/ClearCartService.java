@@ -20,9 +20,13 @@ public final class ClearCartService implements ClearCartUseCase {
     @Transactional
     public void clear(final String memberPublicId) {
         final MemberReferenceId memberId = MemberReferenceId.parse(memberPublicId);
-        cartRepositoryPort.findByMemberIdForUpdate(memberId).ifPresent(cart -> {
-            final var saved = cartRepositoryPort.save(cart.clear());
-            integrationEventPort.publish(CartEventMapper.toIntegration(saved.changedEvent()));
+        cartRepositoryPort.findByMemberIdForUpdate(memberId)
+                .ifPresent(cart -> {
+            final var saved = cartRepositoryPort.save(
+                    cart.clear());
+            integrationEventPort.publish(
+                    CartEventMapper.toIntegration(
+                            saved.changedEvent()));
         });
     }
 }

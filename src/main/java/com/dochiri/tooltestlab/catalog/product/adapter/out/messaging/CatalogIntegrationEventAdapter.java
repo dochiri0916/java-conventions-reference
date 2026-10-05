@@ -23,6 +23,7 @@ public final class CatalogIntegrationEventAdapter implements IntegrationEventPor
 
     @Override
     public int relay() {
-        return dispatcher.dispatch(CatalogOutboxEntry.class);
+        return dispatcher.dispatch(
+                CatalogOutboxEntry.class);
     }
 }

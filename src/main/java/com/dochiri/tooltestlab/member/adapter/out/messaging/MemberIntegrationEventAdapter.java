@@ -23,6 +23,7 @@ public final class MemberIntegrationEventAdapter implements IntegrationEventPort
 
     @Override
     public int relay() {
-        return dispatcher.dispatch(MemberOutboxEntry.class);
+        return dispatcher.dispatch(
+                MemberOutboxEntry.class);
     }
 }

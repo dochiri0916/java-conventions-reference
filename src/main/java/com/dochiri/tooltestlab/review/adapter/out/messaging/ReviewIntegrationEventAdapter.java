@@ -23,6 +23,7 @@ public final class ReviewIntegrationEventAdapter implements IntegrationEventPort
 
     @Override
     public int relay() {
-        return dispatcher.dispatch(ReviewOutboxEntry.class);
+        return dispatcher.dispatch(
+                ReviewOutboxEntry.class);
     }
 }

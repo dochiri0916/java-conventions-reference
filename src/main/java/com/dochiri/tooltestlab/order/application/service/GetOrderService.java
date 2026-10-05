@@ -22,8 +22,11 @@ public final class GetOrderService implements GetOrderUseCase {
     @Override
     @Transactional(readOnly = true)
     public GetOrderResult getOrder(final GetOrderQuery query) {
-        final MemberReferenceId memberId = MemberReferenceId.parse(query.memberPublicId());
-        final Order order = orderRepositoryPort.findByOrderId(OrderId.parse(query.orderPublicId()))
+        final MemberReferenceId memberId = MemberReferenceId.parse(
+                query.memberPublicId());
+        final Order order = orderRepositoryPort.findByOrderId(
+                OrderId.parse(
+                        query.orderPublicId()))
                 .orElseThrow(() -> new OrderNotFoundException());
 
         order.verifyOwner(memberId);

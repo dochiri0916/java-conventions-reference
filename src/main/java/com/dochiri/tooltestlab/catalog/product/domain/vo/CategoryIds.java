@@ -18,7 +18,8 @@ public final class CategoryIds {
         if (values.stream().anyMatch(Objects::isNull)) {
             throw new InvalidCategoryIdsException();
         }
-        this.values = Set.copyOf(values);
+        this.values =
+                Set.copyOf(values);
     }
 
     public static CategoryIds of(final Set<CategoryId> values) {
@@ -39,7 +40,8 @@ public final class CategoryIds {
 
     @Override
     public boolean equals(final Object other) {
-        return this == other || other instanceof CategoryIds categoryIds && values.equals(categoryIds.values);
+        return this == other || other instanceof CategoryIds categoryIds && values.equals(
+                categoryIds.values);
     }
 
     @Override

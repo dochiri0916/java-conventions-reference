@@ -27,7 +27,9 @@ final class ProductQueryRepository {
         validatePaging(page, size);
 
         return queryFactory
-                .select(Projections.constructor(ProductRow.class,
+                .select(
+                        Projections.constructor(
+                                ProductRow.class,
                         productEntity.publicId,
                         productEntity.name,
                         productEntity.description,
@@ -43,7 +45,11 @@ final class ProductQueryRepository {
                         priceGoe(condition),
                         priceLoe(condition)
                 )
-                .orderBy(productEntity.createdAt.desc(), productEntity.id.desc())
+                .orderBy(
+                        productEntity.createdAt
+                                .desc(),
+                productEntity.id
+                        .desc())
                 .offset((long) page * size)
                 .limit(size)
                 .fetch();
@@ -51,7 +57,8 @@ final class ProductQueryRepository {
 
     long count(final ProductSearchCondition condition) {
         final Long count = queryFactory
-                .select(productEntity.count())
+                .select(
+                        productEntity.count())
                 .from(productEntity)
                 .where(
                         keywordContains(condition),
@@ -71,17 +78,25 @@ final class ProductQueryRepository {
     }
 
     private static BooleanExpression keywordContains(final ProductSearchCondition condition) {
-        if (condition.keyword() == null || condition.keyword().isBlank()) {
+        if (condition.keyword() == null ||
+                condition.keyword()
+                        .isBlank()) {
             return null;
         }
-        return productEntity.name.containsIgnoreCase(condition.keyword().strip());
+        return productEntity.name
+                .containsIgnoreCase(
+                        condition.keyword()
+                                .strip());
     }
 
     private static BooleanExpression statusEq(final ProductSearchCondition condition) {
         if (condition.status() == null) {
             return null;
         }
-        return productEntity.status.eq(condition.status().name());
+        return productEntity.status
+                .eq(
+                        condition.status()
+                                .name());
     }
 
     private static BooleanExpression categoryEq(final ProductSearchCondition condition) {
@@ -91,8 +106,13 @@ final class ProductQueryRepository {
         return JPAExpressions.selectOne()
                 .from(productCategoryEntity)
                 .where(
-                        productCategoryEntity.productId.eq(productEntity.publicId),
-                        productCategoryEntity.categoryId.eq(condition.categoryId().value())
+                        productCategoryEntity.productId
+                                .eq(
+                                        productEntity.publicId),
+                        productCategoryEntity.categoryId
+                                .eq(
+                                        condition.categoryId()
+                                                .value())
                 )
                 .exists();
     }
@@ -101,14 +121,20 @@ final class ProductQueryRepository {
         if (condition.minPrice() == null) {
             return null;
         }
-        return productEntity.priceAmount.goe(condition.minPrice().amount());
+        return productEntity.priceAmount
+                .goe(
+                        condition.minPrice()
+                                .amount());
     }
 
     private static BooleanExpression priceLoe(final ProductSearchCondition condition) {
         if (condition.maxPrice() == null) {
             return null;
         }
-        return productEntity.priceAmount.loe(condition.maxPrice().amount());
+        return productEntity.priceAmount
+                .loe(
+                        condition.maxPrice()
+                                .amount());
     }
 
 }

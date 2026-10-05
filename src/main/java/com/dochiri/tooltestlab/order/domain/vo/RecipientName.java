@@ -34,7 +34,8 @@ public final class RecipientName {
         if (!(object instanceof final RecipientName other)) {
             return false;
         }
-        return value.equals(other.value);
+        return value.equals(
+                other.value);
     }
 
     @Override
