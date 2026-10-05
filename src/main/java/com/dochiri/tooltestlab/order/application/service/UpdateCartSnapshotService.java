@@ -2,7 +2,8 @@ package com.dochiri.tooltestlab.order.application.service;
 
 import com.dochiri.tooltestlab.global.domain.vo.Money;
 import com.dochiri.tooltestlab.global.domain.vo.Quantity;
-import com.dochiri.tooltestlab.order.application.port.in.*;
+import com.dochiri.tooltestlab.order.application.port.in.command.UpdateCartSnapshotCommand;
+import com.dochiri.tooltestlab.order.application.port.in.usecase.UpdateCartSnapshotUseCase;
 import com.dochiri.tooltestlab.order.application.port.out.CartSnapshotPort;
 import com.dochiri.tooltestlab.order.domain.vo.*;
 import lombok.RequiredArgsConstructor;

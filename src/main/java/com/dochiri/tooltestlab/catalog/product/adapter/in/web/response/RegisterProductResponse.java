@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.adapter.in.web.response;
 
+import com.dochiri.tooltestlab.catalog.product.application.port.in.result.RegisterProductResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
@@ -16,5 +17,10 @@ public record RegisterProductResponse(
 
     public RegisterProductResponse {
         categoryNames = List.copyOf(categoryNames);
+    }
+
+    public static RegisterProductResponse from(final RegisterProductResult result) {
+        return new RegisterProductResponse(result.publicId(), result.name(), null, result.priceAmount(),
+                result.stock(), result.status(), result.categoryNames());
     }
 }

@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.cart.adapter.in.web.request;
 
+import com.dochiri.tooltestlab.cart.application.port.in.command.AddToCartCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -13,4 +14,8 @@ public record AddToCartRequest(
         @Schema(description = "수량", example = "2")
         @Min(value = 1, message = "수량은 1 이상이어야 합니다.")
         int quantity) {
+
+    public AddToCartCommand toCommand(final String memberPublicId) {
+        return new AddToCartCommand(memberPublicId, productPublicId, quantity);
+    }
 }

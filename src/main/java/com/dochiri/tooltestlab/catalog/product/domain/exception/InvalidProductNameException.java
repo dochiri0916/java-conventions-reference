@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.domain.exception;
 
-public final class InvalidProductNameException extends RuntimeException {
+public final class InvalidProductNameException extends ProductDomainException {
 
     private final String productName;
 

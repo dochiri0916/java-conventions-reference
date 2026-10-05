@@ -6,7 +6,7 @@ import com.dochiri.tooltestlab.order.domain.exception.CartReferenceIdRequiredExc
 import com.dochiri.tooltestlab.order.domain.exception.InvalidCartReferenceIdException;
 import com.dochiri.tooltestlab.global.exception.ProblemDetails;
 import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
-import com.dochiri.tooltestlab.order.application.exception.NotOrderOwnerException;
+import com.dochiri.tooltestlab.order.domain.exception.NotOrderOwnerException;
 import com.dochiri.tooltestlab.order.application.exception.OrderApplicationException;
 import com.dochiri.tooltestlab.order.application.exception.OrderNotFoundException;
 import com.dochiri.tooltestlab.order.application.exception.CartSnapshotNotReadyException;
@@ -64,6 +64,7 @@ public final class OrderExceptionHandler {
             case ProductNameRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "PRODUCT_NAME_REQUIRED");
             case UnitPriceRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "UNIT_PRICE_REQUIRED");
             case InvalidOrderStatusException e -> respond(e, HttpStatus.CONFLICT, "BAD_ORDER_STATUS");
+            case NotOrderOwnerException e -> respond(e, HttpStatus.FORBIDDEN, "NOT_ORDER_OWNER");
         };
     }
 
@@ -73,7 +74,6 @@ public final class OrderExceptionHandler {
             case OrderNotFoundException e -> respond(e, HttpStatus.NOT_FOUND, "ORDER_NOT_FOUND");
             case CartSnapshotNotReadyException e -> respond(e, HttpStatus.CONFLICT, "CART_SNAPSHOT_NOT_READY");
             case CheckoutAlreadyRequestedException e -> respond(e, HttpStatus.CONFLICT, "CHECKOUT_ALREADY_REQUESTED");
-            case NotOrderOwnerException e -> respond(e, HttpStatus.FORBIDDEN, "NOT_ORDER_OWNER");
             case EmptyCartException e -> respond(e, HttpStatus.CONFLICT, "EMPTY_CART");
         };
     }

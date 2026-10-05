@@ -1,14 +1,14 @@
 package com.dochiri.tooltestlab.catalog.category.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.global.persistence.BaseEntity;
-import com.dochiri.tooltestlab.catalog.category.domain.CategoryStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "categories",
+@Table(
+        name = "categories",
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_categories_public_id",
@@ -39,14 +39,13 @@ public class CategoryEntity extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 16)
-    private CategoryStatus status;
+    private String status;
 
     private CategoryEntity(
             final String publicId,
             final String name,
-            final CategoryStatus status
+            final String status
     ) {
         this.publicId = publicId;
         this.name = name;
@@ -56,12 +55,12 @@ public class CategoryEntity extends BaseEntity {
     static CategoryEntity create(
             final String publicId,
             final String name,
-            final CategoryStatus status
+            final String status
     ) {
         return new CategoryEntity(publicId, name, status);
     }
 
-    void update(final String name, final CategoryStatus status) {
+    void update(final String name, final String status) {
         this.name = name;
         this.status = status;
     }

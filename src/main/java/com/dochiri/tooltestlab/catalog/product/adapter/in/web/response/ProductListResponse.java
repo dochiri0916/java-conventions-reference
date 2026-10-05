@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.adapter.in.web.response;
 
+import com.dochiri.tooltestlab.catalog.product.application.port.in.result.ListProductsResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
@@ -15,6 +16,11 @@ public record ProductListResponse(
         products = List.copyOf(products);
     }
 
+    public static ProductListResponse from(final ListProductsResult result) {
+        final var items = result.products().stream().map(ProductSummary::from).toList();
+        return new ProductListResponse(items, result.page(), result.size(), result.totalCount());
+    }
+
     @Schema(description = "상품 요약")
     public record ProductSummary(
             @Schema(description = "상품 publicId", example = "01900000-0000-7000-8000-000000000001") String publicId,
@@ -26,6 +32,11 @@ public record ProductListResponse(
 
         public ProductSummary {
             categoryNames = List.copyOf(categoryNames);
+        }
+
+        public static ProductSummary from(final ListProductsResult.ProductSummary result) {
+            return new ProductSummary(result.publicId(), result.name(), result.priceAmount(), result.stock(),
+                    result.status(), result.categoryNames());
         }
     }
 }

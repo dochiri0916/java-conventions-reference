@@ -1,11 +1,14 @@
 package com.dochiri.tooltestlab.order.application.service;
 
-import com.dochiri.tooltestlab.order.application.exception.NotOrderOwnerException;
+import com.dochiri.tooltestlab.order.application.OrderResultMapper;
 import com.dochiri.tooltestlab.order.application.exception.OrderNotFoundException;
-import com.dochiri.tooltestlab.order.application.port.in.GetOrderResult;
-import com.dochiri.tooltestlab.order.application.port.in.GetOrderUseCase;
+import com.dochiri.tooltestlab.order.application.port.in.query.GetOrderQuery;
+import com.dochiri.tooltestlab.order.application.port.in.result.GetOrderResult;
+import com.dochiri.tooltestlab.order.application.port.in.usecase.GetOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
 import com.dochiri.tooltestlab.order.domain.Order;
+import com.dochiri.tooltestlab.order.domain.vo.OrderId;
+import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,27 +21,13 @@ public final class GetOrderService implements GetOrderUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public GetOrderResult getOrder(final String memberPublicId, final String publicId) {
-        final Order order = orderRepositoryPort.findByPublicId(publicId)
+    public GetOrderResult getOrder(final GetOrderQuery query) {
+        final MemberReferenceId memberId = MemberReferenceId.parse(query.memberPublicId());
+        final Order order = orderRepositoryPort.findByOrderId(OrderId.parse(query.orderPublicId()))
                 .orElseThrow(() -> new OrderNotFoundException());
 
-        if (!order.memberId().value().equals(memberPublicId)) {
-            throw new NotOrderOwnerException();
-        }
+        order.verifyOwner(memberId);
 
-        final var items = order.items().values().stream()
-                .map(i -> new GetOrderResult.Item(
-                        i.productId().value(),
-                        i.productName().value(),
-                        i.quantity().value(),
-                        i.unitPrice().amount(),
-                        i.totalPrice().amount()))
-                .toList();
-
-        return new GetOrderResult(
-                order.id().value(), order.memberId().value(), order.status().name(), order.totalAmount().amount(),
-                order.shippingAddress().recipientName().value(), order.shippingAddress().phone().value(),
-                order.shippingAddress().address().value(), order.shippingAddress().zipCode().value(),
-                items);
+        return OrderResultMapper.toGetOrderResult(order);
     }
 }

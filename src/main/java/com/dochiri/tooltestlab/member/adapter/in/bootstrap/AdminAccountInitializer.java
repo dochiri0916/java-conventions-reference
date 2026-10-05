@@ -1,8 +1,8 @@
 package com.dochiri.tooltestlab.member.adapter.in.bootstrap;
 
 import com.dochiri.tooltestlab.member.application.exception.DuplicateEmailException;
-import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberCommand;
-import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberUseCase;
+import com.dochiri.tooltestlab.member.application.port.in.command.RegisterMemberCommand;
+import com.dochiri.tooltestlab.member.application.port.in.usecase.RegisterMemberUseCase;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

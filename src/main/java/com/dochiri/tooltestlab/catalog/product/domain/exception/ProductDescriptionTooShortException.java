@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.domain.exception;
 
-public final class ProductDescriptionTooShortException extends RuntimeException {
+public final class ProductDescriptionTooShortException extends ProductDomainException {
 
     private final int minLength;
 

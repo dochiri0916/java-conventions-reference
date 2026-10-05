@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.domain.exception;
 
-public final class InsufficientStockException extends RuntimeException {
+public final class InsufficientStockException extends ProductDomainException {
 
     private final int currentStock;
     private final int requestedQuantity;

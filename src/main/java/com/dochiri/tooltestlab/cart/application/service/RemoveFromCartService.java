@@ -1,8 +1,8 @@
 package com.dochiri.tooltestlab.cart.application.service;
 
 import com.dochiri.tooltestlab.cart.application.exception.CartNotFoundException;
-import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartCommand;
-import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartUseCase;
+import com.dochiri.tooltestlab.cart.application.port.in.command.RemoveFromCartCommand;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.RemoveFromCartUseCase;
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.application.port.out.IntegrationEventPort;
 import com.dochiri.tooltestlab.cart.application.CartEventMapper;
@@ -26,7 +26,7 @@ public final class RemoveFromCartService implements RemoveFromCartUseCase {
         final MemberReferenceId memberId = MemberReferenceId.parse(command.memberPublicId());
         final ProductReferenceId productId = ProductReferenceId.parse(command.productPublicId());
 
-        Cart cart = cartRepositoryPort.findByMemberIdForUpdate(memberId.value())
+        Cart cart = cartRepositoryPort.findByMemberIdForUpdate(memberId)
                 .orElseThrow(() -> new CartNotFoundException());
 
         cart = cart.removeItem(productId);

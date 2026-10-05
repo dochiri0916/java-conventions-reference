@@ -4,11 +4,11 @@ import com.dochiri.tooltestlab.review.adapter.in.web.request.WriteReviewRequest;
 import com.dochiri.tooltestlab.review.adapter.in.web.response.DeleteReviewResponse;
 import com.dochiri.tooltestlab.review.adapter.in.web.response.GetProductReviewsResponse;
 import com.dochiri.tooltestlab.review.adapter.in.web.response.WriteReviewResponse;
-import com.dochiri.tooltestlab.review.application.port.in.DeleteReviewUseCase;
-import com.dochiri.tooltestlab.review.application.port.in.GetProductReviewsResult;
-import com.dochiri.tooltestlab.review.application.port.in.GetProductReviewsUseCase;
-import com.dochiri.tooltestlab.review.application.port.in.WriteReviewCommand;
-import com.dochiri.tooltestlab.review.application.port.in.WriteReviewUseCase;
+import com.dochiri.tooltestlab.review.application.port.in.query.GetProductReviewsQuery;
+import com.dochiri.tooltestlab.review.application.port.in.usecase.DeleteReviewUseCase;
+import com.dochiri.tooltestlab.review.application.port.in.result.GetProductReviewsResult;
+import com.dochiri.tooltestlab.review.application.port.in.usecase.GetProductReviewsUseCase;
+import com.dochiri.tooltestlab.review.application.port.in.usecase.WriteReviewUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,8 +42,8 @@ public class ReviewController {
             @Parameter(hidden = true) String memberPublicId,
             @Valid @RequestBody WriteReviewRequest request) {
         final var result = writeReviewUseCase.write(
-                new WriteReviewCommand(memberPublicId, request.productPublicId(), request.rating(), request.content()));
-        return ResponseEntity.ok(new WriteReviewResponse(result.publicId(), "리뷰가 등록되었습니다."));
+                request.toCommand(memberPublicId));
+        return ResponseEntity.ok(WriteReviewResponse.from(result));
     }
 
     @Operation(summary = "상품 리뷰 조회", description = "특정 상품의 리뷰 목록을 조회합니다.")
@@ -54,12 +54,9 @@ public class ReviewController {
     public ResponseEntity<GetProductReviewsResponse> getByProduct(
             @Parameter(description = "상품 publicId", example = "01900000-0000-7000-8000-000000000001")
             @PathVariable String productPublicId) {
-        final GetProductReviewsResult result = getProductReviewsUseCase.getByProduct(productPublicId);
-        final var data = result.reviews().stream()
-                .map(r -> new GetProductReviewsResponse.ReviewData(
-                        r.reviewPublicId(), r.memberPublicId(), r.rating(), r.content()))
-                .toList();
-        return ResponseEntity.ok(new GetProductReviewsResponse(result.productPublicId(), data, result.averageRating()));
+        final GetProductReviewsResult result =
+                getProductReviewsUseCase.getByProduct(new GetProductReviewsQuery(productPublicId));
+        return ResponseEntity.ok(GetProductReviewsResponse.from(result));
     }
 
     @Operation(summary = "리뷰 삭제", description = "작성한 리뷰를 삭제합니다.")

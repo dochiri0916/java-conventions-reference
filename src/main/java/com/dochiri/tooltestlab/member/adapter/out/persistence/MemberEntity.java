@@ -7,7 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "members")
+@Table(
+        name = "members",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_members_email",
+                columnNames = "email"
+        )
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public final class MemberEntity extends BaseEntity {
@@ -17,8 +23,8 @@ public final class MemberEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 36)
-    private String memberId;
+    @Column(name = "public_id", nullable = false, unique = true, length = 36)
+    private String publicId;
 
     @Column(nullable = false)
     private String email;
@@ -34,13 +40,13 @@ public final class MemberEntity extends BaseEntity {
 
     private MemberEntity(
             final Long id,
-            final String memberId,
+            final String publicId,
             final String email,
             final String encodedPassword,
             final String name,
             final String status) {
         this.id = id;
-        this.memberId = memberId;
+        this.publicId = publicId;
         this.email = email;
         this.encodedPassword = encodedPassword;
         this.name = name;
@@ -48,11 +54,11 @@ public final class MemberEntity extends BaseEntity {
     }
 
     public static MemberEntity create(
-            final String memberId,
+            final String publicId,
             final String email,
             final String encodedPassword,
             final String name,
             final String status) {
-        return new MemberEntity(null, memberId, email, encodedPassword, name, status);
+        return new MemberEntity(null, publicId, email, encodedPassword, name, status);
     }
 }

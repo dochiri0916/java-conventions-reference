@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.domain.exception;
 
-public final class ProductIdRequiredException extends RuntimeException {
+public final class ProductIdRequiredException extends ProductDomainException {
 
     public ProductIdRequiredException() {
         super("상품 ID는 필수입니다.");

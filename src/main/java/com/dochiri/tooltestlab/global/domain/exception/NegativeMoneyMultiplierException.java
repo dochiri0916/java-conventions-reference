@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.global.domain.exception;
 
-public final class NegativeMoneyMultiplierException extends RuntimeException {
+public final class NegativeMoneyMultiplierException extends GlobalDomainException {
 
     private final int quantity;
 

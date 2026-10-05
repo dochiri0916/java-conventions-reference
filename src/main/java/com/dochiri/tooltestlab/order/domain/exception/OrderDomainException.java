@@ -18,7 +18,8 @@ public abstract sealed class OrderDomainException extends RuntimeException
         ProductNameRequiredException,
         UnitPriceRequiredException,
         InvalidOrderStatusException,
-        MemberReferenceIdRequiredException {
+        MemberReferenceIdRequiredException,
+        NotOrderOwnerException {
     protected OrderDomainException(final String message) {
         super(message);
     }

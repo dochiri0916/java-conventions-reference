@@ -1,17 +1,18 @@
 package com.dochiri.tooltestlab.order.application.service;
 
 import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
-import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
-import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderResult;
-import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderUseCase;
+import com.dochiri.tooltestlab.order.application.port.in.command.PlaceOrderCommand;
+import com.dochiri.tooltestlab.order.application.port.in.result.PlaceOrderResult;
+import com.dochiri.tooltestlab.order.application.port.in.usecase.PlaceOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.out.CartSnapshotPort;
+import com.dochiri.tooltestlab.order.application.port.out.CartSnapshotPort.CartSnapshot;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
 import com.dochiri.tooltestlab.order.application.port.out.IntegrationEventPort;
 import com.dochiri.tooltestlab.order.application.OrderEventMapper;
+import com.dochiri.tooltestlab.order.application.OrderResultMapper;
 import com.dochiri.tooltestlab.order.application.exception.CartSnapshotNotReadyException;
 import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
 import com.dochiri.tooltestlab.order.domain.Order;
-import com.dochiri.tooltestlab.order.domain.vo.OrderLine;
 import com.dochiri.tooltestlab.order.domain.vo.OrderLines;
 import com.dochiri.tooltestlab.order.domain.vo.Phone;
 import com.dochiri.tooltestlab.order.domain.vo.RecipientName;
@@ -35,30 +36,27 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
     @Transactional
     public PlaceOrderResult place(final PlaceOrderCommand command) {
         final MemberReferenceId memberId = MemberReferenceId.parse(command.memberPublicId());
-        final ShippingAddress shippingAddress = ShippingAddress.of(
-                RecipientName.of(command.recipientName()), Phone.of(command.phone()),
-                StreetAddress.of(command.address()), ZipCode.of(command.zipCode()));
+        final ShippingAddress shippingAddress = toShippingAddress(command);
 
-        final var cart = cartSnapshotPort.claim(memberId).orElseThrow(CartSnapshotNotReadyException::new);
-        if (cart.items().isEmpty()) {
-            throw new EmptyCartException();
-        }
-
+        final CartSnapshot cart = claimNotEmptyCart(memberId);
         final Order saved = orderRepositoryPort.create(
                 Order.create(memberId, cart.cartId(), cart.revision(), OrderLines.of(cart.items()), shippingAddress));
         integrationEventPort.publish(OrderEventMapper.toIntegration(saved.placedEvent()));
 
-        final var resultItems = saved.items().values().stream()
-                .map(i -> new PlaceOrderResult.OrderItemResult(
-                        i.productId().value(),
-                        i.productName().value(),
-                        i.quantity().value(),
-                        i.unitPrice().amount()))
-                .toList();
-        return new PlaceOrderResult(
-                saved.id().value(),
-                saved.status().name(),
-                saved.totalAmount().amount(),
-                resultItems);
+        return OrderResultMapper.toPlaceOrderResult(saved);
+    }
+
+    private CartSnapshot claimNotEmptyCart(final MemberReferenceId memberId) {
+        final CartSnapshot cart = cartSnapshotPort.claim(memberId).orElseThrow(CartSnapshotNotReadyException::new);
+        if (cart.items().isEmpty()) {
+            throw new EmptyCartException();
+        }
+        return cart;
+    }
+
+    private static ShippingAddress toShippingAddress(final PlaceOrderCommand command) {
+        return ShippingAddress.of(
+                RecipientName.of(command.recipientName()), Phone.of(command.phone()),
+                StreetAddress.of(command.address()), ZipCode.of(command.zipCode()));
     }
 }

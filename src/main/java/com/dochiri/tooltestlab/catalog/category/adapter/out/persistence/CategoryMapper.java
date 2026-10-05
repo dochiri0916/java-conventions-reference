@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.catalog.category.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.catalog.category.domain.Category;
+import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryStatus;
 import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
 import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryName;
 
@@ -13,7 +14,7 @@ final class CategoryMapper {
         return CategoryEntity.create(
                 category.id().value(),
                 category.name().value(),
-                category.state()
+                category.state().name()
         );
     }
 
@@ -21,7 +22,7 @@ final class CategoryMapper {
         return Category.restore(
                 CategoryId.parse(entity.getPublicId()),
                 CategoryName.of(entity.getName()),
-                entity.getStatus()
+                CategoryStatus.valueOf(entity.getStatus())
         );
     }
 }

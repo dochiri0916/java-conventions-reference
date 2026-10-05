@@ -2,12 +2,12 @@ package com.dochiri.tooltestlab.catalog.product.application.service;
 
 import com.dochiri.tooltestlab.catalog.product.application.exception.InsufficientProductStockException;
 import com.dochiri.tooltestlab.catalog.product.application.exception.ProductNotFoundException;
-import com.dochiri.tooltestlab.catalog.product.application.port.in.DecreaseProductStockUseCase;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.usecase.DecreaseProductStockUseCase;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.catalog.product.domain.exception.InsufficientStockException;
 import com.dochiri.tooltestlab.catalog.product.domain.Product;
-import com.dochiri.tooltestlab.catalog.application.CatalogEventMapper;
-import com.dochiri.tooltestlab.catalog.application.port.out.IntegrationEventPort;
+import com.dochiri.tooltestlab.catalog.product.application.CatalogEventMapper;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.IntegrationEventPort;
 import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

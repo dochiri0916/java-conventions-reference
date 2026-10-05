@@ -1,7 +1,8 @@
 package com.dochiri.tooltestlab.cart.application.service;
 
-import com.dochiri.tooltestlab.cart.application.port.in.GetCartResult;
-import com.dochiri.tooltestlab.cart.application.port.in.GetCartUseCase;
+import com.dochiri.tooltestlab.cart.application.port.in.query.GetCartQuery;
+import com.dochiri.tooltestlab.cart.application.port.in.result.GetCartResult;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.GetCartUseCase;
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.Cart;
 import com.dochiri.tooltestlab.cart.domain.vo.MemberReferenceId;
@@ -17,9 +18,9 @@ public final class GetCartService implements GetCartUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public GetCartResult getCart(final String memberPublicId) {
-        final MemberReferenceId memberId = MemberReferenceId.parse(memberPublicId);
-        final Cart cart = cartRepositoryPort.findByMemberId(memberPublicId)
+    public GetCartResult getCart(final GetCartQuery query) {
+        final MemberReferenceId memberId = MemberReferenceId.parse(query.memberPublicId());
+        final Cart cart = cartRepositoryPort.findByMemberId(memberId)
                 .orElseGet(() -> Cart.create(memberId));
 
         final var items = cart.items().values().stream()

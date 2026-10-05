@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.domain.exception;
 
-public final class ProductDescriptionTooLongException extends RuntimeException {
+public final class ProductDescriptionTooLongException extends ProductDomainException {
 
     private final int maxLength;
 

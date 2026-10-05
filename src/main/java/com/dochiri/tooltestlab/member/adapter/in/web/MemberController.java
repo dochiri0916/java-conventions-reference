@@ -6,12 +6,10 @@ import com.dochiri.tooltestlab.member.adapter.in.web.response.GetMyProfileRespon
 import com.dochiri.tooltestlab.member.adapter.in.web.response.LoginMemberResponse;
 import com.dochiri.tooltestlab.member.adapter.in.web.response.LogoutMemberResponse;
 import com.dochiri.tooltestlab.member.adapter.in.web.response.RegisterMemberResponse;
-import com.dochiri.tooltestlab.member.application.port.in.LoginMemberCommand;
-import com.dochiri.tooltestlab.member.application.port.in.LoginMemberResult;
-import com.dochiri.tooltestlab.member.application.port.in.LoginMemberUseCase;
-import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberCommand;
-import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberResult;
-import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberUseCase;
+import com.dochiri.tooltestlab.member.application.port.in.result.LoginMemberResult;
+import com.dochiri.tooltestlab.member.application.port.in.usecase.LoginMemberUseCase;
+import com.dochiri.tooltestlab.member.application.port.in.result.RegisterMemberResult;
+import com.dochiri.tooltestlab.member.application.port.in.usecase.RegisterMemberUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,10 +40,8 @@ public class MemberController {
     })
     @PostMapping("/register")
     public ResponseEntity<RegisterMemberResponse> register(@Valid @RequestBody RegisterMemberRequest request) {
-        final RegisterMemberCommand command =
-                new RegisterMemberCommand(request.email(), request.password(), request.name());
-        final RegisterMemberResult result = registerMemberUseCase.register(command);
-        return ResponseEntity.ok(new RegisterMemberResponse(result.publicId(), result.email(), result.name()));
+        final RegisterMemberResult result = registerMemberUseCase.register(request.toCommand());
+        return ResponseEntity.ok(RegisterMemberResponse.from(result));
     }
 
     @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다.")
@@ -57,10 +53,9 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<LoginMemberResponse> login(
             @Valid @RequestBody LoginMemberRequest request, final HttpSession session) {
-        final LoginMemberCommand command = new LoginMemberCommand(request.email(), request.password());
-        final LoginMemberResult result = loginMemberUseCase.login(command);
+        final LoginMemberResult result = loginMemberUseCase.login(request.toCommand());
         session.setAttribute(MEMBER_ID_KEY, result.publicId());
-        return ResponseEntity.ok(new LoginMemberResponse(result.publicId(), result.email(), result.name()));
+        return ResponseEntity.ok(LoginMemberResponse.from(result));
     }
 
     @Operation(summary = "로그아웃", description = "현재 세션을 무효화하고 로그아웃합니다.")

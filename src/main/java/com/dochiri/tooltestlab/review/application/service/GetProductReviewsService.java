@@ -1,9 +1,11 @@
 package com.dochiri.tooltestlab.review.application.service;
 
-import com.dochiri.tooltestlab.review.application.port.in.GetProductReviewsResult;
-import com.dochiri.tooltestlab.review.application.port.in.GetProductReviewsUseCase;
+import com.dochiri.tooltestlab.review.application.port.in.query.GetProductReviewsQuery;
+import com.dochiri.tooltestlab.review.application.port.in.result.GetProductReviewsResult;
+import com.dochiri.tooltestlab.review.application.port.in.usecase.GetProductReviewsUseCase;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
 import com.dochiri.tooltestlab.review.domain.Review;
+import com.dochiri.tooltestlab.review.domain.vo.ProductReferenceId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +20,9 @@ public final class GetProductReviewsService implements GetProductReviewsUseCase 
 
     @Override
     @Transactional(readOnly = true)
-    public GetProductReviewsResult getByProduct(final String productPublicId) {
-        final List<Review> reviews = reviewRepositoryPort.findByProductId(productPublicId);
+    public GetProductReviewsResult getByProduct(final GetProductReviewsQuery query) {
+        final ProductReferenceId productId = ProductReferenceId.parse(query.productPublicId());
+        final List<Review> reviews = reviewRepositoryPort.findByProductId(productId);
 
         final double avg = reviews.isEmpty() ? 0.0
                 : reviews.stream().mapToInt(r -> r.rating().value()).average().orElse(0.0);
@@ -29,6 +32,6 @@ public final class GetProductReviewsService implements GetProductReviewsUseCase 
                         r.id().value(), r.memberId().value(), r.rating().value(), r.content().value()))
                 .toList();
 
-        return new GetProductReviewsResult(productPublicId, data, Math.round(avg * 10.0) / 10.0);
+        return new GetProductReviewsResult(productId.value(), data, Math.round(avg * 10.0) / 10.0);
     }
 }

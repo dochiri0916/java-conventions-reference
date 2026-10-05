@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.cart.adapter.in.bootstrap;
 
-import com.dochiri.tooltestlab.cart.application.port.in.PublishCartSnapshotsUseCase;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.PublishCartSnapshotsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

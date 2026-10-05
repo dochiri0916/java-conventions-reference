@@ -25,7 +25,7 @@ final class CartMapper {
                         ProductName.of(e.getProductName()), Quantity.of(e.getQuantity()), Money.of(e.getUnitPrice())))
                 .toList();
         return Cart.restore(
-                CartId.parse(entity.getCartId()),
+                CartId.parse(entity.getPublicId()),
                 MemberReferenceId.parse(entity.getMemberId()),
                 CartItems.of(domainItems), entity.getRevision());
     }

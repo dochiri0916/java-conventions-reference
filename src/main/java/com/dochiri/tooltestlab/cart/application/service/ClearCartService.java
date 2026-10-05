@@ -1,9 +1,10 @@
 package com.dochiri.tooltestlab.cart.application.service;
 
-import com.dochiri.tooltestlab.cart.application.port.in.ClearCartUseCase;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.ClearCartUseCase;
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.application.port.out.IntegrationEventPort;
 import com.dochiri.tooltestlab.cart.application.CartEventMapper;
+import com.dochiri.tooltestlab.cart.domain.vo.MemberReferenceId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,8 @@ public final class ClearCartService implements ClearCartUseCase {
     @Override
     @Transactional
     public void clear(final String memberPublicId) {
-        cartRepositoryPort.findByMemberIdForUpdate(memberPublicId).ifPresent(cart -> {
+        final MemberReferenceId memberId = MemberReferenceId.parse(memberPublicId);
+        cartRepositoryPort.findByMemberIdForUpdate(memberId).ifPresent(cart -> {
             final var saved = cartRepositoryPort.save(cart.clear());
             integrationEventPort.publish(CartEventMapper.toIntegration(saved.changedEvent()));
         });

@@ -5,14 +5,15 @@ import com.dochiri.tooltestlab.order.adapter.in.web.response.CancelOrderResponse
 import com.dochiri.tooltestlab.order.adapter.in.web.response.GetOrderResponse;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.OrderSummaryResponse;
 import com.dochiri.tooltestlab.order.adapter.in.web.response.PlaceOrderResponse;
-import com.dochiri.tooltestlab.order.application.port.in.CancelOrderUseCase;
-import com.dochiri.tooltestlab.order.application.port.in.GetOrderResult;
-import com.dochiri.tooltestlab.order.application.port.in.GetOrderUseCase;
-import com.dochiri.tooltestlab.order.application.port.in.ListOrdersResult;
-import com.dochiri.tooltestlab.order.application.port.in.ListOrdersUseCase;
-import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderCommand;
-import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderResult;
-import com.dochiri.tooltestlab.order.application.port.in.PlaceOrderUseCase;
+import com.dochiri.tooltestlab.order.application.port.in.query.GetOrderQuery;
+import com.dochiri.tooltestlab.order.application.port.in.query.ListOrdersQuery;
+import com.dochiri.tooltestlab.order.application.port.in.usecase.CancelOrderUseCase;
+import com.dochiri.tooltestlab.order.application.port.in.result.GetOrderResult;
+import com.dochiri.tooltestlab.order.application.port.in.usecase.GetOrderUseCase;
+import com.dochiri.tooltestlab.order.application.port.in.result.ListOrdersResult;
+import com.dochiri.tooltestlab.order.application.port.in.usecase.ListOrdersUseCase;
+import com.dochiri.tooltestlab.order.application.port.in.result.PlaceOrderResult;
+import com.dochiri.tooltestlab.order.application.port.in.usecase.PlaceOrderUseCase;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,9 +38,9 @@ public class OrderController {
     private final ListOrdersUseCase listOrdersUseCase;
     private final CancelOrderUseCase cancelOrderUseCase;
 
-    @Operation(summary = "주문 생성", description = "동기화된 장바구니로 주문을 접수합니다. STOCK_PENDING으로 반환되며 재고 예약 결과는 주문 조회에서 확인합니다.")
+    @Operation(summary = "주문 생성", description = "동기화된 장바구니로 주문을 접수합니다. PENDING 상태로 반환됩니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "202", description = "주문 접수, 재고 예약 결과 대기"),
+            @ApiResponse(responseCode = "202", description = "주문 접수"),
             @ApiResponse(responseCode = "400", description = "잘못된 배송지"),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 요청"),
             @ApiResponse(responseCode = "409", description = "빈 장바구니, 장바구니 동기화 대기 또는 중복 주문 요청")
@@ -49,16 +50,10 @@ public class OrderController {
             @Parameter(hidden = true) String memberPublicId,
             @Valid @RequestBody PlaceOrderRequest request) {
         final PlaceOrderResult result = placeOrderUseCase.place(
-                new PlaceOrderCommand(
-                        memberPublicId, request.recipientName(), request.phone(), request.address(), request.zipCode()));
+                request.toCommand(memberPublicId));
 
-        final var items = result.items().stream()
-                .map(i -> new PlaceOrderResponse.Item(
-                        i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(),
-                        i.quantity() * i.unitPrice()))
-                .toList();
-        return ResponseEntity.accepted().body(new PlaceOrderResponse(result.publicId(), result.status(), result.totalAmount(),
-                request.recipientName(), request.phone(), request.address(), request.zipCode(), items));
+        return ResponseEntity.accepted().body(PlaceOrderResponse.from(result,
+                request.recipientName(), request.phone(), request.address(), request.zipCode()));
     }
 
     @Operation(summary = "주문 목록 조회", description = "로그인된 회원의 주문 목록을 조회합니다.")
@@ -69,9 +64,9 @@ public class OrderController {
     @GetMapping
     public ResponseEntity<List<OrderSummaryResponse>> list(
             @Parameter(hidden = true) String memberPublicId) {
-        final ListOrdersResult result = listOrdersUseCase.listByMember(memberPublicId);
+        final ListOrdersResult result = listOrdersUseCase.listByMember(new ListOrdersQuery(memberPublicId));
         final var body = result.orders().stream()
-                .map(o -> new OrderSummaryResponse(o.publicId(), o.status(), o.totalAmount(), o.itemCount()))
+                .map(OrderSummaryResponse::from)
                 .toList();
         return ResponseEntity.ok(body);
     }
@@ -88,21 +83,8 @@ public class OrderController {
             @Parameter(hidden = true) String memberPublicId,
             @Parameter(description = "주문 publicId", example = "01900000-0000-7000-8000-000000000001")
             @PathVariable String publicId) {
-        final GetOrderResult result = getOrderUseCase.getOrder(memberPublicId, publicId);
-        final var items = result.items().stream()
-                .map(i -> new GetOrderResponse.Item(
-                        i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.totalPrice()))
-                .toList();
-          return ResponseEntity.ok(new GetOrderResponse(
-                  result.publicId(),
-                  result.memberPublicId(),
-                  result.status(),
-                  result.totalAmount(),
-                  result.recipientName(),
-                  result.phone(),
-                  result.address(),
-                  result.zipCode(),
-                  items));
+        final GetOrderResult result = getOrderUseCase.getOrder(new GetOrderQuery(memberPublicId, publicId));
+        return ResponseEntity.ok(GetOrderResponse.from(result));
     }
 
     @Operation(summary = "주문 취소", description = "주문을 취소합니다.")

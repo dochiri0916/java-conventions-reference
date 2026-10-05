@@ -11,7 +11,8 @@ public abstract sealed class ReviewDomainException extends RuntimeException
         ReviewContentRequiredException,
         ReviewRequiredException,
         ProductReferenceIdRequiredException,
-        MemberReferenceIdRequiredException {
+        MemberReferenceIdRequiredException,
+        NotReviewOwnerException {
     protected ReviewDomainException(final String message) {
         super(message);
     }

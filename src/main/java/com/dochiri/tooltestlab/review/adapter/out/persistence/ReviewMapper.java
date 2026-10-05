@@ -15,7 +15,7 @@ final class ReviewMapper {
 
     static Review toDomain(final ReviewEntity entity) {
         return Review.restore(
-                ReviewId.parse(entity.getReviewId()),
+                ReviewId.parse(entity.getPublicId()),
                 MemberReferenceId.parse(entity.getMemberId()),
                 ProductReferenceId.parse(entity.getProductId()),
                 Rating.of(entity.getRating()),

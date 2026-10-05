@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.cart.application.service;
 
-import com.dochiri.tooltestlab.cart.application.port.in.AddToCartCommand;
-import com.dochiri.tooltestlab.cart.application.port.in.AddToCartUseCase;
+import com.dochiri.tooltestlab.cart.application.port.in.command.AddToCartCommand;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.AddToCartUseCase;
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.application.port.out.IntegrationEventPort;
 import com.dochiri.tooltestlab.cart.application.CartEventMapper;
@@ -30,7 +30,7 @@ public final class AddToCartService implements AddToCartUseCase {
         final ProductSnapshot product = productCatalogPort.findProduct(
                 ProductReferenceId.parse(command.productPublicId()));
 
-        Cart cart = cartRepositoryPort.findByMemberIdForUpdate(memberId.value())
+        Cart cart = cartRepositoryPort.findByMemberIdForUpdate(memberId)
                 .orElseGet(() -> Cart.create(memberId));
 
         cart = cart.addItem(product.id(), product.name(), Quantity.of(command.quantity()), product.price());

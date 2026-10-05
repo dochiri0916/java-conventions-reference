@@ -3,10 +3,8 @@ package com.dochiri.tooltestlab.catalog.category.adapter.in.web;
 import com.dochiri.tooltestlab.catalog.category.adapter.in.web.request.CreateCategoryRequest;
 import com.dochiri.tooltestlab.catalog.category.adapter.in.web.response.CategoryListResponse;
 import com.dochiri.tooltestlab.catalog.category.adapter.in.web.response.CreateCategoryResponse;
-import com.dochiri.tooltestlab.catalog.category.application.port.in.GetCategorySummariesUseCase;
-import com.dochiri.tooltestlab.catalog.category.application.port.in.RegisterCategoryUseCase;
-import com.dochiri.tooltestlab.catalog.category.application.port.in.command.RegisterCategoryCommand;
-import com.dochiri.tooltestlab.catalog.category.application.port.in.result.CategorySummary;
+import com.dochiri.tooltestlab.catalog.category.application.port.in.usecase.GetCategorySummariesUseCase;
+import com.dochiri.tooltestlab.catalog.category.application.port.in.usecase.RegisterCategoryUseCase;
 import com.dochiri.tooltestlab.catalog.category.application.port.in.result.RegisterCategoryResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,8 +34,8 @@ public final class CategoryController {
     @PostMapping
     public ResponseEntity<CreateCategoryResponse> create(@Valid @RequestBody CreateCategoryRequest request) {
         final RegisterCategoryResult result =
-                registerCategoryUseCase.register(new RegisterCategoryCommand(request.name()));
-        return ResponseEntity.ok(new CreateCategoryResponse(result.publicId(), result.name()));
+                registerCategoryUseCase.register(request.toCommand());
+        return ResponseEntity.ok(CreateCategoryResponse.from(result));
     }
 
     @Operation(summary = "카테고리 목록 조회", description = "전체 카테고리 목록을 조회합니다.")
@@ -47,13 +45,9 @@ public final class CategoryController {
     @GetMapping
     public ResponseEntity<List<CategoryListResponse>> list() {
         final List<CategoryListResponse> response = getCategorySummariesUseCase.getAll().stream()
-                .map(CategoryController::toResponse)
+                .map(CategoryListResponse::from)
                 .toList();
 
         return ResponseEntity.ok(response);
-    }
-
-    private static CategoryListResponse toResponse(final CategorySummary summary) {
-        return new CategoryListResponse(summary.publicId(), summary.name());
     }
 }

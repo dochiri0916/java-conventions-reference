@@ -1,10 +1,12 @@
 package com.dochiri.tooltestlab.review.application.service;
 
-import com.dochiri.tooltestlab.review.application.exception.NotReviewOwnerException;
 import com.dochiri.tooltestlab.review.application.exception.ReviewNotFoundException;
-import com.dochiri.tooltestlab.review.application.port.in.DeleteReviewUseCase;
+import com.dochiri.tooltestlab.review.application.port.in.usecase.DeleteReviewUseCase;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
 import com.dochiri.tooltestlab.review.domain.Review;
+import com.dochiri.tooltestlab.review.domain.event.ReviewDeleted;
+import com.dochiri.tooltestlab.review.domain.vo.MemberReferenceId;
+import com.dochiri.tooltestlab.review.domain.vo.ReviewId;
 import com.dochiri.tooltestlab.review.application.ReviewEventMapper;
 import com.dochiri.tooltestlab.review.application.port.out.IntegrationEventPort;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +23,13 @@ public final class DeleteReviewService implements DeleteReviewUseCase {
     @Override
     @Transactional
     public void delete(final String reviewPublicId, final String memberPublicId) {
-        final Review review = reviewRepositoryPort.findByPublicId(reviewPublicId)
+        final ReviewId reviewId = ReviewId.parse(reviewPublicId);
+        final MemberReferenceId memberId = MemberReferenceId.parse(memberPublicId);
+        final Review review = reviewRepositoryPort.findByReviewId(reviewId)
                 .orElseThrow(() -> new ReviewNotFoundException());
 
-        if (!review.memberId().value().equals(memberPublicId)) {
-            throw new NotReviewOwnerException();
-        }
-
-        reviewRepositoryPort.deleteByPublicId(reviewPublicId);
-        integrationEventPort.publish(ReviewEventMapper.toIntegration(review.deletedEvent()));
+        final ReviewDeleted deleted = review.delete(memberId);
+        reviewRepositoryPort.deleteByReviewId(reviewId);
+        integrationEventPort.publish(ReviewEventMapper.toIntegration(deleted));
     }
 }

@@ -2,6 +2,7 @@ package com.dochiri.tooltestlab.catalog.category.domain;
 
 import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
 import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryName;
+import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryStatus;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,10 +22,10 @@ public final class Category {
         this.status = requireNonNull(status);
     }
 
-    public static Category create(final String name) {
+    public static Category create(final CategoryName name) {
         return new Category(
                 CategoryId.generate(),
-                CategoryName.of(name),
+                name,
                 CategoryStatus.ACTIVE
         );
     }
@@ -37,10 +38,10 @@ public final class Category {
         return new Category(id, name, status);
     }
 
-    public Category rename(final String name) {
+    public Category rename(final CategoryName name) {
         return new Category(
                 id,
-                CategoryName.of(name),
+                name,
                 status
         );
     }

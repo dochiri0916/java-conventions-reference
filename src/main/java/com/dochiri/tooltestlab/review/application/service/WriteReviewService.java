@@ -3,9 +3,9 @@ package com.dochiri.tooltestlab.review.application.service;
 import com.dochiri.tooltestlab.review.application.exception.DuplicateReviewException;
 import com.dochiri.tooltestlab.review.domain.vo.ProductReferenceId;
 import com.dochiri.tooltestlab.review.domain.vo.MemberReferenceId;
-import com.dochiri.tooltestlab.review.application.port.in.WriteReviewCommand;
-import com.dochiri.tooltestlab.review.application.port.in.WriteReviewResult;
-import com.dochiri.tooltestlab.review.application.port.in.WriteReviewUseCase;
+import com.dochiri.tooltestlab.review.application.port.in.command.WriteReviewCommand;
+import com.dochiri.tooltestlab.review.application.port.in.result.WriteReviewResult;
+import com.dochiri.tooltestlab.review.application.port.in.usecase.WriteReviewUseCase;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
 import com.dochiri.tooltestlab.review.domain.vo.Rating;
 import com.dochiri.tooltestlab.review.domain.Review;
@@ -28,7 +28,7 @@ public final class WriteReviewService implements WriteReviewUseCase {
     public WriteReviewResult write(final WriteReviewCommand command) {
         final MemberReferenceId memberId = MemberReferenceId.parse(command.memberPublicId());
         final ProductReferenceId productId = ProductReferenceId.parse(command.productPublicId());
-        if (reviewRepositoryPort.existsByMemberIdAndProductId(memberId.value(), productId.value())) {
+        if (reviewRepositoryPort.existsByMemberIdAndProductId(memberId, productId)) {
             throw new DuplicateReviewException();
         }
 
@@ -37,7 +37,7 @@ public final class WriteReviewService implements WriteReviewUseCase {
                 productId,
                 Rating.of(command.rating()),
                 ReviewContent.of(command.content()));
-        final Review saved = reviewRepositoryPort.save(review);
+        final Review saved = reviewRepositoryPort.create(review);
         integrationEventPort.publish(ReviewEventMapper.toIntegration(saved.writtenEvent()));
 
         return new WriteReviewResult(saved.id().value(), saved.memberId().value(),

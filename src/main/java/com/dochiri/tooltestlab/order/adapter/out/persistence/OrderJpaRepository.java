@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
-    Optional<OrderEntity> findByOrderId(String orderId);
+    Optional<OrderEntity> findByPublicId(String publicId);
 
     List<OrderEntity> findByMemberIdOrderByIdDesc(String memberId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT o FROM OrderEntity o WHERE o.orderId = :orderId")
-    Optional<OrderEntity> findByOrderIdForUpdate(@Param("orderId") String orderId);
+    @Query("SELECT o FROM OrderEntity o WHERE o.publicId = :publicId")
+    Optional<OrderEntity> findByPublicIdForUpdate(@Param("publicId") String publicId);
 }

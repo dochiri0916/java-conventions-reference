@@ -7,7 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "cart_items")
+@Table(
+        name = "cart_items",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_cart_items_public_id",
+                columnNames = "public_id"
+        )
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartItemEntity extends BaseEntity {
@@ -17,8 +23,8 @@ public class CartItemEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 36)
-    private String cartItemId;
+    @Column(name = "public_id", nullable = false, length = 36)
+    private String publicId;
 
     @Column(nullable = false, length = 36)
     private String cartId;
@@ -35,9 +41,9 @@ public class CartItemEntity extends BaseEntity {
     @Column(nullable = false)
     private long unitPrice;
 
-    private CartItemEntity(final String cartItemId, final String cartId, final String productId,
+    private CartItemEntity(final String publicId, final String cartId, final String productId,
                           final String productName, final int quantity, final long unitPrice) {
-        this.cartItemId = cartItemId;
+        this.publicId = publicId;
         this.cartId = cartId;
         this.productId = productId;
         this.productName = productName;
@@ -45,8 +51,8 @@ public class CartItemEntity extends BaseEntity {
         this.unitPrice = unitPrice;
     }
 
-    static CartItemEntity create(final String cartItemId, final String cartId, final String productId,
+    static CartItemEntity create(final String publicId, final String cartId, final String productId,
                                  final String productName, final int quantity, final long unitPrice) {
-        return new CartItemEntity(cartItemId, cartId, productId, productName, quantity, unitPrice);
+        return new CartItemEntity(publicId, cartId, productId, productName, quantity, unitPrice);
     }
 }

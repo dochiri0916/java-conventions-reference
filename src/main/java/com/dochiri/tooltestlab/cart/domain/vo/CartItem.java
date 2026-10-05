@@ -1,6 +1,5 @@
 package com.dochiri.tooltestlab.cart.domain.vo;
 
-import com.dochiri.tooltestlab.cart.domain.exception.InvalidCartItemException;
 import com.dochiri.tooltestlab.cart.domain.exception.ProductNameRequiredException;
 import com.dochiri.tooltestlab.cart.domain.exception.ProductReferenceIdRequiredException;
 import com.dochiri.tooltestlab.cart.domain.exception.QuantityRequiredException;
@@ -45,11 +44,11 @@ public final class CartItem {
         return unitPrice.multiply(quantity.value());
     }
 
-    public CartItem increaseQuantity(final int delta) {
-        if (delta <= 0) {
-            throw new InvalidCartItemException();
+    public CartItem increaseQuantity(final Quantity delta) {
+        if (delta == null) {
+            throw new QuantityRequiredException();
         }
-        return new CartItem(productId, productName, Quantity.of(quantity.value() + delta), unitPrice);
+        return new CartItem(productId, productName, Quantity.of(quantity.value() + delta.value()), unitPrice);
     }
 
     public static CartItem of(

@@ -7,7 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "order_lines")
+@Table(
+        name = "order_lines",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_order_lines_public_id",
+                columnNames = "public_id"
+        )
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderLineEntity extends BaseEntity {
@@ -17,8 +23,8 @@ public class OrderLineEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 36)
-    private String orderLineId;
+    @Column(name = "public_id", nullable = false, length = 36)
+    private String publicId;
 
     @Column(nullable = false, length = 36)
     private String orderId;
@@ -35,9 +41,9 @@ public class OrderLineEntity extends BaseEntity {
     @Column(nullable = false)
     private long unitPrice;
 
-    private OrderLineEntity(final String orderLineId, final String orderId, final String productId,
+    private OrderLineEntity(final String publicId, final String orderId, final String productId,
                            final String productName, final int quantity, final long unitPrice) {
-        this.orderLineId = orderLineId;
+        this.publicId = publicId;
         this.orderId = orderId;
         this.productId = productId;
         this.productName = productName;
@@ -45,8 +51,8 @@ public class OrderLineEntity extends BaseEntity {
         this.unitPrice = unitPrice;
     }
 
-    static OrderLineEntity create(final String orderLineId, final String orderId, final String productId,
+    static OrderLineEntity create(final String publicId, final String orderId, final String productId,
                                   final String productName, final int quantity, final long unitPrice) {
-        return new OrderLineEntity(orderLineId, orderId, productId, productName, quantity, unitPrice);
+        return new OrderLineEntity(publicId, orderId, productId, productName, quantity, unitPrice);
     }
 }

@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.cart.adapter.in.web.response;
 
+import com.dochiri.tooltestlab.cart.application.port.in.result.GetCartResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
@@ -15,6 +16,11 @@ public record GetCartResponse(
         items = List.copyOf(items);
     }
 
+    public static GetCartResponse from(final GetCartResult result) {
+        final var items = result.items().stream().map(Item::from).toList();
+        return new GetCartResponse(result.publicId(), result.memberPublicId(), items, result.totalAmount());
+    }
+
     @Schema(description = "장바구니 상품")
     public record Item(
             @Schema(description = "상품 publicId", example = "01900000-0000-7000-8000-000000000001") String productPublicId,
@@ -22,5 +28,10 @@ public record GetCartResponse(
             @Schema(description = "수량", example = "2") int quantity,
             @Schema(description = "단가 (원 단위)", example = "3690000") long unitPrice,
             @Schema(description = "총 가격 (원 단위)", example = "7380000") long totalPrice) {
+
+        public static Item from(final GetCartResult.Item result) {
+            return new Item(result.productPublicId(), result.productName(), result.quantity(),
+                    result.unitPrice(), result.totalPrice());
+        }
     }
 }

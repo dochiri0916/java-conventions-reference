@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.cart.application.service;
 
-import com.dochiri.tooltestlab.cart.application.port.in.*;
+import com.dochiri.tooltestlab.cart.application.port.in.command.UpdateProductSnapshotCommand;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.UpdateProductSnapshotUseCase;
 import com.dochiri.tooltestlab.cart.application.port.out.ProductCatalogPort;
 import com.dochiri.tooltestlab.cart.domain.vo.ProductName;
 import com.dochiri.tooltestlab.cart.domain.vo.ProductReferenceId;

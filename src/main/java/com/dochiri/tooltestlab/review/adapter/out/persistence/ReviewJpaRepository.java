@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Optional;
 
 interface ReviewJpaRepository extends JpaRepository<ReviewEntity, Long> {
-    Optional<ReviewEntity> findByReviewId(String reviewId);
+    Optional<ReviewEntity> findByPublicId(String publicId);
 
     List<ReviewEntity> findByProductIdOrderByIdDesc(String productId);
 
     boolean existsByMemberIdAndProductId(String memberId, String productId);
 
-    void deleteByReviewId(String reviewId);
+    void deleteByPublicId(String publicId);
 }

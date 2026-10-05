@@ -49,7 +49,7 @@ public final class Cart {
         requireNonNull(quantity);
         requireNonNull(unitPrice);
         return items.findByProductId(productId)
-                .map(existing -> new Cart(id, memberId, items.replace(existing, existing.increaseQuantity(quantity.value())), revision + 1))
+                .map(existing -> new Cart(id, memberId, items.replace(existing, existing.increaseQuantity(quantity)), revision + 1))
                 .orElseGet(() -> new Cart(id, memberId, items.add(CartItem.of(productId, productName, quantity, unitPrice)), revision + 1));
     }
 

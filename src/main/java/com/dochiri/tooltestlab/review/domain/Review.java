@@ -3,6 +3,8 @@ package com.dochiri.tooltestlab.review.domain;
 import com.dochiri.tooltestlab.review.domain.vo.MemberReferenceId;
 import com.dochiri.tooltestlab.review.domain.event.ReviewWritten;
 import com.dochiri.tooltestlab.review.domain.event.ReviewDeleted;
+import com.dochiri.tooltestlab.review.domain.exception.MemberReferenceIdRequiredException;
+import com.dochiri.tooltestlab.review.domain.exception.NotReviewOwnerException;
 import com.dochiri.tooltestlab.review.domain.vo.ProductReferenceId;
 import com.dochiri.tooltestlab.review.domain.vo.Rating;
 import com.dochiri.tooltestlab.review.domain.vo.ReviewContent;
@@ -59,7 +61,13 @@ public final class Review {
         return new ReviewWritten(this);
     }
 
-    public ReviewDeleted deletedEvent() {
+    public ReviewDeleted delete(final MemberReferenceId requesterId) {
+        if (requesterId == null) {
+            throw new MemberReferenceIdRequiredException();
+        }
+        if (!memberId.equals(requesterId)) {
+            throw new NotReviewOwnerException();
+        }
         return new ReviewDeleted(id, productId);
     }
 

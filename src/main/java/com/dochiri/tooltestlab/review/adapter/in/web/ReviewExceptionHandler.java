@@ -5,7 +5,7 @@ import com.dochiri.tooltestlab.review.domain.exception.InvalidMemberReferenceIdE
 import com.dochiri.tooltestlab.global.exception.ProblemDetails;
 import com.dochiri.tooltestlab.review.application.exception.DuplicateReviewException;
 import com.dochiri.tooltestlab.review.application.exception.InvalidCommandException;
-import com.dochiri.tooltestlab.review.application.exception.NotReviewOwnerException;
+import com.dochiri.tooltestlab.review.domain.exception.NotReviewOwnerException;
 import com.dochiri.tooltestlab.review.application.exception.ReviewApplicationException;
 import com.dochiri.tooltestlab.review.application.exception.ReviewNotFoundException;
 import com.dochiri.tooltestlab.review.domain.exception.InvalidRatingException;
@@ -49,6 +49,7 @@ public final class ReviewExceptionHandler {
             case ReviewRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "REVIEW_REQUIRED");
             case ProductReferenceIdRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "PRODUCT_ID_REQUIRED");
             case MemberReferenceIdRequiredException e -> respond(e, HttpStatus.BAD_REQUEST, "MEMBER_ID_REQUIRED");
+            case NotReviewOwnerException e -> respond(e, HttpStatus.FORBIDDEN, "NOT_REVIEW_OWNER");
         };
     }
 
@@ -57,7 +58,6 @@ public final class ReviewExceptionHandler {
         return switch (exception) {
             case DuplicateReviewException e -> respond(e, HttpStatus.CONFLICT, "DUPLICATE_REVIEW");
             case ReviewNotFoundException e -> respond(e, HttpStatus.NOT_FOUND, "REVIEW_NOT_FOUND");
-            case NotReviewOwnerException e -> respond(e, HttpStatus.FORBIDDEN, "NOT_REVIEW_OWNER");
             case InvalidCommandException e -> respond(e, HttpStatus.BAD_REQUEST, "INVALID_INPUT");
         };
     }

@@ -7,7 +7,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "carts")
+@Table(
+        name = "carts",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_carts_public_id",
+                        columnNames = "public_id"
+                ),
+                @UniqueConstraint(
+                        name = "uk_carts_member_id",
+                        columnNames = "member_id"
+                )
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartEntity extends BaseEntity {
@@ -21,10 +33,10 @@ public class CartEntity extends BaseEntity {
     @Version
     private Long version;
 
-    @Column(nullable = false, unique = true, length = 36)
-    private String cartId;
+    @Column(name = "public_id", nullable = false, length = 36)
+    private String publicId;
 
-    @Column(nullable = false, unique = true, length = 36)
+    @Column(name = "member_id", nullable = false, length = 36)
     private String memberId;
 
     @Column(nullable = false)
@@ -34,12 +46,12 @@ public class CartEntity extends BaseEntity {
         this.revision = revision;
     }
 
-    private CartEntity(final String cartId, final String memberId) {
-        this.cartId = cartId;
+    private CartEntity(final String publicId, final String memberId) {
+        this.publicId = publicId;
         this.memberId = memberId;
     }
 
-    static CartEntity create(final String cartId, final String memberId) {
-        return new CartEntity(cartId, memberId);
+    static CartEntity create(final String publicId, final String memberId) {
+        return new CartEntity(publicId, memberId);
     }
 }

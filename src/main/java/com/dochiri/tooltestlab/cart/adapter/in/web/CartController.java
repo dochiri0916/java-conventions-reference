@@ -4,12 +4,12 @@ import com.dochiri.tooltestlab.cart.adapter.in.web.request.AddToCartRequest;
 import com.dochiri.tooltestlab.cart.adapter.in.web.response.AddToCartResponse;
 import com.dochiri.tooltestlab.cart.adapter.in.web.response.GetCartResponse;
 import com.dochiri.tooltestlab.cart.adapter.in.web.response.RemoveFromCartResponse;
-import com.dochiri.tooltestlab.cart.application.port.in.AddToCartCommand;
-import com.dochiri.tooltestlab.cart.application.port.in.AddToCartUseCase;
-import com.dochiri.tooltestlab.cart.application.port.in.GetCartResult;
-import com.dochiri.tooltestlab.cart.application.port.in.GetCartUseCase;
-import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartCommand;
-import com.dochiri.tooltestlab.cart.application.port.in.RemoveFromCartUseCase;
+import com.dochiri.tooltestlab.cart.application.port.in.query.GetCartQuery;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.AddToCartUseCase;
+import com.dochiri.tooltestlab.cart.application.port.in.result.GetCartResult;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.GetCartUseCase;
+import com.dochiri.tooltestlab.cart.application.port.in.command.RemoveFromCartCommand;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.RemoveFromCartUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -38,13 +38,8 @@ public class CartController {
     })
     @GetMapping
     public ResponseEntity<GetCartResponse> get(@Parameter(hidden = true) String memberPublicId) {
-        final GetCartResult result = getCartUseCase.getCart(memberPublicId);
-        final var items = result.items().stream()
-                .map(i -> new GetCartResponse.Item(
-                        i.productPublicId(), i.productName(), i.quantity(), i.unitPrice(), i.totalPrice()))
-                .toList();
-        return ResponseEntity.ok(
-                new GetCartResponse(result.publicId(), result.memberPublicId(), items, result.totalAmount()));
+        final GetCartResult result = getCartUseCase.getCart(new GetCartQuery(memberPublicId));
+        return ResponseEntity.ok(GetCartResponse.from(result));
     }
 
     @Operation(summary = "장바구니 담기", description = "상품을 장바구니에 추가합니다.")
@@ -58,8 +53,7 @@ public class CartController {
     public ResponseEntity<AddToCartResponse> add(
             @Parameter(hidden = true) String memberPublicId,
             @Valid @RequestBody AddToCartRequest request) {
-        addToCartUseCase.add(new AddToCartCommand(
-                memberPublicId, request.productPublicId(), request.quantity()));
+        addToCartUseCase.add(request.toCommand(memberPublicId));
         return ResponseEntity.ok(new AddToCartResponse("장바구니에 추가되었습니다."));
     }
 

@@ -1,9 +1,9 @@
 package com.dochiri.tooltestlab.member.application.service;
 
 import com.dochiri.tooltestlab.member.application.exception.DuplicateEmailException;
-import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberCommand;
-import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberResult;
-import com.dochiri.tooltestlab.member.application.port.in.RegisterMemberUseCase;
+import com.dochiri.tooltestlab.member.application.port.in.command.RegisterMemberCommand;
+import com.dochiri.tooltestlab.member.application.port.in.result.RegisterMemberResult;
+import com.dochiri.tooltestlab.member.application.port.in.usecase.RegisterMemberUseCase;
 import com.dochiri.tooltestlab.member.application.port.out.MemberRepositoryPort;
 import com.dochiri.tooltestlab.member.application.port.out.PasswordEncoderPort;
 import com.dochiri.tooltestlab.member.domain.vo.Email;
@@ -27,7 +27,7 @@ public final class RegisterMemberService implements RegisterMemberUseCase {
     @Transactional
     public RegisterMemberResult register(final RegisterMemberCommand command) {
         final Email email = Email.of(command.email());
-        if (memberRepositoryPort.existsByEmail(email.value())) {
+        if (memberRepositoryPort.existsByEmail(email)) {
             throw new DuplicateEmailException();
         }
 

@@ -1,7 +1,7 @@
 package com.dochiri.tooltestlab.catalog.product.domain.exception;
 
 
-public final class StockOverflowException extends RuntimeException {
+public final class StockOverflowException extends ProductDomainException {
 
     private final int currentStock;
     private final int requestedQuantity;

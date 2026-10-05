@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.catalog.category.application.service;
 
-import com.dochiri.tooltestlab.catalog.category.application.port.in.GetCategorySummariesUseCase;
+import com.dochiri.tooltestlab.catalog.category.application.port.in.usecase.GetCategorySummariesUseCase;
 import com.dochiri.tooltestlab.catalog.category.application.port.in.result.CategorySummary;
 import com.dochiri.tooltestlab.catalog.category.application.port.out.CategoryRepositoryPort;
 import lombok.RequiredArgsConstructor;

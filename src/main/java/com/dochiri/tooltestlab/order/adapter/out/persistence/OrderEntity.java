@@ -7,7 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "orders")
+@Table(
+        name = "orders",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_orders_public_id",
+                columnNames = "public_id"
+        )
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderEntity extends BaseEntity {
@@ -21,8 +27,8 @@ public class OrderEntity extends BaseEntity {
     @Version
     private Long version;
 
-    @Column(nullable = false, unique = true, length = 36)
-    private String orderId;
+    @Column(name = "public_id", nullable = false, length = 36)
+    private String publicId;
 
     @Column(nullable = false, length = 36)
     private String memberId;
@@ -57,7 +63,7 @@ public class OrderEntity extends BaseEntity {
     private String zipCode;
 
     private OrderEntity(
-            final String orderId,
+            final String publicId,
             final String memberId,
             final String status,
             final long totalAmount,
@@ -66,7 +72,7 @@ public class OrderEntity extends BaseEntity {
             final String address,
             final String zipCode
     ) {
-        this.orderId = orderId;
+        this.publicId = publicId;
         this.memberId = memberId;
         this.status = status;
         this.totalAmount = totalAmount;
@@ -77,7 +83,7 @@ public class OrderEntity extends BaseEntity {
     }
 
     static OrderEntity create(
-            final String orderId,
+            final String publicId,
             final String memberId,
             final String status,
             final long totalAmount,
@@ -87,7 +93,7 @@ public class OrderEntity extends BaseEntity {
             final String zipCode
     ) {
         return new OrderEntity(
-                orderId, memberId, status, totalAmount, recipientName, phone, address, zipCode);
+                publicId, memberId, status, totalAmount, recipientName, phone, address, zipCode);
     }
 
     void update(

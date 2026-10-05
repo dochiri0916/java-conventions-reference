@@ -1,14 +1,14 @@
 package com.dochiri.tooltestlab.catalog.product.domain;
 
-import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
 import com.dochiri.tooltestlab.catalog.product.domain.event.ProductChanged;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.CategoryIds;
 import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductDescription;
 import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductId;
 import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductName;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductStatus;
 import com.dochiri.tooltestlab.catalog.product.domain.vo.Stock;
+import com.dochiri.tooltestlab.catalog.product.domain.vo.StockStatus;
 import com.dochiri.tooltestlab.global.domain.vo.Money;
-
-import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
@@ -20,7 +20,7 @@ public final class Product {
     private final Money price;
     private final Stock stock;
     private final ProductStatus status;
-    private final Set<CategoryId> categoryIds;
+    private final CategoryIds categoryIds;
 
     private Product(
             final ProductId id,
@@ -29,7 +29,7 @@ public final class Product {
             final Money price,
             final Stock stock,
             final ProductStatus status,
-            final Set<CategoryId> categoryIds
+            final CategoryIds categoryIds
     ) {
         this.id = requireNonNull(id);
         this.name = requireNonNull(name);
@@ -37,34 +37,34 @@ public final class Product {
         this.price = requireNonNull(price);
         this.stock = requireNonNull(stock);
         this.status = requireNonNull(status);
-        this.categoryIds = Set.copyOf(requireNonNull(categoryIds));
+        this.categoryIds = requireNonNull(categoryIds);
     }
 
     public static Product create(
-            final String name,
-            final String description,
-            final long price,
-            final int stock,
-            final Set<CategoryId> categoryIds
+            final ProductName name,
+            final ProductDescription description,
+            final Money price,
+            final Stock stock,
+            final CategoryIds categoryIds
     ) {
         return new Product(
                 ProductId.generate(),
-                ProductName.of(name),
-                ProductDescription.of(description),
-                Money.of(price),
-                Stock.of(stock),
+                name,
+                description,
+                price,
+                stock,
                 ProductStatus.PREPARING,
                 categoryIds
         );
     }
 
     public static Product create(
-            final String name,
-            final String description,
-            final long price,
-            final int stock
+            final ProductName name,
+            final ProductDescription description,
+            final Money price,
+            final Stock stock
     ) {
-        return create(name, description, price, stock, Set.of());
+        return create(name, description, price, stock, CategoryIds.empty());
     }
 
     public static Product restore(
@@ -74,7 +74,7 @@ public final class Product {
             final Money price,
             final Stock stock,
             final ProductStatus status,
-            final Set<CategoryId> categoryIds
+            final CategoryIds categoryIds
     ) {
         return new Product(
                 id,
@@ -95,10 +95,10 @@ public final class Product {
             final Stock stock,
             final ProductStatus status
     ) {
-        return restore(id, name, description, price, stock, status, Set.of());
+        return restore(id, name, description, price, stock, status, CategoryIds.empty());
     }
 
-    public Product replaceCategories(final Set<CategoryId> categoryIds) {
+    public Product replaceCategories(final CategoryIds categoryIds) {
         return copy(
                 stock,
                 status,
@@ -172,14 +172,14 @@ public final class Product {
         return status;
     }
 
-    public Set<CategoryId> categoryIds() {
+    public CategoryIds categoryIds() {
         return categoryIds;
     }
 
     private Product copy(
             final Stock stock,
             final ProductStatus status,
-            final Set<CategoryId> categoryIds
+            final CategoryIds categoryIds
     ) {
         return new Product(
                 id,

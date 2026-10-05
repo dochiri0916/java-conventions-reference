@@ -8,7 +8,7 @@ import com.dochiri.tooltestlab.order.domain.Order;
 import com.dochiri.tooltestlab.order.domain.vo.OrderId;
 import com.dochiri.tooltestlab.order.domain.vo.OrderLine;
 import com.dochiri.tooltestlab.order.domain.vo.OrderLines;
-import com.dochiri.tooltestlab.order.domain.OrderStatus;
+import com.dochiri.tooltestlab.order.domain.vo.OrderStatus;
 import com.dochiri.tooltestlab.order.domain.vo.Phone;
 import com.dochiri.tooltestlab.order.domain.vo.ProductName;
 import com.dochiri.tooltestlab.order.domain.vo.ProductReferenceId;
@@ -38,7 +38,7 @@ final class OrderMapper {
                 StreetAddress.of(entity.getAddress()), ZipCode.of(entity.getZipCode()));
 
         return Order.restore(
-                OrderId.parse(entity.getOrderId()), MemberReferenceId.parse(entity.getMemberId()),
+                OrderId.parse(entity.getPublicId()), MemberReferenceId.parse(entity.getMemberId()),
                 CartReferenceId.parse(entity.getCartId()), entity.getCartRevision(), OrderLines.of(domainItems),
                 OrderStatus.valueOf(entity.getStatus()), shippingAddress, Money.of(entity.getTotalAmount()));
     }
