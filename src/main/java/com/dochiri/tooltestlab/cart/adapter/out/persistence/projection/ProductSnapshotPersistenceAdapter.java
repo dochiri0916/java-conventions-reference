@@ -21,26 +21,61 @@ public final class ProductSnapshotPersistenceAdapter implements ProductCatalogPo
     @Override
     public ProductSnapshot findProduct(final ProductReferenceId productId) {
         return execute(() -> {
-            final var entity = entityManager.find(ProductSnapshotEntity.class, productId.value());
+            var entity = entityManager.find(
+                    ProductSnapshotEntity.class,
+                    productId.value());
             if (entity == null) {
                 throw new ProductSnapshotNotReadyException();
             }
-            return new ProductSnapshot(productId, ProductName.of(entity.getName()), Money.of(entity.getPriceAmount()));
+            return new ProductSnapshot(productId, ProductName.of(
+                    entity.getName()),
+                    Money.of(
+                            entity.getPriceAmount()));
         });
     }
 
     @Override
     public void save(final ProductSnapshot snapshot, final long sequence) {
         run(() -> {
-            var entity = entityManager.find(ProductSnapshotEntity.class, snapshot.id().value(), LockModeType.PESSIMISTIC_WRITE);
-            if (entity == null) {
-                entity = new ProductSnapshotEntity(snapshot.id().value());
-                entity.update(snapshot.name().value(), snapshot.price().amount(), sequence);
-                entityManager.persist(entity);
-            } else if (sequence > entity.getSequence()) {
-                entity.update(snapshot.name().value(), snapshot.price().amount(), sequence);
-            }
+            ProductReferenceId id = snapshot.id();
+            final String key = id.value();
+            final var entity = entityManager.find(
+                    ProductSnapshotEntity.class,
+                    key,
+                    LockModeType.PESSIMISTIC_WRITE);
+            upsert(entity, key, snapshot, sequence);
             entityManager.flush();
         });
+    }
+
+    private void upsert(
+            final ProductSnapshotEntity entity,
+            final String key,
+            final ProductSnapshot snapshot,
+            final long sequence) {
+        if (entity == null) {
+            insert(key, snapshot, sequence);
+            return;
+        }
+        if (sequence > entity.getSequence()) {
+            apply(entity, snapshot, sequence);
+        }
+    }
+
+    private void insert(final String key, final ProductSnapshot snapshot, final long sequence) {
+        final var created = new ProductSnapshotEntity(key);
+        apply(created, snapshot, sequence);
+        entityManager.persist(created);
+    }
+
+    private static void apply(
+            final ProductSnapshotEntity entity,
+            final ProductSnapshot snapshot,
+            final long sequence) {
+        final ProductName name = snapshot.name();
+        final Money price = snapshot.price();
+        entity.update(
+                name.value(),
+                price.amount(), sequence);
     }
 }

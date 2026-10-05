@@ -8,5 +8,5 @@ import com.dochiri.tooltestlab.catalog.product.application.port.in.result.GetPro
  */
 @FunctionalInterface
 public interface GetProductUseCase {
-    GetProductResult getProduct(final GetProductQuery query);
+    GetProductResult getProduct(GetProductQuery query);
 }

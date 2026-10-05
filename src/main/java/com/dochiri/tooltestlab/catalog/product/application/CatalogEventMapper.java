@@ -1,6 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.application;
 
-import com.dochiri.tooltestlab.catalog.product.application.port.out.event.*;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.event.ProductChangedIntegrationEvent;
 import com.dochiri.tooltestlab.catalog.product.domain.event.ProductChanged;
 
 public final class CatalogEventMapper {
@@ -9,8 +9,16 @@ public final class CatalogEventMapper {
 
     public static ProductChangedIntegrationEvent toIntegration(final ProductChanged event) {
         final var product = event.product();
-        return new ProductChangedIntegrationEvent(product.id().value(), product.name().value(),
-                product.price().amount(), product.stock().value(), product.status().name());
+        return new ProductChangedIntegrationEvent(product.id()
+                .value(),
+                product.name()
+                        .value(),
+                product.price()
+                        .amount(),
+                product.stock()
+                        .value(),
+                product.status()
+                        .name());
     }
 
 }

@@ -1,17 +1,11 @@
 package com.dochiri.tooltestlab.catalog.product.application.port.in.result;
 
-import java.util.List;
-
 public record ListProductsResult(
-        List<ProductSummary> products,
+        ProductSummaries products,
         int page,
         int size,
         long totalCount
 ) {
-
-    public ListProductsResult {
-        products = List.copyOf(products);
-    }
 
     public record ProductSummary(
             String publicId,
@@ -19,10 +13,7 @@ public record ListProductsResult(
             long priceAmount,
             int stock,
             String status,
-            List<String> categoryNames
+            CategoryNameItems categoryNames
     ) {
-        public ProductSummary {
-            categoryNames = List.copyOf(categoryNames);
-        }
     }
 }

@@ -4,6 +4,9 @@ import com.dochiri.tooltestlab.catalog.category.application.exception.DuplicateC
 import com.dochiri.tooltestlab.catalog.category.application.port.in.usecase.RegisterCategoryUseCase;
 import com.dochiri.tooltestlab.catalog.category.application.port.in.command.RegisterCategoryCommand;
 import com.dochiri.tooltestlab.catalog.category.application.port.in.result.RegisterCategoryResult;
+import com.dochiri.tooltestlab.catalog.category.application.CategoryResultMapper;
+import com.dochiri.tooltestlab.catalog.category.application.port.out.Categories;
+import com.dochiri.tooltestlab.catalog.category.application.port.out.CategoryNameSet;
 import com.dochiri.tooltestlab.catalog.category.application.port.out.CategoryRepositoryPort;
 import com.dochiri.tooltestlab.catalog.category.domain.Category;
 import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryName;
@@ -22,15 +25,18 @@ public final class RegisterCategoryService implements RegisterCategoryUseCase {
     @Override
     @Transactional
     public RegisterCategoryResult register(final RegisterCategoryCommand command) {
-        final CategoryName categoryName = CategoryName.of(command.name());
-        final boolean exists = categoryRepositoryPort.findAllByNames(Set.of(categoryName))
-                .stream()
+        final CategoryName categoryName = CategoryName.of(
+                command.name());
+        final Categories found = categoryRepositoryPort.findAllByNames(
+                new CategoryNameSet(Set.of(categoryName)));
+        final boolean exists = found.values().stream()
                 .anyMatch(category -> category.name().equals(categoryName));
         if (exists) {
             throw new DuplicateCategoryNameException();
         }
 
-        final Category saved = categoryRepositoryPort.create(Category.create(categoryName));
-        return new RegisterCategoryResult(saved.id().value(), saved.name().value());
+        final Category saved = categoryRepositoryPort.create(
+                Category.create(categoryName));
+        return CategoryResultMapper.toRegisterResult(saved);
     }
 }

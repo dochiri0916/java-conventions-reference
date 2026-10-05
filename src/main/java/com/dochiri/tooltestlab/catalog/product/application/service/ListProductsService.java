@@ -1,5 +1,7 @@
 package com.dochiri.tooltestlab.catalog.product.application.service;
 
+import com.dochiri.tooltestlab.catalog.category.application.port.out.Categories;
+import com.dochiri.tooltestlab.catalog.category.application.port.out.CategoryIdSet;
 import com.dochiri.tooltestlab.catalog.category.application.port.out.CategoryRepositoryPort;
 import com.dochiri.tooltestlab.catalog.category.domain.Category;
 import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
@@ -9,6 +11,7 @@ import com.dochiri.tooltestlab.catalog.product.application.port.in.usecase.ListP
 import com.dochiri.tooltestlab.catalog.product.application.port.in.result.ListProductsResult;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductPage;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.Products;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductSearchCondition;
 import com.dochiri.tooltestlab.catalog.product.domain.Product;
 import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductStatus;
@@ -34,23 +37,38 @@ public final class ListProductsService implements ListProductsUseCase {
     @Override
     @Transactional(readOnly = true)
     public ListProductsResult list(final ListProductsQuery query) {
-        final ProductPage productPage = productRepositoryPort.search(toCondition(query), query.page(), query.size());
-        final Map<CategoryId, Category> categoriesById = findCategoriesById(productPage.products());
+        final ProductPage productPage = productRepositoryPort.search(toCondition(query),
+                query.page(),
+                query.size());
+        final Products products = productPage.products();
+        final List<Product> values = products.values();
+        final Map<CategoryId, Category> categoriesById = findCategoriesById(values);
 
-        final List<ListProductsResult.ProductSummary> summaries = productPage.products().stream()
+        final List<ListProductsResult.ProductSummary> summaries = values.stream()
                 .map(product -> toSummary(product, categoriesById))
                 .toList();
 
-        return new ListProductsResult(summaries, query.page(), query.size(), productPage.totalCount());
+        return ProductResultMapper.toListResult(summaries,
+                query.page(),
+                query.size(),
+                productPage.totalCount());
     }
 
     private static ProductSearchCondition toCondition(final ListProductsQuery query) {
         return new ProductSearchCondition(
                 query.keyword(),
-                query.status() == null ? null : ProductStatus.valueOf(query.status()),
-                query.categoryId() == null ? null : CategoryId.parse(query.categoryId()),
-                query.minPrice() == null ? null : Money.of(query.minPrice()),
-                query.maxPrice() == null ? null : Money.of(query.maxPrice())
+                query.status() == null ? null :
+                        ProductStatus.valueOf(
+                                query.status()),
+                query.categoryId() == null ? null :
+                        CategoryId.parse(
+                                query.categoryId()),
+                query.minPrice() == null ? null :
+                        Money.of(
+                                query.minPrice()),
+                query.maxPrice() == null ? null :
+                        Money.of(
+                                query.maxPrice())
         );
     }
 
@@ -58,7 +76,8 @@ public final class ListProductsService implements ListProductsUseCase {
         final Set<CategoryId> categoryIds = products.stream()
                 .flatMap(product -> product.categoryIds().values().stream())
                 .collect(Collectors.toUnmodifiableSet());
-        return categoryRepositoryPort.findAllByIds(categoryIds).stream()
+        final Categories found = categoryRepositoryPort.findAllByIds(new CategoryIdSet(categoryIds));
+        return found.values().stream()
                 .collect(Collectors.toUnmodifiableMap(Category::id, Function.identity()));
     }
 
@@ -70,6 +89,7 @@ public final class ListProductsService implements ListProductsUseCase {
                 .map(categoriesById::get)
                 .filter(Objects::nonNull)
                 .toList();
-        return ProductResultMapper.toSummary(product, categories);
+        return ProductResultMapper.toSummary(product, new Categories(
+                Set.copyOf(categories)));
     }
 }

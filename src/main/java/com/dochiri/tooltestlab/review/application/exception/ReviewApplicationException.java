@@ -8,4 +8,8 @@ public abstract sealed class ReviewApplicationException extends RuntimeException
         super(message);
     }
 
+    protected ReviewApplicationException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+
 }

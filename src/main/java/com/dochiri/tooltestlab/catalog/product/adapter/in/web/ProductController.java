@@ -23,7 +23,13 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "상품", description = "상품 등록, 조회, 목록 API")
 @RestController
@@ -41,10 +47,11 @@ public final class ProductController {
             @ApiResponse(responseCode = "400", description = "잘못된 상품명, 가격, 또는 재고")
     })
     @PostMapping
-    public ResponseEntity<RegisterProductResponse> register(@Valid @RequestBody RegisterProductRequest request) {
+    public ResponseEntity<RegisterProductResponse> register(@Valid @RequestBody final RegisterProductRequest request) {
         final RegisterProductResult result = registerProductUseCase.register(
                 request.toCommand());
-        return ResponseEntity.ok(RegisterProductResponse.from(result));
+        return ResponseEntity.ok(
+                RegisterProductResponse.from(result));
     }
 
     @Operation(summary = "상품 목록 조회", description = "검색 조건(이름·상태·카테고리·가격 범위)을 선택적으로 적용해 상품 목록을 페이지네이션으로 조회합니다.")
@@ -55,24 +62,25 @@ public final class ProductController {
     @GetMapping
     public ResponseEntity<ProductListResponse> list(
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
-            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page는 0 이상이어야 합니다.") int page,
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page는 0 이상이어야 합니다.") final int page,
             @Parameter(description = "페이지 크기 (1~100)", example = "20")
             @RequestParam(defaultValue = "20")
             @Min(value = 1, message = "size는 1 이상이어야 합니다.")
-            @Max(value = 100, message = "size는 100 이하여야 합니다.") int size,
+            @Max(value = 100, message = "size는 100 이하여야 합니다.") final int size,
             @Parameter(description = "상품 이름 검색어 (부분 일치, 대소문자 무시)")
-            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) final String keyword,
             @Parameter(description = "상품 상태")
-            @RequestParam(required = false) ProductStatus status,
+            @RequestParam(required = false) final ProductStatus status,
             @Parameter(description = "카테고리 publicId")
-            @RequestParam(required = false) String categoryId,
+            @RequestParam(required = false) final String categoryId,
             @Parameter(description = "최소 가격", example = "1000")
-            @RequestParam(required = false) Long minPrice,
+            @RequestParam(required = false) final Long minPrice,
             @Parameter(description = "최대 가격", example = "50000")
-            @RequestParam(required = false) Long maxPrice) {
+            @RequestParam(required = false) final Long maxPrice) {
         final ListProductsResult result = listProductsUseCase.list(new ListProductsQuery(
                 page, size, keyword, status == null ? null : status.name(), categoryId, minPrice, maxPrice));
-        return ResponseEntity.ok(ProductListResponse.from(result));
+        return ResponseEntity.ok(
+                ProductListResponse.from(result));
     }
 
     @Operation(summary = "상품 상세 조회", description = "상품 publicId로 상품 상세 정보를 조회합니다.")
@@ -83,8 +91,9 @@ public final class ProductController {
     @GetMapping("/{publicId}")
     public ResponseEntity<GetProductResponse> get(
             @Parameter(description = "상품 publicId", example = "01900000-0000-7000-8000-000000000001")
-            @PathVariable String publicId) {
+            @PathVariable final String publicId) {
         final GetProductResult result = getProductUseCase.getProduct(new GetProductQuery(publicId));
-        return ResponseEntity.ok(GetProductResponse.from(result));
+        return ResponseEntity.ok(
+                GetProductResponse.from(result));
     }
 }

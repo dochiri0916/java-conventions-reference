@@ -8,5 +8,5 @@ import com.dochiri.tooltestlab.catalog.product.application.port.in.result.ListPr
  */
 @FunctionalInterface
 public interface ListProductsUseCase {
-    ListProductsResult list(final ListProductsQuery query);
+    ListProductsResult list(ListProductsQuery query);
 }

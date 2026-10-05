@@ -18,13 +18,19 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "장바구니", description = "장바구니 조회, 추가, 삭제 API")
 @RestController
 @RequestMapping("/api/cart")
 @RequiredArgsConstructor
-public class CartController {
+public final class CartController {
 
     private final GetCartUseCase getCartUseCase;
     private final AddToCartUseCase addToCartUseCase;
@@ -37,9 +43,10 @@ public class CartController {
             @ApiResponse(responseCode = "404", description = "장바구니가 존재하지 않음")
     })
     @GetMapping
-    public ResponseEntity<GetCartResponse> get(@Parameter(hidden = true) String memberPublicId) {
+    public ResponseEntity<GetCartResponse> get(@Parameter(hidden = true) final String memberPublicId) {
         final GetCartResult result = getCartUseCase.getCart(new GetCartQuery(memberPublicId));
-        return ResponseEntity.ok(GetCartResponse.from(result));
+        return ResponseEntity.ok(
+                GetCartResponse.from(result));
     }
 
     @Operation(summary = "장바구니 담기", description = "상품을 장바구니에 추가합니다.")
@@ -51,9 +58,10 @@ public class CartController {
     })
     @PostMapping("/items")
     public ResponseEntity<AddToCartResponse> add(
-            @Parameter(hidden = true) String memberPublicId,
-            @Valid @RequestBody AddToCartRequest request) {
-        addToCartUseCase.add(request.toCommand(memberPublicId));
+            @Parameter(hidden = true) final String memberPublicId,
+            @Valid @RequestBody final AddToCartRequest request) {
+        addToCartUseCase.add(
+                request.toCommand(memberPublicId));
         return ResponseEntity.ok(new AddToCartResponse("장바구니에 추가되었습니다."));
     }
 
@@ -66,9 +74,9 @@ public class CartController {
     })
     @DeleteMapping("/items/{productPublicId}")
     public ResponseEntity<RemoveFromCartResponse> remove(
-            @Parameter(hidden = true) String memberPublicId,
+            @Parameter(hidden = true) final String memberPublicId,
             @Parameter(description = "상품 publicId", example = "01900000-0000-7000-8000-000000000001")
-            @PathVariable String productPublicId) {
+            @PathVariable final String productPublicId) {
         removeFromCartUseCase.remove(new RemoveFromCartCommand(memberPublicId, productPublicId));
         return ResponseEntity.ok(new RemoveFromCartResponse("장바구니에서 제거되었습니다."));
     }

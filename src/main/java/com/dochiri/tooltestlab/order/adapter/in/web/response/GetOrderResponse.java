@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.order.adapter.in.web.response;
 
 import com.dochiri.tooltestlab.order.application.port.in.result.GetOrderResult;
+import com.dochiri.tooltestlab.order.application.port.in.result.GetOrderResultItems;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
@@ -22,7 +23,8 @@ public record GetOrderResponse(
     }
 
     public static GetOrderResponse from(final GetOrderResult result) {
-        final var items = result.items().stream().map(Item::from).toList();
+        final GetOrderResultItems resultItems = result.items();
+        final List<Item> items = resultItems.values().stream().map(Item::from).toList();
         return new GetOrderResponse(result.publicId(), result.memberPublicId(), result.status(), result.totalAmount(),
                 result.recipientName(), result.phone(), result.address(), result.zipCode(), items);
     }

@@ -9,4 +9,8 @@ public abstract sealed class MemberApplicationException extends RuntimeException
         super(message);
     }
 
+    protected MemberApplicationException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+
 }

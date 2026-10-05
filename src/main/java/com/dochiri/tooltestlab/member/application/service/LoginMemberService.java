@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.member.application.service;
 
+import com.dochiri.tooltestlab.member.application.MemberResultMapper;
 import com.dochiri.tooltestlab.member.application.exception.LoginFailedException;
 import com.dochiri.tooltestlab.member.application.port.in.command.LoginMemberCommand;
 import com.dochiri.tooltestlab.member.application.port.in.result.LoginMemberResult;
@@ -22,14 +23,17 @@ public final class LoginMemberService implements LoginMemberUseCase {
     @Override
     @Transactional(readOnly = true)
     public LoginMemberResult login(final LoginMemberCommand command) {
-        final Email email = Email.of(command.email());
+        final Email email = Email.of(
+                command.email());
         final Member member = memberRepositoryPort.findByEmail(email)
                 .orElseThrow(LoginFailedException::new);
 
-        if (!passwordEncoderPort.matches(command.password(), member.encodedPassword())) {
+        if (!passwordEncoderPort.matches(
+                command.password(),
+                member.encodedPassword())) {
             throw new LoginFailedException();
         }
 
-        return new LoginMemberResult(member.id().value(), member.email().value(), member.name().value());
+        return MemberResultMapper.toLoginResult(member);
     }
 }

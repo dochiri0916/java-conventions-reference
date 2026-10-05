@@ -8,5 +8,5 @@ import com.dochiri.tooltestlab.order.application.port.in.result.GetOrderResult;
  */
 @FunctionalInterface
 public interface GetOrderUseCase {
-    GetOrderResult getOrder(final GetOrderQuery query);
+    GetOrderResult getOrder(GetOrderQuery query);
 }

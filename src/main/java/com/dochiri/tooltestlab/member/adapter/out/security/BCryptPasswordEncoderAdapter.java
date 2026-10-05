@@ -6,15 +6,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-class BCryptPasswordEncoderAdapter implements PasswordEncoderPort {
+final class BCryptPasswordEncoderAdapter implements PasswordEncoderPort {
 
     @Override
     public EncodedPassword encode(final String rawPassword) {
-        return EncodedPassword.of(new BCryptPasswordEncoder().encode(rawPassword));
+        return EncodedPassword.of(new BCryptPasswordEncoder()
+                .encode(rawPassword));
     }
 
     @Override
     public boolean matches(final String rawPassword, final EncodedPassword encodedPassword) {
-        return new BCryptPasswordEncoder().matches(rawPassword, encodedPassword.value());
+        return new BCryptPasswordEncoder().matches(rawPassword,
+                encodedPassword.value());
     }
 }

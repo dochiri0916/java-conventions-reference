@@ -4,6 +4,7 @@ import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductRepositoryPort;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductPage;
 import com.dochiri.tooltestlab.catalog.product.application.port.out.ProductSearchCondition;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.Products;
 import com.dochiri.tooltestlab.catalog.product.domain.Product;
 import com.dochiri.tooltestlab.catalog.product.domain.vo.ProductId;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ import static java.util.stream.Collectors.groupingBy;
 
 @Repository
 @RequiredArgsConstructor
-class ProductPersistenceAdapter implements ProductRepositoryPort {
+final class ProductPersistenceAdapter implements ProductRepositoryPort {
 
     private final ProductJpaRepository productJpaRepository;
     private final ProductCategoryJpaRepository productCategoryJpaRepository;
@@ -34,11 +35,12 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
     @Override
     public Product create(final Product product) {
         return execute(() -> {
-            final ProductEntity entity = ProductMapper.toEntity(product);
+            ProductEntity entity = ProductMapper.toEntity(product);
 
             final ProductEntity saved = productJpaRepository.saveAndFlush(entity);
             final List<ProductCategoryEntity> categories =
-                    productCategoryJpaRepository.saveAllAndFlush(ProductMapper.toCategoryEntities(product));
+                    productCategoryJpaRepository.saveAllAndFlush(
+                            ProductMapper.toCategoryEntities(product));
 
             return ProductMapper.toDomain(saved, categories);
         });
@@ -47,11 +49,15 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
     @Override
     public Product update(final Product product) {
         return execute(() -> {
-            final ProductEntity entity = productJpaRepository.findByPublicId(product.id().value())
-                    .orElseThrow(() -> new IllegalArgumentException(product.id().value()));
+            ProductEntity entity = productJpaRepository.findByPublicId(
+                    product.id()
+                            .value())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            product.id()
+                                    .value()));
 
             ProductMapper.updateEntity(entity, product);
-            final List<ProductCategoryEntity> categories = replaceCategories(product);
+            List<ProductCategoryEntity> categories = replaceCategories(product);
 
             return ProductMapper.toDomain(entity, categories);
         });
@@ -60,27 +66,33 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
     @Override
     public Optional<Product> findById(final ProductId productId) {
         return execute(() -> productJpaRepository
-                .findByPublicId(productId.value())
-                .map(entity -> ProductMapper.toDomain(
-                        entity, productCategoryJpaRepository.findByProductId(entity.getPublicId()))));
+                .findByPublicId(
+                        productId.value())
+                .map(entity ->
+                        ProductMapper.toDomain(
+                        entity, productCategoryJpaRepository.findByProductId(
+                                entity.getPublicId()))));
     }
 
     @Override
     public Optional<Product> findByIdForUpdate(final ProductId productId) {
         return execute(() -> productJpaRepository
-                .findWithLockByPublicId(productId.value())
+                .findWithLockByPublicId(
+                        productId.value())
                 .map(entity -> {
                     entityManager.refresh(entity);
                     return ProductMapper.toDomain(
-                            entity, productCategoryJpaRepository.findByProductId(entity.getPublicId()));
+                            entity, productCategoryJpaRepository.findByProductId(
+                                    entity.getPublicId()));
                 }));
     }
 
     @Override
     public ProductPage findAll(final int page, final int size) {
         return execute(() -> {
-            final Page<ProductEntity> productPage =
-                    productJpaRepository.findAll(PageRequest.of(page, size));
+            Page<ProductEntity> productPage =
+                    productJpaRepository.findAll(
+                            PageRequest.of(page, size));
 
             return toProductPage(
                     productPage.getContent().stream().map(ProductRow::from).toList(),
@@ -105,17 +117,16 @@ class ProductPersistenceAdapter implements ProductRepositoryPort {
                 productCategoryJpaRepository.findByProductIdIn(productIds).stream()
                         .collect(groupingBy(ProductCategoryEntity::getProductId));
 
-        return new ProductPage(
-                rows.stream()
-                        .map(row -> ProductMapper.toDomain(
-                                row, categoriesByProductId.getOrDefault(row.publicId(), List.of())))
-                        .toList(),
-                totalCount
-        );
+        final List<Product> products = rows.stream()
+                .map(row -> ProductMapper.toDomain(
+                        row, categoriesByProductId.getOrDefault(row.publicId(), List.of())))
+                .toList();
+        return new ProductPage(new Products(products), totalCount);
     }
 
     private List<ProductCategoryEntity> replaceCategories(final Product product) {
-        final String productId = product.id().value();
+        final String productId = product.id()
+                .value();
         final List<ProductCategoryEntity> current = productCategoryJpaRepository.findByProductId(productId);
         final Set<String> requested = product.categoryIds().values().stream()
                 .map(CategoryId::value)

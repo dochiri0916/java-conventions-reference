@@ -1,10 +1,10 @@
 package com.dochiri.tooltestlab.catalog.category.application.port.in.usecase;
 
-import com.dochiri.tooltestlab.catalog.category.application.port.in.result.CategorySummary;
+import com.dochiri.tooltestlab.catalog.category.application.port.in.result.CategorySummaries;
 
-import java.util.List;
+@FunctionalInterface
 public interface GetCategorySummariesUseCase {
 
-    List<CategorySummary> getAll();
+    CategorySummaries getAll();
 
 }

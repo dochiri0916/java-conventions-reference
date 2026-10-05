@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.review.adapter.in.web.response;
 
 import com.dochiri.tooltestlab.review.application.port.in.result.GetProductReviewsResult;
+import com.dochiri.tooltestlab.review.application.port.in.result.ReviewDataItems;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
@@ -16,7 +17,8 @@ public record GetProductReviewsResponse(
     }
 
     public static GetProductReviewsResponse from(final GetProductReviewsResult result) {
-        final var items = result.reviews().stream().map(ReviewData::from).toList();
+        final ReviewDataItems reviews = result.reviews();
+        final List<ReviewData> items = reviews.values().stream().map(ReviewData::from).toList();
         return new GetProductReviewsResponse(result.productPublicId(), items, result.averageRating());
     }
 

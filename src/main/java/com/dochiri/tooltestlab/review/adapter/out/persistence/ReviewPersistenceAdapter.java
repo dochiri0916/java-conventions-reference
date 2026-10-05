@@ -2,31 +2,27 @@ package com.dochiri.tooltestlab.review.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.review.application.exception.DuplicateReviewException;
 import com.dochiri.tooltestlab.review.application.port.out.ReviewRepositoryPort;
+import com.dochiri.tooltestlab.review.application.port.out.Reviews;
 import com.dochiri.tooltestlab.review.domain.Review;
 import com.dochiri.tooltestlab.review.domain.vo.MemberReferenceId;
 import com.dochiri.tooltestlab.review.domain.vo.ProductReferenceId;
 import com.dochiri.tooltestlab.review.domain.vo.ReviewId;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTranslator.execute;
+import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTranslator.isConstraintViolation;
 import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTranslator.run;
 
 @Repository
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "tool-test-lab.concurrency.safe", havingValue = "false", matchIfMissing = true)
-class ReviewPersistenceAdapter implements ReviewRepositoryPort {
-
-    private static final Pattern MEMBER_PRODUCT_CONSTRAINT = Pattern.compile(
-            Pattern.quote("uk_reviews_member_product") + "(?:_INDEX_[0-9A-F]+)?",
-            Pattern.CASE_INSENSITIVE);
+final class ReviewPersistenceAdapter implements ReviewRepositoryPort {
 
     private final ReviewJpaRepository reviewJpaRepository;
 
@@ -34,27 +30,33 @@ class ReviewPersistenceAdapter implements ReviewRepositoryPort {
     public Review create(final Review review) {
         return execute(() -> {
             try {
-                final ReviewEntity entity = ReviewMapper.toEntity(review);
+                ReviewEntity entity = ReviewMapper.toEntity(review);
                 final ReviewEntity saved = reviewJpaRepository.saveAndFlush(entity);
                 return ReviewMapper.toDomain(saved);
             } catch (final DataIntegrityViolationException exception) {
-                if (isMemberProductConstraintViolation(exception)) {
-                    throw new DuplicateReviewException();
-                }
-                throw exception;
+                throw translateConflict(exception);
             }
         });
     }
 
     @Override
     public Optional<Review> findByReviewId(final ReviewId reviewId) {
-        return execute(() -> reviewJpaRepository.findByPublicId(reviewId.value()).map(ReviewMapper::toDomain));
+        return execute(() -> reviewJpaRepository.findByPublicId(
+                reviewId.value())
+                        .map(ReviewMapper::toDomain));
     }
 
     @Override
-    public List<Review> findByProductId(final ProductReferenceId productId) {
-        return execute(() -> reviewJpaRepository.findByProductIdOrderByIdDesc(productId.value()).stream()
-                .map(ReviewMapper::toDomain).toList());
+    public Reviews findByProductId(final ProductReferenceId productId) {
+        final String value = productId.value();
+        return execute(() -> toReviews(reviewJpaRepository.findByProductIdOrderByIdDesc(value)));
+    }
+
+    private static Reviews toReviews(final List<ReviewEntity> entities) {
+        final List<Review> reviews = entities.stream()
+                .map(ReviewMapper::toDomain)
+                .toList();
+        return new Reviews(reviews);
     }
 
     @Override
@@ -62,30 +64,24 @@ class ReviewPersistenceAdapter implements ReviewRepositoryPort {
             final MemberReferenceId memberId,
             final ProductReferenceId productId
     ) {
-        return execute(() -> reviewJpaRepository.existsByMemberIdAndProductId(memberId.value(), productId.value()));
+        return execute(() -> reviewJpaRepository.existsByMemberIdAndProductId(
+                memberId.value(),
+                productId.value()));
     }
 
     @Override
     public void deleteByReviewId(final ReviewId reviewId) {
         run(() -> {
-            reviewJpaRepository.deleteByPublicId(reviewId.value());
+            reviewJpaRepository.deleteByPublicId(
+                    reviewId.value());
             reviewJpaRepository.flush();
         });
     }
 
-    private static boolean isMemberProductConstraintViolation(final Throwable exception) {
-        for (Throwable cause = exception; cause != null; cause = cause.getCause()) {
-            if (cause instanceof ConstraintViolationException violation) {
-                final String constraintName = violation.getConstraintName();
-                if (constraintName == null) {
-                    return false;
-                }
-                // H2는 스키마와 자동 생성한 유니크 인덱스 접미사를 함께 반환한다.
-                final String unquoted = constraintName.replace("\"", "").replace("`", "");
-                final String name = unquoted.substring(unquoted.lastIndexOf('.') + 1);
-                return MEMBER_PRODUCT_CONSTRAINT.matcher(name).matches();
-            }
+    private static RuntimeException translateConflict(final DataIntegrityViolationException exception) {
+        if (isConstraintViolation(exception, "uk_reviews_member_product")) {
+            return new DuplicateReviewException(exception);
         }
-        return false;
+        return exception;
     }
 }

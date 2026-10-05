@@ -5,7 +5,6 @@ import com.dochiri.tooltestlab.order.domain.vo.OrderId;
 import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
 import com.dochiri.tooltestlab.global.application.exception.RepositoryOperationException;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -22,5 +21,5 @@ public interface OrderRepositoryPort {
 
     Optional<Order> findByOrderIdForUpdate(OrderId orderId);
 
-    List<Order> findByMemberId(MemberReferenceId memberId);
+    Orders findByMemberId(MemberReferenceId memberId);
 }

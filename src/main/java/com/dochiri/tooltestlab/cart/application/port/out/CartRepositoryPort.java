@@ -6,7 +6,6 @@ import com.dochiri.tooltestlab.cart.domain.vo.MemberReferenceId;
 import com.dochiri.tooltestlab.global.application.exception.RepositoryOperationException;
 
 import java.util.Optional;
-import java.util.List;
 
 /**
  * 장바구니 저장소 Port (Application 소유).
@@ -21,5 +20,5 @@ public interface CartRepositoryPort {
 
     Optional<Cart> findByMemberIdForUpdate(MemberReferenceId memberId);
 
-    List<Cart> findPage(int page, int size);
+    Carts findPage(int page, int size);
 }

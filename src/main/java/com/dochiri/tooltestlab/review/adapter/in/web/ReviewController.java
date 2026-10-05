@@ -17,13 +17,19 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "리뷰", description = "리뷰 작성, 조회, 삭제 API")
 @RestController
 @RequestMapping("/api/reviews")
 @RequiredArgsConstructor
-public class ReviewController {
+public final class ReviewController {
 
     private final WriteReviewUseCase writeReviewUseCase;
     private final GetProductReviewsUseCase getProductReviewsUseCase;
@@ -39,11 +45,12 @@ public class ReviewController {
     })
     @PostMapping
     public ResponseEntity<WriteReviewResponse> write(
-            @Parameter(hidden = true) String memberPublicId,
-            @Valid @RequestBody WriteReviewRequest request) {
+            @Parameter(hidden = true) final String memberPublicId,
+            @Valid @RequestBody final WriteReviewRequest request) {
         final var result = writeReviewUseCase.write(
                 request.toCommand(memberPublicId));
-        return ResponseEntity.ok(WriteReviewResponse.from(result));
+        return ResponseEntity.ok(
+                WriteReviewResponse.from(result));
     }
 
     @Operation(summary = "상품 리뷰 조회", description = "특정 상품의 리뷰 목록을 조회합니다.")
@@ -53,10 +60,11 @@ public class ReviewController {
     @GetMapping("/product/{productPublicId}")
     public ResponseEntity<GetProductReviewsResponse> getByProduct(
             @Parameter(description = "상품 publicId", example = "01900000-0000-7000-8000-000000000001")
-            @PathVariable String productPublicId) {
+            @PathVariable final String productPublicId) {
         final GetProductReviewsResult result =
                 getProductReviewsUseCase.getByProduct(new GetProductReviewsQuery(productPublicId));
-        return ResponseEntity.ok(GetProductReviewsResponse.from(result));
+        return ResponseEntity.ok(
+                GetProductReviewsResponse.from(result));
     }
 
     @Operation(summary = "리뷰 삭제", description = "작성한 리뷰를 삭제합니다.")
@@ -68,9 +76,9 @@ public class ReviewController {
     })
     @DeleteMapping("/{publicId}")
     public ResponseEntity<DeleteReviewResponse> delete(
-            @Parameter(hidden = true) String memberPublicId,
+            @Parameter(hidden = true) final String memberPublicId,
             @Parameter(description = "리뷰 publicId", example = "01900000-0000-7000-8000-000000000001")
-            @PathVariable String publicId) {
+            @PathVariable final String publicId) {
         deleteReviewUseCase.delete(publicId, memberPublicId);
         return ResponseEntity.ok(new DeleteReviewResponse("리뷰가 삭제되었습니다."));
     }

@@ -13,9 +13,10 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Profile("!test")
-public class AdminAccountInitializer implements CommandLineRunner {
+public final class AdminAccountInitializer implements CommandLineRunner {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AdminAccountInitializer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+            AdminAccountInitializer.class);
 
     private final RegisterMemberUseCase registerMemberUseCase;
 
@@ -25,7 +26,8 @@ public class AdminAccountInitializer implements CommandLineRunner {
             registerMemberUseCase.register(new RegisterMemberCommand("admin@test.com", "1234", "관리자"));
             LOG.info("[AdminAccountInitializer] 관리자 계정 생성 완료");
         } catch (DuplicateEmailException exception) {
-            LOG.info("[AdminAccountInitializer] 관리자 계정이 이미 존재합니다: {}", exception.getMessage());
+            LOG.info("[AdminAccountInitializer] 관리자 계정이 이미 존재합니다: {}",
+                    exception.getMessage());
         }
     }
 }

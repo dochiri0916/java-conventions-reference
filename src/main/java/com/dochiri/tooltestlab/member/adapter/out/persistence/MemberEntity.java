@@ -1,7 +1,13 @@
 package com.dochiri.tooltestlab.member.adapter.out.persistence;
 
 import com.dochiri.tooltestlab.global.persistence.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +22,7 @@ import lombok.NoArgsConstructor;
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public final class MemberEntity extends BaseEntity {
+public class MemberEntity extends BaseEntity {
 
     @Getter(AccessLevel.NONE)
     @Id

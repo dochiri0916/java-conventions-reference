@@ -6,4 +6,8 @@ public final class DuplicateCategoryNameException extends CategoryApplicationExc
         super("이미 등록된 카테고리명입니다.");
     }
 
+    public DuplicateCategoryNameException(final Throwable cause) {
+        super("이미 등록된 카테고리명입니다.", cause);
+    }
+
 }

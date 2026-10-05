@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.cart.application.service;
 
+import com.dochiri.tooltestlab.cart.application.CartResultMapper;
 import com.dochiri.tooltestlab.cart.application.port.in.query.GetCartQuery;
 import com.dochiri.tooltestlab.cart.application.port.in.result.GetCartResult;
 import com.dochiri.tooltestlab.cart.application.port.in.usecase.GetCartUseCase;
@@ -19,16 +20,12 @@ public final class GetCartService implements GetCartUseCase {
     @Override
     @Transactional(readOnly = true)
     public GetCartResult getCart(final GetCartQuery query) {
-        final MemberReferenceId memberId = MemberReferenceId.parse(query.memberPublicId());
+        final MemberReferenceId memberId = MemberReferenceId.parse(
+                query.memberPublicId());
         final Cart cart = cartRepositoryPort.findByMemberId(memberId)
-                .orElseGet(() -> Cart.create(memberId));
+                .orElseGet(() ->
+                        Cart.create(memberId));
 
-        final var items = cart.items().values().stream()
-                .map(i -> new GetCartResult.Item(
-                        i.productId().value(), i.productName().value(), i.quantity().value(),
-                        i.unitPrice().amount(), i.totalPrice().amount()))
-                .toList();
-
-        return new GetCartResult(cart.id().value(), cart.memberId().value(), items, cart.totalAmount().amount());
+        return CartResultMapper.toGetResult(cart);
     }
 }

@@ -25,12 +25,21 @@ public final class CartReferenceId {
         if (value == null) {
             throw new CartReferenceIdRequiredException();
         }
+        return of(canonicalUuid(value));
+    }
+
+    private static UUID canonicalUuid(final String value) {
+        final UUID uuid = fromString(value);
+        final String canonical = uuid.toString();
+        if (!canonical.equalsIgnoreCase(value)) {
+            throw new InvalidCartReferenceIdException();
+        }
+        return uuid;
+    }
+
+    private static UUID fromString(final String value) {
         try {
-            final UUID uuid = UUID.fromString(value);
-            if (!uuid.toString().equalsIgnoreCase(value)) {
-                throw new InvalidCartReferenceIdException();
-            }
-            return of(uuid);
+            return UUID.fromString(value);
         } catch (final IllegalArgumentException failure) {
             throw new InvalidCartReferenceIdException();
         }
@@ -42,7 +51,8 @@ public final class CartReferenceId {
 
     @Override
     public boolean equals(final Object other) {
-        return this == other || other instanceof CartReferenceId id && value.equals(id.value);
+        return this == other || other instanceof CartReferenceId id && value.equals(
+                id.value);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.dochiri.tooltestlab.catalog.product.adapter.in.web.response;
 
+import com.dochiri.tooltestlab.catalog.product.application.port.in.result.CategoryNameItems;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.result.ListProductsResult;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.result.ProductSummaries;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
@@ -17,7 +19,8 @@ public record ProductListResponse(
     }
 
     public static ProductListResponse from(final ListProductsResult result) {
-        final var items = result.products().stream().map(ProductSummary::from).toList();
+        final ProductSummaries summaries = result.products();
+        final List<ProductSummary> items = summaries.values().stream().map(ProductSummary::from).toList();
         return new ProductListResponse(items, result.page(), result.size(), result.totalCount());
     }
 
@@ -35,8 +38,9 @@ public record ProductListResponse(
         }
 
         public static ProductSummary from(final ListProductsResult.ProductSummary result) {
+            final CategoryNameItems categoryNames = result.categoryNames();
             return new ProductSummary(result.publicId(), result.name(), result.priceAmount(), result.stock(),
-                    result.status(), result.categoryNames());
+                    result.status(), categoryNames.values());
         }
     }
 }

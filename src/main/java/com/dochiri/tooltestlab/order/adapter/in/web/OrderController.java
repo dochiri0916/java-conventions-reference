@@ -23,7 +23,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -31,7 +36,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
-public class OrderController {
+public final class OrderController {
 
     private final PlaceOrderUseCase placeOrderUseCase;
     private final GetOrderUseCase getOrderUseCase;
@@ -47,13 +52,14 @@ public class OrderController {
     })
     @PostMapping
     public ResponseEntity<PlaceOrderResponse> place(
-            @Parameter(hidden = true) String memberPublicId,
-            @Valid @RequestBody PlaceOrderRequest request) {
+            @Parameter(hidden = true) final String memberPublicId,
+            @Valid @RequestBody final PlaceOrderRequest request) {
         final PlaceOrderResult result = placeOrderUseCase.place(
                 request.toCommand(memberPublicId));
 
-        return ResponseEntity.accepted().body(PlaceOrderResponse.from(result,
-                request.recipientName(), request.phone(), request.address(), request.zipCode()));
+        return ResponseEntity.accepted()
+                .body(
+                        PlaceOrderResponse.from(result));
     }
 
     @Operation(summary = "주문 목록 조회", description = "로그인된 회원의 주문 목록을 조회합니다.")
@@ -63,7 +69,7 @@ public class OrderController {
     })
     @GetMapping
     public ResponseEntity<List<OrderSummaryResponse>> list(
-            @Parameter(hidden = true) String memberPublicId) {
+            @Parameter(hidden = true) final String memberPublicId) {
         final ListOrdersResult result = listOrdersUseCase.listByMember(new ListOrdersQuery(memberPublicId));
         final var body = result.orders().stream()
                 .map(OrderSummaryResponse::from)
@@ -80,11 +86,12 @@ public class OrderController {
     })
     @GetMapping("/{publicId}")
     public ResponseEntity<GetOrderResponse> get(
-            @Parameter(hidden = true) String memberPublicId,
+            @Parameter(hidden = true) final String memberPublicId,
             @Parameter(description = "주문 publicId", example = "01900000-0000-7000-8000-000000000001")
-            @PathVariable String publicId) {
+            @PathVariable final String publicId) {
         final GetOrderResult result = getOrderUseCase.getOrder(new GetOrderQuery(memberPublicId, publicId));
-        return ResponseEntity.ok(GetOrderResponse.from(result));
+        return ResponseEntity.ok(
+                GetOrderResponse.from(result));
     }
 
     @Operation(summary = "주문 취소", description = "주문을 취소합니다.")
@@ -97,9 +104,9 @@ public class OrderController {
     })
     @PostMapping("/{publicId}/cancel")
     public ResponseEntity<CancelOrderResponse> cancel(
-            @Parameter(hidden = true) String memberPublicId,
+            @Parameter(hidden = true) final String memberPublicId,
             @Parameter(description = "주문 publicId", example = "01900000-0000-7000-8000-000000000001")
-            @PathVariable String publicId) {
+            @PathVariable final String publicId) {
         cancelOrderUseCase.cancel(memberPublicId, publicId);
         return ResponseEntity.ok(new CancelOrderResponse("주문이 취소되었습니다."));
     }

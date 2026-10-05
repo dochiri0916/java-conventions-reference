@@ -8,5 +8,5 @@ import com.dochiri.tooltestlab.order.application.port.in.result.ListOrdersResult
  */
 @FunctionalInterface
 public interface ListOrdersUseCase {
-    ListOrdersResult listByMember(final ListOrdersQuery query);
+    ListOrdersResult listByMember(ListOrdersQuery query);
 }

@@ -7,4 +7,8 @@ public abstract sealed class CategoryApplicationException extends RuntimeExcepti
         super(message);
     }
 
+    protected CategoryApplicationException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+
 }

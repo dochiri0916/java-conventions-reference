@@ -19,13 +19,17 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "회원", description = "회원 가입, 로그인, 로그아웃 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/members")
-public class MemberController {
+public final class MemberController {
 
     private static final String MEMBER_ID_KEY = "memberId";
 
@@ -39,9 +43,11 @@ public class MemberController {
             @ApiResponse(responseCode = "409", description = "이미 등록된 이메일")
     })
     @PostMapping("/register")
-    public ResponseEntity<RegisterMemberResponse> register(@Valid @RequestBody RegisterMemberRequest request) {
-        final RegisterMemberResult result = registerMemberUseCase.register(request.toCommand());
-        return ResponseEntity.ok(RegisterMemberResponse.from(result));
+    public ResponseEntity<RegisterMemberResponse> register(@Valid @RequestBody final RegisterMemberRequest request) {
+        final RegisterMemberResult result = registerMemberUseCase.register(
+                request.toCommand());
+        return ResponseEntity.ok(
+                RegisterMemberResponse.from(result));
     }
 
     @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다.")
@@ -52,10 +58,13 @@ public class MemberController {
     })
     @PostMapping("/login")
     public ResponseEntity<LoginMemberResponse> login(
-            @Valid @RequestBody LoginMemberRequest request, final HttpSession session) {
-        final LoginMemberResult result = loginMemberUseCase.login(request.toCommand());
-        session.setAttribute(MEMBER_ID_KEY, result.publicId());
-        return ResponseEntity.ok(LoginMemberResponse.from(result));
+            @Valid @RequestBody final LoginMemberRequest request, final HttpSession session) {
+        final LoginMemberResult result = loginMemberUseCase.login(
+                request.toCommand());
+        session.setAttribute(MEMBER_ID_KEY,
+                result.publicId());
+        return ResponseEntity.ok(
+                LoginMemberResponse.from(result));
     }
 
     @Operation(summary = "로그아웃", description = "현재 세션을 무효화하고 로그아웃합니다.")
@@ -75,7 +84,7 @@ public class MemberController {
     })
     @GetMapping("/me")
     public ResponseEntity<GetMyProfileResponse> me(
-            @Parameter(hidden = true) String memberPublicId) {
+            @Parameter(hidden = true) final String memberPublicId) {
         return ResponseEntity.ok(new GetMyProfileResponse(memberPublicId));
     }
 }

@@ -1,6 +1,7 @@
 package com.dochiri.tooltestlab.order.adapter.in.web.response;
 
 import com.dochiri.tooltestlab.order.application.port.in.result.PlaceOrderResult;
+import com.dochiri.tooltestlab.order.application.port.in.result.PlaceOrderResultItems;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
@@ -20,15 +21,11 @@ public record PlaceOrderResponse(
         items = List.copyOf(items);
     }
 
-    public static PlaceOrderResponse from(
-            final PlaceOrderResult result,
-            final String recipientName,
-            final String phone,
-            final String address,
-            final String zipCode) {
-        final var items = result.items().stream().map(Item::from).toList();
+    public static PlaceOrderResponse from(final PlaceOrderResult result) {
+        final PlaceOrderResultItems resultItems = result.items();
+        final List<Item> items = resultItems.values().stream().map(Item::from).toList();
         return new PlaceOrderResponse(result.publicId(), result.status(), result.totalAmount(),
-                recipientName, phone, address, zipCode, items);
+                result.recipientName(), result.phone(), result.address(), result.zipCode(), items);
     }
 
     @Schema(description = "주문 상품")

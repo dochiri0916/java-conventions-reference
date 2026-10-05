@@ -2,11 +2,7 @@ package com.dochiri.tooltestlab.catalog.category.application.port.out;
 
 import com.dochiri.tooltestlab.catalog.category.application.exception.DuplicateCategoryNameException;
 import com.dochiri.tooltestlab.catalog.category.domain.Category;
-import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
-import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryName;
 import com.dochiri.tooltestlab.global.application.exception.RepositoryOperationException;
-
-import java.util.Set;
 
 /**
  * 카테고리 이름 중복은 {@link DuplicateCategoryNameException}으로 전달한다.
@@ -14,14 +10,14 @@ import java.util.Set;
  */
 public interface CategoryRepositoryPort {
 
-    Set<Category> findAllByIds(Set<CategoryId> categoryIds);
+    Categories findAllByIds(CategoryIdSet categoryIds);
 
-    Set<Category> findAllByNames(Set<CategoryName> categoryNames);
+    Categories findAllByNames(CategoryNameSet categoryNames);
 
-    Set<Category> findAll();
+    Categories findAll();
 
     Category create(Category category);
 
-    Set<Category> createAll(Set<Category> categories);
+    Categories createAll(Categories categories);
 
 }

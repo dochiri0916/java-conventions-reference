@@ -4,6 +4,7 @@ import com.dochiri.tooltestlab.order.application.exception.EmptyCartException;
 import com.dochiri.tooltestlab.order.application.port.in.command.PlaceOrderCommand;
 import com.dochiri.tooltestlab.order.application.port.in.result.PlaceOrderResult;
 import com.dochiri.tooltestlab.order.application.port.in.usecase.PlaceOrderUseCase;
+import com.dochiri.tooltestlab.order.application.port.out.CartSnapshotLines;
 import com.dochiri.tooltestlab.order.application.port.out.CartSnapshotPort;
 import com.dochiri.tooltestlab.order.application.port.out.CartSnapshotPort.CartSnapshot;
 import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
@@ -35,20 +36,32 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
     @Override
     @Transactional
     public PlaceOrderResult place(final PlaceOrderCommand command) {
-        final MemberReferenceId memberId = MemberReferenceId.parse(command.memberPublicId());
+        final MemberReferenceId memberId = MemberReferenceId.parse(
+                command.memberPublicId());
         final ShippingAddress shippingAddress = toShippingAddress(command);
 
         final CartSnapshot cart = claimNotEmptyCart(memberId);
-        final Order saved = orderRepositoryPort.create(
-                Order.create(memberId, cart.cartId(), cart.revision(), OrderLines.of(cart.items()), shippingAddress));
-        integrationEventPort.publish(OrderEventMapper.toIntegration(saved.placedEvent()));
+        final CartSnapshotLines lines = cart.items();
+        final Order order = Order.create(
+                memberId,
+                cart.cartId(),
+                cart.revision(),
+                OrderLines.of(
+                        lines.values()),
+                shippingAddress);
+        final Order saved = orderRepositoryPort.create(order);
+        integrationEventPort.publish(
+                OrderEventMapper.toIntegration(
+                        saved.placedEvent()));
 
         return OrderResultMapper.toPlaceOrderResult(saved);
     }
 
     private CartSnapshot claimNotEmptyCart(final MemberReferenceId memberId) {
-        final CartSnapshot cart = cartSnapshotPort.claim(memberId).orElseThrow(CartSnapshotNotReadyException::new);
-        if (cart.items().isEmpty()) {
+        final CartSnapshot cart = cartSnapshotPort.claim(memberId)
+                .orElseThrow(CartSnapshotNotReadyException::new);
+        final CartSnapshotLines lines = cart.items();
+        if (lines.isEmpty()) {
             throw new EmptyCartException();
         }
         return cart;
@@ -56,7 +69,13 @@ public final class PlaceOrderService implements PlaceOrderUseCase {
 
     private static ShippingAddress toShippingAddress(final PlaceOrderCommand command) {
         return ShippingAddress.of(
-                RecipientName.of(command.recipientName()), Phone.of(command.phone()),
-                StreetAddress.of(command.address()), ZipCode.of(command.zipCode()));
+                RecipientName.of(
+                        command.recipientName()),
+                Phone.of(
+                        command.phone()),
+                StreetAddress.of(
+                        command.address()),
+                ZipCode.of(
+                        command.zipCode()));
     }
 }

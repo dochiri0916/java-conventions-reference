@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.catalog.product.adapter.in.web.request;
 
+import com.dochiri.tooltestlab.catalog.product.application.port.in.command.CategoryPublicIds;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.command.RegisterProductCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
@@ -7,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Schema(description = "상품 등록 요청")
 public record RegisterProductRequest(
@@ -27,11 +28,11 @@ public record RegisterProductRequest(
         @NotEmpty(message = "카테고리는 하나 이상 필수입니다.")
         List<String> categoryIds) {
     public RegisterProductRequest {
-        categoryIds = categoryIds != null ? List.copyOf(categoryIds) : List.of();
+        categoryIds = List.copyOf(categoryIds == null ? List.of() : categoryIds);
     }
 
     public RegisterProductCommand toCommand() {
-        return new RegisterProductCommand(name, description, priceAmount, stock,
-                categoryIds.stream().collect(Collectors.toUnmodifiableSet()));
+        final CategoryPublicIds publicIds = new CategoryPublicIds(Set.copyOf(categoryIds));
+        return new RegisterProductCommand(name, description, priceAmount, stock, publicIds);
     }
 }

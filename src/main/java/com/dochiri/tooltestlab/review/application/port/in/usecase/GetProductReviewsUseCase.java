@@ -8,5 +8,5 @@ import com.dochiri.tooltestlab.review.application.port.in.result.GetProductRevie
  */
 @FunctionalInterface
 public interface GetProductReviewsUseCase {
-    GetProductReviewsResult getByProduct(final GetProductReviewsQuery query);
+    GetProductReviewsResult getByProduct(GetProductReviewsQuery query);
 }

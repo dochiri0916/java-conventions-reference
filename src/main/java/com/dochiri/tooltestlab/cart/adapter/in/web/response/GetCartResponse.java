@@ -1,5 +1,6 @@
 package com.dochiri.tooltestlab.cart.adapter.in.web.response;
 
+import com.dochiri.tooltestlab.cart.application.port.in.result.CartResultItems;
 import com.dochiri.tooltestlab.cart.application.port.in.result.GetCartResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -17,7 +18,8 @@ public record GetCartResponse(
     }
 
     public static GetCartResponse from(final GetCartResult result) {
-        final var items = result.items().stream().map(Item::from).toList();
+        final CartResultItems cartItems = result.items();
+        final List<Item> items = cartItems.values().stream().map(Item::from).toList();
         return new GetCartResponse(result.publicId(), result.memberPublicId(), items, result.totalAmount());
     }
 

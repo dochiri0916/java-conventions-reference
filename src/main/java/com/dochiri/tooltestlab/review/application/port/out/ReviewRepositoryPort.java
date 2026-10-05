@@ -7,7 +7,6 @@ import com.dochiri.tooltestlab.review.domain.vo.ProductReferenceId;
 import com.dochiri.tooltestlab.review.domain.vo.ReviewId;
 import com.dochiri.tooltestlab.global.application.exception.RepositoryOperationException;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -21,7 +20,7 @@ public interface ReviewRepositoryPort {
 
     Optional<Review> findByReviewId(ReviewId reviewId);
 
-    List<Review> findByProductId(ProductReferenceId productId);
+    Reviews findByProductId(ProductReferenceId productId);
 
     boolean existsByMemberIdAndProductId(MemberReferenceId memberId, ProductReferenceId productId);
 

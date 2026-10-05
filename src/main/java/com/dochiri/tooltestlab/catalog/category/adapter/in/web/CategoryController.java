@@ -3,6 +3,7 @@ package com.dochiri.tooltestlab.catalog.category.adapter.in.web;
 import com.dochiri.tooltestlab.catalog.category.adapter.in.web.request.CreateCategoryRequest;
 import com.dochiri.tooltestlab.catalog.category.adapter.in.web.response.CategoryListResponse;
 import com.dochiri.tooltestlab.catalog.category.adapter.in.web.response.CreateCategoryResponse;
+import com.dochiri.tooltestlab.catalog.category.application.port.in.result.CategorySummaries;
 import com.dochiri.tooltestlab.catalog.category.application.port.in.usecase.GetCategorySummariesUseCase;
 import com.dochiri.tooltestlab.catalog.category.application.port.in.usecase.RegisterCategoryUseCase;
 import com.dochiri.tooltestlab.catalog.category.application.port.in.result.RegisterCategoryResult;
@@ -13,7 +14,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -32,10 +37,12 @@ public final class CategoryController {
             @ApiResponse(responseCode = "400", description = "잘못된 카테고리명")
     })
     @PostMapping
-    public ResponseEntity<CreateCategoryResponse> create(@Valid @RequestBody CreateCategoryRequest request) {
+    public ResponseEntity<CreateCategoryResponse> create(@Valid @RequestBody final CreateCategoryRequest request) {
         final RegisterCategoryResult result =
-                registerCategoryUseCase.register(request.toCommand());
-        return ResponseEntity.ok(CreateCategoryResponse.from(result));
+                registerCategoryUseCase.register(
+                        request.toCommand());
+        return ResponseEntity.ok(
+                CreateCategoryResponse.from(result));
     }
 
     @Operation(summary = "카테고리 목록 조회", description = "전체 카테고리 목록을 조회합니다.")
@@ -44,7 +51,8 @@ public final class CategoryController {
     })
     @GetMapping
     public ResponseEntity<List<CategoryListResponse>> list() {
-        final List<CategoryListResponse> response = getCategorySummariesUseCase.getAll().stream()
+        final CategorySummaries summaries = getCategorySummariesUseCase.getAll();
+        final List<CategoryListResponse> response = summaries.values().stream()
                 .map(CategoryListResponse::from)
                 .toList();
 

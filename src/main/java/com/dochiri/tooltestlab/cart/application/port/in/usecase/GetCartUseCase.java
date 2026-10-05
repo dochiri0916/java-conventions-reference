@@ -8,5 +8,5 @@ import com.dochiri.tooltestlab.cart.application.port.in.result.GetCartResult;
  */
 @FunctionalInterface
 public interface GetCartUseCase {
-    GetCartResult getCart(final GetCartQuery query);
+    GetCartResult getCart(GetCartQuery query);
 }
