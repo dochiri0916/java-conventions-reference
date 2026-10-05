@@ -1,13 +1,17 @@
 package com.dochiri.tooltestlab.catalog.category.adapter.out.persistence;
 
+import com.dochiri.tooltestlab.catalog.category.application.exception.DuplicateCategoryNameException;
 import com.dochiri.tooltestlab.catalog.category.application.port.out.CategoryRepositoryPort;
 import com.dochiri.tooltestlab.catalog.category.domain.Category;
 import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryId;
 import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryName;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTranslator.execute;
@@ -15,6 +19,10 @@ import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTran
 @Repository
 @RequiredArgsConstructor
 class CategoryPersistenceAdapter implements CategoryRepositoryPort {
+
+    private static final Pattern NAME_CONSTRAINT = Pattern.compile(
+            Pattern.quote("uk_categories_name") + "(?:_INDEX_[0-9A-F]+)?",
+            Pattern.CASE_INSENSITIVE);
 
     private final CategoryJpaRepository categoryJpaRepository;
 
@@ -58,9 +66,15 @@ class CategoryPersistenceAdapter implements CategoryRepositoryPort {
     @Override
     public Category create(final Category category) {
         return execute(() -> {
-            final CategoryEntity saved = categoryJpaRepository.save(CategoryMapper.toEntity(category));
-
-            return CategoryMapper.toDomain(saved);
+            try {
+                final CategoryEntity saved = categoryJpaRepository.saveAndFlush(CategoryMapper.toEntity(category));
+                return CategoryMapper.toDomain(saved);
+            } catch (final DataIntegrityViolationException exception) {
+                if (isNameConstraintViolation(exception)) {
+                    throw new DuplicateCategoryNameException();
+                }
+                throw exception;
+            }
         });
     }
 
@@ -71,11 +85,34 @@ class CategoryPersistenceAdapter implements CategoryRepositoryPort {
                 return Set.of();
             }
 
-            return categoryJpaRepository.saveAll(
-                            categories.stream().map(CategoryMapper::toEntity).toList()
-                    ).stream()
-                    .map(CategoryMapper::toDomain)
-                    .collect(Collectors.toUnmodifiableSet());
+            try {
+                return categoryJpaRepository.saveAllAndFlush(
+                                categories.stream().map(CategoryMapper::toEntity).toList()
+                        ).stream()
+                        .map(CategoryMapper::toDomain)
+                        .collect(Collectors.toUnmodifiableSet());
+            } catch (final DataIntegrityViolationException exception) {
+                if (isNameConstraintViolation(exception)) {
+                    throw new DuplicateCategoryNameException();
+                }
+                throw exception;
+            }
         });
+    }
+
+    private static boolean isNameConstraintViolation(final Throwable exception) {
+        for (Throwable cause = exception; cause != null; cause = cause.getCause()) {
+            if (cause instanceof ConstraintViolationException violation) {
+                final String constraintName = violation.getConstraintName();
+                if (constraintName == null) {
+                    return false;
+                }
+                // H2는 스키마와 자동 생성한 유니크 인덱스 접미사를 함께 반환한다.
+                final String unquoted = constraintName.replace("\"", "").replace("`", "");
+                final String name = unquoted.substring(unquoted.lastIndexOf('.') + 1);
+                return NAME_CONSTRAINT.matcher(name).matches();
+            }
+        }
+        return false;
     }
 }

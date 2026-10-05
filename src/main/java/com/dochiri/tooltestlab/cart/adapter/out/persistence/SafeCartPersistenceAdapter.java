@@ -1,11 +1,11 @@
 package com.dochiri.tooltestlab.cart.adapter.out.persistence;
 
+import com.dochiri.tooltestlab.cart.application.exception.CartCreationConflictException;
 import com.dochiri.tooltestlab.cart.application.port.out.CartRepositoryPort;
 import com.dochiri.tooltestlab.cart.domain.Cart;
+import com.dochiri.tooltestlab.cart.domain.vo.MemberReferenceId;
 import lombok.RequiredArgsConstructor;
 import jakarta.persistence.EntityManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
@@ -22,14 +22,13 @@ import static com.dochiri.tooltestlab.global.persistence.RepositoryExceptionTran
  * PESSIMISTIC_WRITE 락으로 동시 수정을 직렬화한다.
  * <p>
  * PESSIMISTIC_WRITE 락은 기존 row에만 적용되므로, 최초 생성 시에는
- * UNIQUE 제약 위반이 발생할 수 있다. 이 경우 한 번 재시도한다.
+ * 회원별 장바구니 UNIQUE 제약 위반이 발생할 수 있다.
+ * 실패한 트랜잭션에서는 재시도하지 않고 생성 충돌 예외를 전달한다.
  */
 @Repository
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "tool-test-lab.concurrency.safe", havingValue = "true")
 class SafeCartPersistenceAdapter implements CartRepositoryPort {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SafeCartPersistenceAdapter.class);
 
     private final CartJpaRepository cartJpaRepository;
     private final CartItemJpaRepository cartItemJpaRepository;
@@ -41,12 +40,11 @@ class SafeCartPersistenceAdapter implements CartRepositoryPort {
             try {
                 return doSave(cart);
             } catch (final DataIntegrityViolationException exception) {
-                // PESSIMISTIC_WRITE 락은 기존 row에만 적용되므로
-                // 동시에 최초 생성되는 경우 UNIQUE 제약 위반이 발생할 수 있다.
-                // 재시도: 이제는 상대 트랜잭션이 생성한 장바구니가 존재하므로
-                // PESSIMISTIC_WRITE 락을 잡고 재조회할 수 있다.
-                LOG.debug("장바구니 동시 생성 감지, 재시도합니다. memberId={}", cart.memberId().value());
-                return doSave(cart);
+                if (CartConstraintViolationClassifier.isMemberIdViolation(exception)) {
+                    // 제약 위반으로 실패한 트랜잭션에서는 다시 조회하거나 저장하지 않는다.
+                    throw new CartCreationConflictException(exception);
+                }
+                throw exception;
             }
         });
     }
@@ -56,40 +54,40 @@ class SafeCartPersistenceAdapter implements CartRepositoryPort {
         if (existing.isPresent()) {
             final CartEntity cartEntity = existing.get();
             cartEntity.updateRevision(cart.revision());
-            final CartEntity savedCart = cartJpaRepository.save(cartEntity);
-            cartItemJpaRepository.deleteByCartId(cart.id().value());
-            final List<CartItemEntity> itemEntities = CartMapper.toItemEntities(cart, cart.id().value());
-            final List<CartItemEntity> savedItems = cartItemJpaRepository.saveAll(itemEntities);
+            final CartEntity savedCart = cartJpaRepository.saveAndFlush(cartEntity);
+            cartItemJpaRepository.deleteByCartId(savedCart.getPublicId());
+            final List<CartItemEntity> itemEntities = CartMapper.toItemEntities(cart, savedCart.getPublicId());
+            final List<CartItemEntity> savedItems = cartItemJpaRepository.saveAllAndFlush(itemEntities);
             return CartMapper.toDomain(savedCart, savedItems);
         }
 
         final CartEntity cartEntity = CartMapper.toEntity(cart);
-        final CartEntity savedCart = cartJpaRepository.save(cartEntity);
-        cartItemJpaRepository.deleteByCartId(cart.id().value());
-        final List<CartItemEntity> itemEntities = CartMapper.toItemEntities(cart, cart.id().value());
-        final List<CartItemEntity> savedItems = cartItemJpaRepository.saveAll(itemEntities);
+        final CartEntity savedCart = cartJpaRepository.saveAndFlush(cartEntity);
+        cartItemJpaRepository.deleteByCartId(savedCart.getPublicId());
+        final List<CartItemEntity> itemEntities = CartMapper.toItemEntities(cart, savedCart.getPublicId());
+        final List<CartItemEntity> savedItems = cartItemJpaRepository.saveAllAndFlush(itemEntities);
         return CartMapper.toDomain(savedCart, savedItems);
     }
 
     @Override
     public List<Cart> findPage(final int page, final int size) {
         return execute(() -> cartJpaRepository.findAll(PageRequest.of(page, size)).getContent().stream()
-                .map(entity -> CartMapper.toDomain(entity, cartItemJpaRepository.findByCartId(entity.getCartId())))
+                .map(entity -> CartMapper.toDomain(entity, cartItemJpaRepository.findByCartId(entity.getPublicId())))
                 .toList());
     }
 
     @Override
-    public Optional<Cart> findByMemberIdForUpdate(final String memberPublicId) {
-        return execute(() -> cartJpaRepository.findByMemberIdForUpdate(memberPublicId).map(cartEntity -> {
+    public Optional<Cart> findByMemberIdForUpdate(final MemberReferenceId memberId) {
+        return execute(() -> cartJpaRepository.findByMemberIdForUpdate(memberId.value()).map(cartEntity -> {
             entityManager.refresh(cartEntity);
-            return CartMapper.toDomain(cartEntity, cartItemJpaRepository.findByCartId(cartEntity.getCartId()));
+            return CartMapper.toDomain(cartEntity, cartItemJpaRepository.findByCartId(cartEntity.getPublicId()));
         }));
     }
 
     @Override
-    public Optional<Cart> findByMemberId(final String memberPublicId) {
-        return execute(() -> cartJpaRepository.findByMemberId(memberPublicId).flatMap(cartEntity -> {
-            final List<CartItemEntity> items = cartItemJpaRepository.findByCartId(cartEntity.getCartId());
+    public Optional<Cart> findByMemberId(final MemberReferenceId memberId) {
+        return execute(() -> cartJpaRepository.findByMemberId(memberId.value()).flatMap(cartEntity -> {
+            final List<CartItemEntity> items = cartItemJpaRepository.findByCartId(cartEntity.getPublicId());
             return Optional.of(CartMapper.toDomain(cartEntity, items));
         }));
     }

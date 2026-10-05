@@ -2,6 +2,7 @@ package com.dochiri.tooltestlab.cart.application.exception;
 
 public abstract sealed class CartApplicationException extends RuntimeException
         permits CartNotFoundException,
+        CartCreationConflictException,
         ProductSnapshotNotReadyException,
         InvalidCommandException {
     protected CartApplicationException(final String message) {
