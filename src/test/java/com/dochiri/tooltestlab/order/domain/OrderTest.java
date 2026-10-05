@@ -3,9 +3,12 @@ package com.dochiri.tooltestlab.order.domain;
 import com.dochiri.tooltestlab.global.domain.vo.Money;
 import com.dochiri.tooltestlab.global.domain.vo.Quantity;
 import com.dochiri.tooltestlab.order.domain.exception.InvalidOrderStatusException;
+import com.dochiri.tooltestlab.order.domain.exception.MemberReferenceIdRequiredException;
+import com.dochiri.tooltestlab.order.domain.exception.NotOrderOwnerException;
 import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
 import com.dochiri.tooltestlab.order.domain.vo.CartReferenceId;
 import com.dochiri.tooltestlab.order.domain.vo.OrderLine;
+import com.dochiri.tooltestlab.order.domain.vo.OrderStatus;
 import com.dochiri.tooltestlab.order.domain.vo.OrderLines;
 import com.dochiri.tooltestlab.order.domain.vo.Phone;
 import com.dochiri.tooltestlab.order.domain.vo.ProductName;
@@ -34,20 +37,16 @@ class OrderTest {
     @DisplayName("주문 상태 전이는 새 객체를 반환하고 ID와 주문 정보를 유지한다")
     void transitionsImmutably() {
         // given
-        final Order awaitingStock = order();
-        final Order pending = awaitingStock.confirmStock();
+        final Order pending = order();
 
         // when
         final Order paid = pending.pay();
         final Order shipping = paid.startShipping();
         final Order delivered = shipping.deliver();
-        final Order cancelled = pending.cancel();
+        final Order cancelled = pending.cancel(pending.memberId());
 
         // then
         assertEquals(OrderStatus.PENDING, pending.status());
-        assertEquals(OrderStatus.STOCK_PENDING, awaitingStock.status());
-        assertEquals(OrderStatus.REJECTED, awaitingStock.rejectStock().status());
-        assertThrows(InvalidOrderStatusException.class, awaitingStock::pay);
         assertEquals(OrderStatus.PAID, paid.status());
         assertEquals(OrderStatus.SHIPPING, shipping.status());
         assertEquals(OrderStatus.DELIVERED, delivered.status());
@@ -59,8 +58,21 @@ class OrderTest {
         assertEquals(Money.of(200), delivered.totalAmount());
         assertThrows(InvalidOrderStatusException.class, pending::startShipping);
         assertThrows(InvalidOrderStatusException.class, paid::pay);
-        assertThrows(InvalidOrderStatusException.class, delivered::cancel);
-        assertThrows(InvalidOrderStatusException.class, cancelled::cancel);
+        assertThrows(InvalidOrderStatusException.class, () -> delivered.cancel(delivered.memberId()));
+        assertThrows(InvalidOrderStatusException.class, () -> cancelled.cancel(cancelled.memberId()));
+    }
+
+    @Test
+    @DisplayName("다른 회원은 주문 소유자 검증과 취소를 통과할 수 없다")
+    void rejectsAnotherOwner() {
+        final Order pending = order();
+        final MemberReferenceId anotherMember = MemberReferenceId.parse("01900000-0000-7000-8000-000000000004");
+
+        assertDoesNotThrow(() -> pending.verifyOwner(pending.memberId()));
+        assertThrows(NotOrderOwnerException.class, () -> pending.verifyOwner(anotherMember));
+        assertThrows(NotOrderOwnerException.class, () -> pending.cancel(anotherMember));
+        assertThrows(MemberReferenceIdRequiredException.class, () -> pending.cancel(null));
+        assertEquals(OrderStatus.PENDING, pending.status());
     }
 
     @Test

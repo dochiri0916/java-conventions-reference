@@ -34,9 +34,9 @@ class CartMapperTest {
         assertEquals(cart.memberId(), restored.memberId());
         assertEquals(cart.items(), restored.items());
         assertEquals(Money.of(200), restored.totalAmount());
-        assertEquals(36, entity.getCartId().length());
+        assertEquals(36, entity.getPublicId().length());
         assertEquals(36, entity.getMemberId().length());
-        assertEquals(7, UUID.fromString(itemEntities.getFirst().getCartItemId()).version());
+        assertEquals(7, UUID.fromString(itemEntities.getFirst().getPublicId()).version());
         assertEquals(cart.id().value(), itemEntities.getFirst().getCartId());
     }
 }

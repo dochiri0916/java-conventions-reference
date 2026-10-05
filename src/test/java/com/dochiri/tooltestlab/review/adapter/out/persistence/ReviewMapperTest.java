@@ -27,7 +27,8 @@ class ReviewMapperTest {
 
         // then
         assertEquals(7, restored.id().reviewId().version());
-        assertEquals(36, entity.getReviewId().length());
+        assertEquals(36, entity.getPublicId().length());
+        assertEquals(review.id().value(), entity.getPublicId());
         assertEquals(review.id(), restored.id());
         assertEquals(review.memberId(), restored.memberId());
         assertEquals(review.productId(), restored.productId());

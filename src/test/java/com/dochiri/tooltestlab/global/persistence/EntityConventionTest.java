@@ -19,6 +19,7 @@ class EntityConventionTest {
                 com.dochiri.tooltestlab.cart.adapter.out.persistence.CartItemEntity.class,
                 com.dochiri.tooltestlab.catalog.category.adapter.out.persistence.CategoryEntity.class,
                 com.dochiri.tooltestlab.catalog.product.adapter.out.persistence.ProductEntity.class,
+                com.dochiri.tooltestlab.catalog.product.adapter.out.persistence.ProductCategoryEntity.class,
                 com.dochiri.tooltestlab.member.adapter.out.persistence.MemberEntity.class,
                 com.dochiri.tooltestlab.order.adapter.out.persistence.OrderEntity.class,
                 com.dochiri.tooltestlab.order.adapter.out.persistence.OrderLineEntity.class,
@@ -51,11 +52,6 @@ class EntityConventionTest {
                 assertNotNull(column);
                 assertEquals(36, column.length());
                 assertFalse(column.nullable());
-            }
-            if (field.getName().equals("categoryPublicIds")) {
-                final Column column = field.getAnnotation(Column.class);
-                assertNotNull(column);
-                assertEquals(36, column.length());
             }
         }
     }

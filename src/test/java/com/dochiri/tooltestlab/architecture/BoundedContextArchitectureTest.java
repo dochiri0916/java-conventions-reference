@@ -25,7 +25,9 @@ class BoundedContextArchitectureTest {
                     }
                     assertTrue(path.toString().contains("/adapter/in/messaging/"),
                             () -> path + " imports foreign BC: " + matcher.group());
-                    assertTrue(matcher.group(2).startsWith("application.port.out.event."),
+                    final String eventPackage = importedBc.equals("catalog")
+                            ? "product.application.port.out.event." : "application.port.out.event.";
+                    assertTrue(matcher.group(2).startsWith(eventPackage),
                             () -> path + " imports a non-public contract: " + matcher.group());
                 }
             }
@@ -35,10 +37,11 @@ class BoundedContextArchitectureTest {
     @Test
     void publicEventsContainNoDomainOrTechnologyTypes() throws Exception {
         for (final var bc : CONTEXTS) {
-            final var eventRoot = ROOT.resolve(bc + "/application/port/out/event");
-            assertTrue(Files.isRegularFile(ROOT.resolve(bc + "/application/port/out/IntegrationEventPort.java")));
-            assertTrue(Files.isDirectory(ROOT.resolve(bc + "/adapter/out/messaging")));
-            assertTrue(Files.isDirectory(ROOT.resolve(bc + "/adapter/out/persistence/outbox")));
+            final var aggregateRoot = ROOT.resolve(bc.equals("catalog") ? "catalog/product" : bc);
+            final var eventRoot = aggregateRoot.resolve("application/port/out/event");
+            assertTrue(Files.isRegularFile(aggregateRoot.resolve("application/port/out/IntegrationEventPort.java")));
+            assertTrue(Files.isDirectory(aggregateRoot.resolve("adapter/out/messaging")));
+            assertTrue(Files.isDirectory(aggregateRoot.resolve("adapter/out/persistence/outbox")));
             try (final var paths = Files.walk(eventRoot)) {
                 for (final var path : paths.filter(p -> p.toString().endsWith(".java")).toList()) {
                     final String source = Files.readString(path);
@@ -51,19 +54,50 @@ class BoundedContextArchitectureTest {
     }
 
     @Test
+    void catalogOnlyGroupsAggregateRoots() throws Exception {
+        try (final var paths = Files.list(ROOT.resolve("catalog"))) {
+            assertEquals(List.of("category", "product"),
+                    paths.map(path -> path.getFileName().toString()).sorted().toList());
+        }
+        for (final var aggregate : List.of("category", "product")) {
+            final String className = aggregate.equals("category") ? "Category" : "Product";
+            assertTrue(Files.isRegularFile(ROOT.resolve("catalog/" + aggregate + "/domain/" + className + ".java")));
+        }
+    }
+
+    @Test
     void domainsHaveNoApplicationOrAdapterDependenciesAndUseLocalReferenceIds() throws Exception {
         try (final var paths = Files.walk(ROOT)) {
             for (final var path : paths.filter(p -> p.toString().contains("/domain/") && p.toString().endsWith(".java")).toList()) {
                 final String source = Files.readString(path);
                 assertFalse(source.contains(".application."), path.toString());
                 assertFalse(source.contains(".adapter."), path.toString());
+                assertFalse(source.contains("jakarta.persistence"), path.toString());
+                assertFalse(source.contains("org.springframework"), path.toString());
             }
         }
         assertTrue(Files.isRegularFile(ROOT.resolve("order/domain/vo/CartReferenceId.java")));
-        assertTrue(Files.isRegularFile(ROOT.resolve("catalog/domain/vo/OrderReferenceId.java")));
         for (final var bc : List.of("cart", "order", "review")) {
             assertTrue(Files.isRegularFile(ROOT.resolve(bc + "/domain/vo/MemberReferenceId.java")));
             assertTrue(Files.isRegularFile(ROOT.resolve(bc + "/domain/vo/ProductReferenceId.java")));
+        }
+    }
+
+    @Test
+    void messagingPersistenceStaysOutsideApplicationAndTransportOutsideConsumers() throws Exception {
+        try (final var paths = Files.walk(ROOT)) {
+            for (final var path : paths.filter(p -> p.toString().endsWith(".java")).toList()) {
+                final String source = Files.readString(path);
+                if (path.toString().contains("/application/")) {
+                    assertFalse(source.contains("jakarta.persistence"), path.toString());
+                    assertFalse(source.contains(".messaging.persistence."), path.toString());
+                    assertFalse(source.contains(".adapter."), path.toString());
+                }
+                if (path.toString().contains("/adapter/in/messaging/")) {
+                    assertFalse(source.contains("@EventListener"), path.toString());
+                    assertFalse(source.contains("org.springframework.kafka"), path.toString());
+                }
+            }
         }
     }
 }

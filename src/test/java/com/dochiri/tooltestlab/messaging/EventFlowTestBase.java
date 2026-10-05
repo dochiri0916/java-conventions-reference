@@ -1,23 +1,32 @@
 package com.dochiri.tooltestlab.messaging;
 
 import com.dochiri.tooltestlab.ToolTestLabApplication;
-import com.dochiri.tooltestlab.cart.application.port.in.*;
-import com.dochiri.tooltestlab.catalog.application.port.in.*;
-import com.dochiri.tooltestlab.catalog.application.port.out.event.*;
-import com.dochiri.tooltestlab.catalog.product.application.port.in.*;
+import com.dochiri.tooltestlab.cart.application.port.in.query.GetCartQuery;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.query.GetProductQuery;
+import com.dochiri.tooltestlab.order.application.port.in.query.GetOrderQuery;
+import com.dochiri.tooltestlab.cart.application.port.in.command.AddToCartCommand;
+import com.dochiri.tooltestlab.cart.application.port.in.command.RemoveFromCartCommand;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.AddToCartUseCase;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.GetCartUseCase;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.PublishCartSnapshotsUseCase;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.RemoveFromCartUseCase;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.usecase.GetProductUseCase;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.usecase.PublishProductSnapshotsUseCase;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.usecase.RegisterProductUseCase;
+import com.dochiri.tooltestlab.catalog.product.application.port.out.event.*;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.command.RegisterProductCommand;
 import com.dochiri.tooltestlab.global.messaging.*;
-import com.dochiri.tooltestlab.member.application.port.in.*;
+import com.dochiri.tooltestlab.member.application.port.in.command.RegisterMemberCommand;
+import com.dochiri.tooltestlab.member.application.port.in.usecase.RegisterMemberUseCase;
 import com.dochiri.tooltestlab.order.application.exception.*;
-import com.dochiri.tooltestlab.order.application.port.in.*;
+import com.dochiri.tooltestlab.order.application.port.in.command.PlaceOrderCommand;
+import com.dochiri.tooltestlab.order.application.port.in.usecase.CancelOrderUseCase;
+import com.dochiri.tooltestlab.order.application.port.in.usecase.GetOrderUseCase;
+import com.dochiri.tooltestlab.order.application.port.in.usecase.PlaceOrderUseCase;
 import com.dochiri.tooltestlab.order.application.port.out.event.*;
-import com.dochiri.tooltestlab.order.application.port.out.OrderRepositoryPort;
-import com.dochiri.tooltestlab.order.domain.Order;
-import com.dochiri.tooltestlab.order.domain.OrderStatus;
-import com.dochiri.tooltestlab.order.domain.vo.*;
-import com.dochiri.tooltestlab.global.domain.vo.Money;
-import com.dochiri.tooltestlab.global.domain.vo.Quantity;
-import com.dochiri.tooltestlab.review.application.port.in.*;
+import com.dochiri.tooltestlab.review.application.port.in.command.WriteReviewCommand;
+import com.dochiri.tooltestlab.review.application.port.in.usecase.DeleteReviewUseCase;
+import com.dochiri.tooltestlab.review.application.port.in.usecase.WriteReviewUseCase;
 import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Table;
@@ -42,6 +51,8 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,12 +70,10 @@ import static org.junit.jupiter.api.Assertions.*;
 abstract class EventFlowTestBase {
     @Autowired RegisterProductUseCase registerProduct;
     @Autowired GetProductUseCase getProduct;
-    @Autowired IncreaseProductStockUseCase increaseStock;
     @Autowired AddToCartUseCase addToCart;
     @Autowired RemoveFromCartUseCase removeFromCart;
     @Autowired GetCartUseCase getCart;
     @Autowired PlaceOrderUseCase placeOrder;
-    @Autowired OrderRepositoryPort orderRepositoryPort;
     @Autowired PublishProductSnapshotsUseCase publishProducts;
     @Autowired PublishCartSnapshotsUseCase publishCarts;
     @Autowired CancelOrderUseCase cancelOrder;
@@ -72,8 +81,6 @@ abstract class EventFlowTestBase {
     @Autowired RegisterMemberUseCase registerMember;
     @Autowired WriteReviewUseCase writeReview;
     @Autowired DeleteReviewUseCase deleteReview;
-    @Autowired ReserveOrderStockUseCase reserveStock;
-    @Autowired ReleaseOrderStockUseCase releaseStock;
     @Autowired List<OutboxRelay> relays;
     @Autowired EntityManager entityManager;
     @Autowired PlatformTransactionManager transactionManager;
@@ -99,26 +106,25 @@ abstract class EventFlowTestBase {
     }
 
     @Test
-    void checkoutAndCancellationUseCommittedEventsAndRestoreReservedStockOnce() {
+    void checkoutAndCancellationDoNotChangeProductStock() {
         final String product = product(10);
         drain();
         addToCart.add(new AddToCartCommand(memberId, product, 2));
         drain();
 
         final var placed = placeOrder.place(command());
-        assertEquals("STOCK_PENDING", placed.status());
+        assertEquals("PENDING", placed.status());
         assertEquals(10, stock(product));
-        assertEquals(1, getCart.getCart(memberId).items().size());
+        assertEquals(1, getCart.getCart(new GetCartQuery(memberId)).items().size());
         assertThrows(CheckoutAlreadyRequestedException.class, () -> placeOrder.place(command()));
 
         drain();
         assertEquals("PENDING", status(placed.publicId()));
-        assertEquals(8, stock(product));
-        assertTrue(getCart.getCart(memberId).items().isEmpty());
-        assertEquals(1, count("catalog_stock_reservations"));
+        assertEquals(10, stock(product));
+        assertTrue(getCart.getCart(new GetCartQuery(memberId)).items().isEmpty());
 
         cancelOrder.cancel(memberId, placed.publicId());
-        assertEquals(8, stock(product));
+        assertEquals(10, stock(product));
         drain();
         assertEquals("CANCELLED", status(placed.publicId()));
         assertEquals(10, stock(product));
@@ -146,31 +152,6 @@ abstract class EventFlowTestBase {
     }
 
     @Test
-    void stockFailureDoesNotPartiallyReserveAndAllowsRetryingTheCart() {
-        final String first = product(10);
-        final String second = product(1);
-        drain();
-        addToCart.add(new AddToCartCommand(memberId, first, 2));
-        addToCart.add(new AddToCartCommand(memberId, second, 2));
-        drain();
-
-        final var placed = placeOrder.place(command());
-        drain();
-        assertEquals("REJECTED", status(placed.publicId()));
-        assertEquals(10, stock(first));
-        assertEquals(1, stock(second));
-        assertEquals(2, getCart.getCart(memberId).items().size());
-
-        increaseStock.increase(second, 4);
-        drain();
-        final var retried = placeOrder.place(command());
-        drain();
-        assertEquals("PENDING", status(retried.publicId()));
-        assertEquals(8, stock(first));
-        assertEquals(3, stock(second));
-    }
-
-    @Test
     void deliveryFailureRetriesDurableOutboxAndCommittedInboxSkipsDuplicate() {
         final String product = product(10);
         broker.failAfter = true;
@@ -187,7 +168,7 @@ abstract class EventFlowTestBase {
         assertEquals(1, count("cart_inbox"));
         assertEquals(sent.eventId(), last(ProductChangedIntegrationEvent.TYPE).eventId());
         addToCart.add(new AddToCartCommand(memberId, product, 1));
-        assertEquals(1, getCart.getCart(memberId).items().size());
+        assertEquals(1, getCart.getCart(new GetCartQuery(memberId)).items().size());
     }
 
     @Test
@@ -203,28 +184,6 @@ abstract class EventFlowTestBase {
         clock.advance(2);
         assertEquals(2, relay("catalog"));
         assertEquals(2, count("cart_inbox"));
-    }
-
-    @Test
-    void failedConsumerRollsBackInboxAndCanHandleSameEventAfterRepair() {
-        final String orderId = UuidCreator.getTimeOrderedEpoch().toString();
-        final var message = message("catalog", new StockReservedIntegrationEvent(orderId), 1);
-        assertThrows(RuntimeException.class, () -> broker.send(message));
-        assertEquals(0, count("order_inbox"));
-        final String product = product(10);
-        drain();
-        transaction(() -> orderRepositoryPort.create(Order.restore(
-                OrderId.parse(orderId), MemberReferenceId.parse(memberId),
-                CartReferenceId.parse(UuidCreator.getTimeOrderedEpoch().toString()), 1,
-                OrderLines.of(OrderLine.of(ProductReferenceId.parse(product), ProductName.of("상품"),
-                        Quantity.of(1), Money.of(100))), OrderStatus.STOCK_PENDING,
-                ShippingAddress.of(RecipientName.of("홍길동"), Phone.of("010-1234-5678"),
-                        StreetAddress.of("서울시 주소"), ZipCode.of("12345")), Money.of(100))));
-        broker.send(message);
-        assertEquals(1, count("order_inbox"));
-        assertEquals("PENDING", status(orderId));
-        broker.send(message);
-        assertEquals(1, count("order_inbox"));
     }
 
     @Test
@@ -253,7 +212,7 @@ abstract class EventFlowTestBase {
         }
         assertEquals(1, count("orders"));
         drain();
-        assertEquals(8, stock(product));
+        assertEquals(10, stock(product));
     }
 
     @Test
@@ -277,7 +236,7 @@ abstract class EventFlowTestBase {
     }
 
     @Test
-    void duplicatedOrderEventsAndNewEventIdsForSameOrderDoNotDoubleReserveOrRelease() {
+    void duplicatedOrderEventsDoNotChangeStockOrRepeatCartCheckout() {
         final String product = product(10);
         drain();
         addToCart.add(new AddToCartCommand(memberId, product, 2));
@@ -285,11 +244,14 @@ abstract class EventFlowTestBase {
         final var placed = placeOrder.place(command());
         relay("order");
         final var event = last(OrderPlacedIntegrationEvent.TYPE);
-        assertEquals(8, stock(product));
+        assertEquals(10, stock(product));
+        assertTrue(getCart.getCart(new GetCartQuery(memberId)).items().isEmpty());
+        addToCart.add(new AddToCartCommand(memberId, product, 1));
         broker.send(event);
         broker.send(new MessageEnvelope(UuidCreator.getTimeOrderedEpoch().toString(), event.source(),
                 event.eventType(), event.aggregateId(), event.sequence() + 1, event.occurredAt(), event.payload()));
-        assertEquals(8, stock(product));
+        assertEquals(10, stock(product));
+        assertEquals(1, getCart.getCart(new GetCartQuery(memberId)).items().getFirst().quantity());
         drain();
         cancelOrder.cancel(memberId, placed.publicId());
         drain();
@@ -301,35 +263,7 @@ abstract class EventFlowTestBase {
     }
 
     @Test
-    void cancellationBeforeStockReplyNeverConfirmsOrClearsTheCart() {
-        final String product = product(10);
-        drain();
-        addToCart.add(new AddToCartCommand(memberId, product, 2));
-        drain();
-        final var placed = placeOrder.place(command());
-        cancelOrder.cancel(memberId, placed.publicId());
-        drain();
-        assertEquals("CANCELLED", status(placed.publicId()));
-        assertEquals(10, stock(product));
-        assertEquals(1, getCart.getCart(memberId).items().size());
-        assertTrue(broker.messages.stream().noneMatch(m -> m.eventType().equals(OrderConfirmedIntegrationEvent.TYPE)));
-    }
-
-    @Test
-    void cancellationArrivingBeforePlacementPreventsLateReservation() {
-        final String product = product(10);
-        drain();
-        final String orderId = UuidCreator.getTimeOrderedEpoch().toString();
-        releaseStock.release(new ReleaseOrderStockCommand(orderId));
-        reserveStock.reserve(new ReserveOrderStockCommand(orderId, List.of(new ReserveOrderStockCommand.Item(product, 2))));
-        assertEquals(10, stock(product));
-        assertEquals("RELEASED", transaction(() -> entityManager.createNativeQuery(
-                "select status from catalog_stock_reservations where order_reference_id = :id")
-                .setParameter("id", orderId).getSingleResult()));
-    }
-
-    @Test
-    void lateConfirmationDoesNotEraseCartChangesAndOldSnapshotDoesNotOverwriteNew() {
+    void lateOrderDeliveryDoesNotEraseCartChangesAndOldSnapshotDoesNotOverwriteNew() {
         final String product = product(10);
         drain();
         addToCart.add(new AddToCartCommand(memberId, product, 2));
@@ -339,7 +273,7 @@ abstract class EventFlowTestBase {
         addToCart.add(new AddToCartCommand(memberId, product, 1));
         drain();
         assertEquals("PENDING", status(placed.publicId()));
-        assertEquals(3, getCart.getCart(memberId).items().getFirst().quantity());
+        assertEquals(3, getCart.getCart(new GetCartQuery(memberId)).items().getFirst().quantity());
         broker.send(new MessageEnvelope(UuidCreator.getTimeOrderedEpoch().toString(), oldCart.source(),
                 oldCart.eventType(), oldCart.aggregateId(), oldCart.sequence(), oldCart.occurredAt(), oldCart.payload()));
         final var second = placeOrder.place(command());
@@ -355,7 +289,7 @@ abstract class EventFlowTestBase {
             addToCart.add(new AddToCartCommand(memberId, product, 2));
             throw new IllegalStateException("rollback");
         }));
-        assertTrue(getCart.getCart(memberId).items().isEmpty());
+        assertTrue(getCart.getCart(new GetCartQuery(memberId)).items().isEmpty());
         assertEquals(outboxCount, count("cart_outbox"));
     }
 
@@ -385,11 +319,11 @@ abstract class EventFlowTestBase {
     }
 
     int stock(final String productId) {
-        return getProduct.getProduct(productId).stock();
+        return getProduct.getProduct(new GetProductQuery(productId)).stock();
     }
 
     String status(final String orderId) {
-        return getOrder.getOrder(memberId, orderId).status();
+        return getOrder.getOrder(new GetOrderQuery(memberId, orderId)).status();
     }
 
     void drain() {
@@ -467,7 +401,7 @@ abstract class EventFlowTestBase {
         }
 
         @Override
-        public void send(final MessageEnvelope message) {
+        public CompletionStage<Void> send(final MessageEnvelope message) {
             if (failBefore) {
                 throw new IllegalStateException("전송 전 실패");
             }
@@ -476,6 +410,7 @@ abstract class EventFlowTestBase {
             if (failAfter) {
                 throw new IllegalStateException("수신자 커밋 후 응답 실패");
             }
+            return CompletableFuture.completedFuture(null);
         }
     }
 

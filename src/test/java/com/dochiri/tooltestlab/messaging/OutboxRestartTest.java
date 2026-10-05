@@ -1,11 +1,12 @@
 package com.dochiri.tooltestlab.messaging;
 
 import com.dochiri.tooltestlab.ToolTestLabApplication;
-import com.dochiri.tooltestlab.cart.application.port.in.AddToCartCommand;
-import com.dochiri.tooltestlab.cart.application.port.in.AddToCartUseCase;
-import com.dochiri.tooltestlab.cart.application.port.in.GetCartUseCase;
-import com.dochiri.tooltestlab.catalog.adapter.out.persistence.outbox.CatalogOutboxEntry;
-import com.dochiri.tooltestlab.catalog.product.application.port.in.RegisterProductUseCase;
+import com.dochiri.tooltestlab.cart.application.port.in.query.GetCartQuery;
+import com.dochiri.tooltestlab.cart.application.port.in.command.AddToCartCommand;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.AddToCartUseCase;
+import com.dochiri.tooltestlab.cart.application.port.in.usecase.GetCartUseCase;
+import com.dochiri.tooltestlab.catalog.product.adapter.out.persistence.outbox.CatalogOutboxEntry;
+import com.dochiri.tooltestlab.catalog.product.application.port.in.usecase.RegisterProductUseCase;
 import com.dochiri.tooltestlab.catalog.product.application.port.in.command.RegisterProductCommand;
 import com.dochiri.tooltestlab.global.messaging.OutboxRelay;
 import com.dochiri.tooltestlab.global.messaging.persistence.OutboxDispatcher;
@@ -43,13 +44,13 @@ class OutboxRestartTest {
             final var jdbc = context.getBean(JdbcTemplate.class);
             assertEquals(1L, jdbc.queryForObject(
                     "select count(*) from catalog_outbox where event_id = ? and published_at is null", Long.class, eventId));
-            assertTrue(context.getBean(OutboxDispatcher.class).dispatch(CatalogOutboxEntry.class, "catalog") >= 1);
+            assertTrue(context.getBean(OutboxDispatcher.class).dispatch(CatalogOutboxEntry.class) >= 1);
             assertEquals(1L, jdbc.queryForObject(
                     "select count(*) from catalog_outbox where event_id = ? and published_at is not null", Long.class, eventId));
             assertEquals(1L, jdbc.queryForObject("select count(*) from cart_product_snapshots", Long.class));
             final String memberId = UuidCreator.getTimeOrderedEpoch().toString();
             context.getBean(AddToCartUseCase.class).add(new AddToCartCommand(memberId, productId, 2));
-            assertEquals(2, context.getBean(GetCartUseCase.class).getCart(memberId).items().getFirst().quantity());
+            assertEquals(2, context.getBean(GetCartUseCase.class).getCart(new GetCartQuery(memberId)).items().getFirst().quantity());
             context.getBeansOfType(OutboxRelay.class).values().forEach(OutboxRelay::relay);
             assertEquals(1L, jdbc.queryForObject("select count(*) from order_cart_snapshots", Long.class));
         }

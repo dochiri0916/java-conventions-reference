@@ -1,5 +1,7 @@
 package com.dochiri.tooltestlab.catalog.category.domain;
 
+import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryName;
+import com.dochiri.tooltestlab.catalog.category.domain.vo.CategoryStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,10 +13,10 @@ class CategoryTest {
     @DisplayName("카테고리 이름과 상태 변경은 새 객체를 반환하고 ID와 원본을 유지한다")
     void changesCategoryImmutably() {
         // given
-        final Category original = Category.create("카테고리");
+        final Category original = Category.create(CategoryName.of("카테고리"));
 
         // when
-        final Category renamed = original.rename("변경한 카테고리");
+        final Category renamed = original.rename(CategoryName.of("변경한 카테고리"));
         final Category inactive = renamed.deactivate();
         final Category deleted = inactive.delete();
 
@@ -33,7 +35,7 @@ class CategoryTest {
     @DisplayName("카테고리 복원은 null 필수 필드를 거부한다")
     void rejectsNullFields() {
         // given
-        final Category category = Category.create("카테고리");
+        final Category category = Category.create(CategoryName.of("카테고리"));
 
         // when
         // then

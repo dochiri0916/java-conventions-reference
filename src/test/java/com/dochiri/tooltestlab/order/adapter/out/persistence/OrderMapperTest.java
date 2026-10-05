@@ -3,7 +3,7 @@ package com.dochiri.tooltestlab.order.adapter.out.persistence;
 import com.dochiri.tooltestlab.global.domain.vo.Money;
 import com.dochiri.tooltestlab.global.domain.vo.Quantity;
 import com.dochiri.tooltestlab.order.domain.Order;
-import com.dochiri.tooltestlab.order.domain.OrderStatus;
+import com.dochiri.tooltestlab.order.domain.vo.OrderStatus;
 import com.dochiri.tooltestlab.order.domain.vo.MemberReferenceId;
 import com.dochiri.tooltestlab.order.domain.vo.CartReferenceId;
 import com.dochiri.tooltestlab.order.domain.vo.OrderLine;
@@ -40,7 +40,7 @@ class OrderMapperTest {
         final OrderEntity entity = OrderMapper.toEntity(order);
         final var itemEntities = OrderMapper.toItemEntities(order, order.id().value());
         final Order restored = OrderMapper.toDomain(entity, itemEntities);
-        OrderMapper.updateEntity(entity, order.confirmStock().pay());
+        OrderMapper.updateEntity(entity, order.pay());
         final Order updated = OrderMapper.toDomain(entity, itemEntities);
 
         // then
@@ -50,14 +50,14 @@ class OrderMapperTest {
         assertEquals(order.items(), restored.items());
         assertEquals(order.shippingAddress(), restored.shippingAddress());
         assertEquals(Money.of(200), restored.totalAmount());
-        assertEquals(OrderStatus.STOCK_PENDING, restored.status());
+        assertEquals(OrderStatus.PENDING, restored.status());
         assertEquals(order.cartId(), restored.cartId());
         assertEquals(order.cartRevision(), restored.cartRevision());
         assertEquals(OrderStatus.PAID, updated.status());
         assertEquals(order.id(), updated.id());
         assertEquals(order.shippingAddress(), updated.shippingAddress());
-        assertEquals(OrderStatus.STOCK_PENDING, order.status());
-        assertEquals(36, entity.getOrderId().length());
-        assertEquals(7, UUID.fromString(itemEntities.getFirst().getOrderLineId()).version());
+        assertEquals(OrderStatus.PENDING, order.status());
+        assertEquals(36, entity.getPublicId().length());
+        assertEquals(7, UUID.fromString(itemEntities.getFirst().getPublicId()).version());
     }
 }

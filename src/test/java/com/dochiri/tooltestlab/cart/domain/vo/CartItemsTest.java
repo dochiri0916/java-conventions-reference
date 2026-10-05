@@ -69,7 +69,7 @@ class CartItemsTest {
 
         // when
         final CartItems added = original.add(second);
-        final CartItem changed = first.increaseQuantity(2);
+        final CartItem changed = first.increaseQuantity(Quantity.of(2));
         final CartItems replaced = added.replace(first, changed);
         final CartItems removed = replaced.remove(second.productId());
 
